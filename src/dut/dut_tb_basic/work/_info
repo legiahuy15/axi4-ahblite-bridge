@@ -1,0 +1,194 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 d/home/hle/Desktop/bridge_axi4_ahblite_vip/src/dut/dut_tb_basic
+T_opt
+!s110 1787822511
+V98MfJYIm>4fRLZPe>4F0D0
+04 27 4 work tb_axi_ahblite_bridge_smoke fast 0
+=1-000ae431a4f1-6a9001af-4c365-2340d2
+o-quiet -auto_acc_if_foreign -work work
+Z1 tCvgOpt 0
+n@_opt
+OL;O;10.6b;65
+vahb_mstr_if
+Z2 DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
+Z3 !s110 1787822510
+!i10b 1
+!s100 9hE:d_0hS79^2EGWn7RV;0
+I43hQVnN1M]lGCJ[]F=2BU3
+Z4 VDg1SIo80bB@j0V0VzS_@n1
+!s105 ahb_mstr_if_sv_unit
+S1
+R0
+Z5 w1787820756
+8../ahb_mstr_if.sv
+F../ahb_mstr_if.sv
+Z6 L0 12
+Z7 OL;L;10.6b;65
+r1
+!s85 0
+31
+Z8 !s108 1787822510.000000
+Z9 !s107 /home/hle/Desktop/bridge_axi4_ahblite_vip/src/dut/dut_tb_basic/tb_axi_ahblite_bridge_smoke.sv|../axi_ahblite_bridge.sv|../ahb_mstr_if.sv|../axi_slv_if.sv|../ahb_skid_buf.sv|../time_out.sv|../counter_f.sv|
+Z10 !s90 -sv|-work|work|-f|/home/hle/Desktop/bridge_axi4_ahblite_vip/src/dut/dut_tb_basic/dut_files_list.f|/home/hle/Desktop/bridge_axi4_ahblite_vip/src/dut/dut_tb_basic/tb_axi_ahblite_bridge_smoke.sv|
+!i113 0
+Z11 o-sv -work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+Z12 !s92 -sv -work work +incdir+.. -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R1
+vahb_skid_buf
+R2
+R3
+!i10b 1
+!s100 __DKEAaa7:dYE7Gak7jT73
+I5afnVVa;9T><f9A1@zF700
+R4
+!s105 ahb_skid_buf_sv_unit
+S1
+R0
+w1787821985
+8../ahb_skid_buf.sv
+F../ahb_skid_buf.sv
+Z13 L0 11
+R7
+r1
+!s85 0
+31
+R8
+R9
+R10
+!i113 0
+R11
+R12
+R1
+vaxi_ahblite_bridge
+R2
+R3
+!i10b 1
+!s100 mUNSI<0Z0>E9:K3P?gSFA0
+IO1aRiiTE]AOgXTkQzJ8f^2
+R4
+!s105 axi_ahblite_bridge_sv_unit
+S1
+R0
+w1787821991
+8../axi_ahblite_bridge.sv
+F../axi_ahblite_bridge.sv
+R13
+R7
+r1
+!s85 0
+31
+R8
+R9
+R10
+!i113 0
+R11
+R12
+R1
+vaxi_slv_if
+R2
+R3
+!i10b 1
+!s100 2AWRG:HdNLoHEbEjn79b13
+Iob0o^nk5]=HP?ZJGGFc6O1
+R4
+!s105 axi_slv_if_sv_unit
+S1
+R0
+w1787821998
+8../axi_slv_if.sv
+F../axi_slv_if.sv
+R13
+R7
+r1
+!s85 0
+31
+R8
+R9
+R10
+!i113 0
+R11
+R12
+R1
+vcounter_f
+R2
+R3
+!i10b 1
+!s100 4Yb_@NILZ^:]T@8C[b;`B3
+I[[ZYhi?A0gRN`j^cd;;g63
+R4
+!s105 counter_f_sv_unit
+S1
+R0
+w1787821971
+8../counter_f.sv
+F../counter_f.sv
+R13
+R7
+r1
+!s85 0
+31
+R8
+R9
+R10
+!i113 0
+R11
+R12
+R1
+vtb_axi_ahblite_bridge_smoke
+R2
+R3
+!i10b 1
+!s100 1zCHMc9i1oc:1e3DQUnFf2
+IeVlo]ab5addn<5j]akndh2
+R4
+!s105 tb_axi_ahblite_bridge_smoke_sv_unit
+S1
+R0
+R5
+8/home/hle/Desktop/bridge_axi4_ahblite_vip/src/dut/dut_tb_basic/tb_axi_ahblite_bridge_smoke.sv
+F/home/hle/Desktop/bridge_axi4_ahblite_vip/src/dut/dut_tb_basic/tb_axi_ahblite_bridge_smoke.sv
+R6
+R7
+r1
+!s85 0
+31
+R8
+R9
+R10
+!i113 0
+R11
+R12
+R1
+vtime_out
+R2
+R3
+!i10b 1
+!s100 Z?=fM`MW=UjVKc8?LcaCF0
+IQUIkUeI8^i@KFi5878k<U1
+R4
+!s105 time_out_sv_unit
+S1
+R0
+w1787822012
+8../time_out.sv
+F../time_out.sv
+R13
+R7
+r1
+!s85 0
+31
+R8
+R9
+R10
+!i113 0
+R11
+R12
+R1

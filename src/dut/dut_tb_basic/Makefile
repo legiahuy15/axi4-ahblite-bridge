@@ -10,8 +10,9 @@
 SHELL := /bin/bash
 
 TOP       ?= tb_axi_ahblite_bridge_smoke
-TB        ?= tb_axi_ahblite_bridge_smoke.sv
-DUT_DIR   ?= src/dut
+MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+TB        ?= $(MAKEFILE_DIR)tb_axi_ahblite_bridge_smoke.sv
+FILELIST  ?= $(MAKEFILE_DIR)dut_files_list.f
 LOG       ?= smoke.log
 WLF       ?= smoke.wlf
 
@@ -25,16 +26,6 @@ VSIM       ?= $(QUESTA_BIN)vsim
 
 VLOG_FLAGS ?= -sv
 VSIM_FLAGS ?=
-
-# Keep the same compile order as src/dut/files.f. Do not compile
-# axi_ahblite_bridge_all.sv because it duplicates the modules below.
-DUT_SRCS := \
-	$(DUT_DIR)/counter_f.sv \
-	$(DUT_DIR)/time_out.sv \
-	$(DUT_DIR)/ahb_skid_buf.sv \
-	$(DUT_DIR)/axi_slv_if.sv \
-	$(DUT_DIR)/ahb_mstr_if.sv \
-	$(DUT_DIR)/axi_ahblite_bridge.sv
 
 .PHONY: all run compile gui view clean help check-tools
 
@@ -50,30 +41,31 @@ check-tools:
 	done
 
 compile: check-tools
-	@test -d work || "$(VLIB)" work
-	@"$(VMAP)" work work
-	"$(VLOG)" $(VLOG_FLAGS) -work work $(DUT_SRCS) "$(TB)"
+	@cd "$(MAKEFILE_DIR)" && { test -d work || "$(VLIB)" work; }
+	@cd "$(MAKEFILE_DIR)" && "$(VMAP)" work work
+	cd "$(MAKEFILE_DIR)" && "$(VLOG)" $(VLOG_FLAGS) -work work -f "$(FILELIST)" "$(TB)"
 
 run: compile
-	"$(VSIM)" -c $(VSIM_FLAGS) "work.$(TOP)" \
+	cd "$(MAKEFILE_DIR)" && "$(VSIM)" -c $(VSIM_FLAGS) "work.$(TOP)" \
 		-l "$(LOG)" -wlf "$(WLF)" \
 		-do 'onerror {quit -code 1}; log -r /*; run -all; quit -code 0'
-	@grep -q 'TEST PASS:' "$(LOG)" || { \
-		echo "ERROR: smoke test did not report TEST PASS; see $(LOG)"; \
+	@grep -q 'TEST PASS:' "$(MAKEFILE_DIR)$(LOG)" || { \
+		echo "ERROR: smoke test did not report TEST PASS; see $(MAKEFILE_DIR)$(LOG)"; \
 		exit 1; \
 	}
 
 gui: compile
-	"$(VSIM)" -gui $(VSIM_FLAGS) "work.$(TOP)" \
+	cd "$(MAKEFILE_DIR)" && "$(VSIM)" -gui $(VSIM_FLAGS) "work.$(TOP)" \
 		-do 'add wave -r sim:/$(TOP)/*'
 
 view: check-tools
-	@test -f "$(WLF)" || { echo "ERROR: $(WLF) not found; run 'make' first"; exit 1; }
-	"$(VSIM)" -view "$(WLF)"
+	@test -f "$(MAKEFILE_DIR)$(WLF)" || { echo "ERROR: $(WLF) not found; run 'make' first"; exit 1; }
+	cd "$(MAKEFILE_DIR)" && "$(VSIM)" -view "$(WLF)"
 
 clean:
-	rm -rf -- work
-	rm -f -- transcript modelsim.ini "$(LOG)" "$(WLF)"
+	rm -rf -- "$(MAKEFILE_DIR)work"
+	rm -f -- "$(MAKEFILE_DIR)transcript" "$(MAKEFILE_DIR)modelsim.ini" \
+		"$(MAKEFILE_DIR)$(LOG)" "$(MAKEFILE_DIR)$(WLF)"
 
 help:
 	@printf '%s\n' \

@@ -1,4 +1,4 @@
-//==============================================================================
+//=============================================================================
 // File        : axi4_pkg.sv
 // Project     : AXI4 VIP
 // Author      : Huy Le
@@ -9,7 +9,7 @@
 //
 //               Note: axi4_if.sv (SystemVerilog interface) is NOT included
 //               here - it must be compiled separately before this package.
-//==============================================================================
+//=============================================================================
 
 `ifndef AXI4_PKG_INCLUDED_
 `define AXI4_PKG_INCLUDED_
