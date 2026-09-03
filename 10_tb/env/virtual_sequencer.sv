@@ -11,8 +11,9 @@ class virtual_sequencer extends uvm_sequencer;
     `uvm_component_utils(virtual_sequencer)
 
     //-------------------------------------------------------------------------
-    // Agent sequencer handles
+    // Configuration and agent handles
     //-------------------------------------------------------------------------
+    vip_env_cfg        cfg;
     axi4_mst_sequencer axi_sqr;
     ahb_slv_sequencer  ahb_sqr;
 
