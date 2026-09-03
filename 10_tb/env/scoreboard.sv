@@ -257,6 +257,17 @@ class scoreboard extends uvm_scoreboard;
     endfunction : axi_transaction_matches
 
     //-------------------------------------------------------------------------
+    // Reset handling
+    //-------------------------------------------------------------------------
+    function void reset_state();
+        expected_ahb_queue.delete();
+        actual_ahb_queue.delete();
+        axi_context_queue.delete();
+        completed_axi_queue.delete();
+        actual_axi_queue.delete();
+    endfunction : reset_state
+
+    //-------------------------------------------------------------------------
     // End-of-test checks
     //-------------------------------------------------------------------------
     function void check_phase(uvm_phase phase);

@@ -310,4 +310,11 @@ class predictor extends uvm_component;
         return hprot;
     endfunction : get_ahb_prot
 
+    //-------------------------------------------------------------------------
+    // Reset handling
+    //-------------------------------------------------------------------------
+    function void reset_state();
+        request_queue.delete();
+    endfunction : reset_state
+
 endclass : predictor
