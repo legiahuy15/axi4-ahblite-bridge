@@ -717,10 +717,9 @@ module ahb_mstr_if #(
 
             AHB_RD_WAIT: begin
                 if (axi_rready) begin
-                    if (wrap_brst_last) begin
-                        ahb_wr_rd_ns = AHB_IDLE;
-                        send_trans_seq = 1'b1;
-                    end else if (one_kb_in_progress && !one_kb_cross) begin
+                    // A resumed segment and each SINGLE transfer must start with
+                    // NONSEQ, even when only the final AXI beat remains.
+                    if (one_kb_in_progress && !one_kb_cross) begin
                         send_trans_nonseq = 1'b1;
                         one_kb_splitted   = 1'b1;
                     end else if (fixed_burst_access || wrap_2_in_progress) begin
@@ -728,7 +727,6 @@ module ahb_mstr_if #(
                     end else begin
                         send_trans_seq = 1'b1;
                     end
-                    // This final assignment intentionally mirrors the original behavior.
                     ahb_wr_rd_ns = AHB_RD_ADDR;
                 end
             end

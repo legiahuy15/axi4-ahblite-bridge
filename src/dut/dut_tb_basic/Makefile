@@ -27,7 +27,7 @@ VSIM       ?= $(QUESTA_BIN)vsim
 VLOG_FLAGS ?= -sv
 VSIM_FLAGS ?=
 
-.PHONY: all run compile gui view clean help check-tools
+.PHONY: all run compile rd-wait regress gui view clean help check-tools
 
 all: run
 
@@ -50,9 +50,20 @@ run: compile
 		-l "$(LOG)" -wlf "$(WLF)" \
 		-do 'onerror {quit -code 1}; log -r /*; run -all; quit -code 0'
 	@grep -q 'TEST PASS:' "$(MAKEFILE_DIR)$(LOG)" || { \
-		echo "ERROR: smoke test did not report TEST PASS; see $(MAKEFILE_DIR)$(LOG)"; \
+		echo "ERROR: test did not report TEST PASS; see $(MAKEFILE_DIR)$(LOG)"; \
 		exit 1; \
 	}
+
+rd-wait:
+	$(MAKE) run \
+		TOP=tb_ahb_mstr_rd_wait \
+		TB="$(MAKEFILE_DIR)tb_ahb_mstr_rd_wait.sv" \
+		LOG=rd_wait.log \
+		WLF=rd_wait.wlf
+
+regress:
+	$(MAKE) run
+	$(MAKE) rd-wait
 
 gui: compile
 	cd "$(MAKEFILE_DIR)" && "$(VSIM)" -gui $(VSIM_FLAGS) "work.$(TOP)" \
@@ -65,12 +76,15 @@ view: check-tools
 clean:
 	rm -rf -- "$(MAKEFILE_DIR)work"
 	rm -f -- "$(MAKEFILE_DIR)transcript" "$(MAKEFILE_DIR)modelsim.ini" \
-		"$(MAKEFILE_DIR)$(LOG)" "$(MAKEFILE_DIR)$(WLF)"
+		"$(MAKEFILE_DIR)$(LOG)" "$(MAKEFILE_DIR)$(WLF)" \
+		"$(MAKEFILE_DIR)rd_wait.log" "$(MAKEFILE_DIR)rd_wait.wlf"
 
 help:
 	@printf '%s\n' \
 		'make          Compile and run the smoke test in console mode' \
 		'make compile  Compile DUT and testbench only' \
+		'make rd-wait  Run directed AHB_RD_WAIT restart checks' \
+		'make regress  Run smoke and AHB_RD_WAIT regressions' \
 		'make gui      Compile and open the testbench in QuestaSim GUI' \
 		'make view     Open the waveform saved by the last console run' \
 		'make clean    Remove generated simulation files' \

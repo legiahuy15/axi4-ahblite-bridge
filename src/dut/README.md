@@ -17,6 +17,10 @@ The translation keeps synchronous reset behavior and the original state-machine/
 structure. Comments focus on protocol behavior and non-obvious SystemVerilog constructs,
 rather than comparing line-by-line with VHDL.
 
+The repository includes the PG177 product guide under `doc/`. The extracted verification
+profile, translation rules, RTL audit risks, and proposed compliance regression are recorded
+in [`docs/pg177_spec_review.md`](../../docs/pg177_spec_review.md).
+
 ## Notes
 
 - The original design assumes AXI and AHB data widths match (32 or 64 bits).
