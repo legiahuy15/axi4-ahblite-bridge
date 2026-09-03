@@ -21,6 +21,10 @@ interface axi4_if #(
 
     localparam int unsigned AXI4_STRB_WIDTH = AXI4_DATA_WIDTH / 8;
 
+    //-------------------------------------------------------------------------
+    // Interface signals
+    //-------------------------------------------------------------------------
+
     // Write address channel
     logic [AXI4_ID_WIDTH-1:0]   AWID;
     logic [AXI4_ADDR_WIDTH-1:0] AWADDR;
@@ -66,7 +70,9 @@ interface axi4_if #(
     logic                       RVALID;
     logic                       RREADY;
 
-    // AXI4 master driver
+    //-------------------------------------------------------------------------
+    // Master clocking block
+    //-------------------------------------------------------------------------
     clocking master_cb @(posedge clk);
         default input #1step output #1;
 
@@ -88,7 +94,9 @@ interface axi4_if #(
         output RREADY;
     endclocking : master_cb
 
-    // Passive monitor
+    //-------------------------------------------------------------------------
+    // Monitor clocking block
+    //-------------------------------------------------------------------------
     clocking monitor_cb @(posedge clk);
         default input #1step;
 
@@ -101,6 +109,9 @@ interface axi4_if #(
         input RID, RDATA, RRESP, RLAST, RVALID, RREADY;
     endclocking : monitor_cb
 
+    //-------------------------------------------------------------------------
+    // Modports
+    //-------------------------------------------------------------------------
     modport master_mp  (clocking master_cb,  input clk, input rst_n);
     modport monitor_mp (clocking monitor_cb, input clk, input rst_n);
 

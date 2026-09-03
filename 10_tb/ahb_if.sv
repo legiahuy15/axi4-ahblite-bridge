@@ -18,6 +18,10 @@ interface ahb_if #(
     input logic rst_n
 );
 
+    //-------------------------------------------------------------------------
+    // Interface signals
+    //-------------------------------------------------------------------------
+
     // Master signals
     logic [AHB_ADDR_WIDTH-1:0] HADDR;
     logic [2:0]                HBURST;
@@ -33,7 +37,9 @@ interface ahb_if #(
     logic                      HREADY;
     logic                      HRESP;
 
-    // AHB-Lite slave driver
+    //-------------------------------------------------------------------------
+    // Slave clocking block
+    //-------------------------------------------------------------------------
     clocking slave_cb @(posedge clk);
         default input #1step output #1;
         input  HADDR, HBURST, HMASTLOCK, HPROT;
@@ -41,7 +47,9 @@ interface ahb_if #(
         output HRDATA, HREADY, HRESP;
     endclocking : slave_cb
 
-    // Passive monitor
+    //-------------------------------------------------------------------------
+    // Monitor clocking block
+    //-------------------------------------------------------------------------
     clocking monitor_cb @(posedge clk);
         default input #1step;
         input HADDR, HBURST, HMASTLOCK, HPROT;
@@ -49,6 +57,9 @@ interface ahb_if #(
         input HRDATA, HREADY, HRESP;
     endclocking : monitor_cb
 
+    //-------------------------------------------------------------------------
+    // Modports
+    //-------------------------------------------------------------------------
     modport slave_mp   (clocking slave_cb,   input clk, input rst_n);
     modport monitor_mp (clocking monitor_cb, input clk, input rst_n);
 

@@ -6,12 +6,18 @@
 //               Included inside the bridge package.
 //=============================================================================
 
+    //-------------------------------------------------------------------------
     // Bus parameters
+    //-------------------------------------------------------------------------
     parameter int unsigned AXI4_ADDR_WIDTH = 32;
     parameter int unsigned AXI4_DATA_WIDTH = 32;
     parameter int unsigned AXI4_STRB_WIDTH = AXI4_DATA_WIDTH / 8;
     parameter int unsigned AXI4_ID_WIDTH   = 4;
     parameter int unsigned AXI4_LEN_WIDTH  = 8;
+
+    //-------------------------------------------------------------------------
+    // Protocol enumerations
+    //-------------------------------------------------------------------------
 
     // Transaction direction
     typedef enum bit {

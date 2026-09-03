@@ -1,9 +1,9 @@
-//==============================================================================
+//=============================================================================
 // File        : ahb_sva.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
 // Description : AHB-Lite protocol and bridge-profile assertions.
-//==============================================================================
+//=============================================================================
 
 `timescale 1ns/1ps
 
@@ -29,6 +29,9 @@ module ahb_sva #(
     input logic                        HRESP
 );
 
+    //-------------------------------------------------------------------------
+    // Protocol constants and checker state
+    //-------------------------------------------------------------------------
     localparam logic [1:0] TRANS_IDLE   = 2'b00;
     localparam logic [1:0] TRANS_BUSY   = 2'b01;
     localparam logic [1:0] TRANS_NONSEQ = 2'b10;
@@ -51,6 +54,9 @@ module ahb_sva #(
     bit data_phase_active;
     bit data_phase_write;
 
+    //-------------------------------------------------------------------------
+    // Address helper
+    //-------------------------------------------------------------------------
     function automatic logic [AHB_ADDR_WIDTH-1:0] wrap_next_addr(
         input logic [AHB_ADDR_WIDTH-1:0] addr,
         input logic [2:0]                size,
@@ -70,6 +76,9 @@ module ahb_sva #(
         return next_addr;
     endfunction : wrap_next_addr
 
+    //-------------------------------------------------------------------------
+    // Parameter checks
+    //-------------------------------------------------------------------------
     initial begin
         if (AHB_ADDR_WIDTH < 32 || AHB_ADDR_WIDTH > 64)
             $fatal(1, "[AHB_SVA] Illegal AHB_ADDR_WIDTH=%0d", AHB_ADDR_WIDTH);
@@ -77,6 +86,9 @@ module ahb_sva #(
             $fatal(1, "[AHB_SVA] Illegal AHB_DATA_WIDTH=%0d", AHB_DATA_WIDTH);
     end
 
+    //-------------------------------------------------------------------------
+    // Data-phase tracking
+    //-------------------------------------------------------------------------
     always @(posedge clk) begin
         reset_active_q <= !rst_n;
         if (!rst_n) begin
@@ -88,7 +100,9 @@ module ahb_sva #(
         end
     end
 
+    //-------------------------------------------------------------------------
     // Reset
+    //-------------------------------------------------------------------------
     property p_reset_defaults;
         @(posedge clk)
         (!rst_n && reset_active_q) |->
@@ -98,7 +112,9 @@ module ahb_sva #(
     RESET_DEFAULTS: assert property (p_reset_defaults)
         else $error("[AHB_SVA] Illegal bus state during reset");
 
+    //-------------------------------------------------------------------------
     // Signal integrity
+    //-------------------------------------------------------------------------
     property p_control_known;
         @(posedge clk) disable iff (!rst_n)
         !$isunknown({HTRANS, HREADY, HRESP});
@@ -130,7 +146,9 @@ module ahb_sva #(
     RDATA_KNOWN: assert property (p_rdata_known)
         else $error("[AHB_SVA] HRDATA contains X/Z");
 
+    //-------------------------------------------------------------------------
     // Wait states
+    //-------------------------------------------------------------------------
     property p_addr_ctrl_stable_during_wait;
         @(posedge clk) disable iff (!rst_n)
         (!HREADY && HTRANS != TRANS_IDLE) |=>
@@ -155,7 +173,9 @@ module ahb_sva #(
         (p_wdata_stable_during_wait)
         else $error("[AHB_SVA] HWDATA changed during wait state");
 
+    //-------------------------------------------------------------------------
     // Address and burst rules
+    //-------------------------------------------------------------------------
     property p_addr_aligned;
         @(posedge clk) disable iff (!rst_n)
         active_transfer |-> (HADDR % bytes_per_beat) == 0;
@@ -257,7 +277,9 @@ module ahb_sva #(
     WRAP16_ADDRESS: assert property (p_wrap16_address)
         else $error("[AHB_SVA] Incorrect WRAP16 address");
 
+    //-------------------------------------------------------------------------
     // ERROR response
+    //-------------------------------------------------------------------------
     property p_error_first_cycle;
         @(posedge clk) disable iff (!rst_n)
         $rose(HRESP) |-> !HREADY;
@@ -280,7 +302,9 @@ module ahb_sva #(
     ERROR_HAS_FIRST_CYCLE: assert property (p_error_has_first_cycle)
         else $error("[AHB_SVA] ERROR completed without first cycle");
 
+    //-------------------------------------------------------------------------
     // Bridge profile
+    //-------------------------------------------------------------------------
     generate
         if (CHECK_BRIDGE_PROFILE) begin : g_bridge_profile
             property p_no_lock;
@@ -300,7 +324,9 @@ module ahb_sva #(
         end
     endgenerate
 
+    //-------------------------------------------------------------------------
     // Scenario coverage
+    //-------------------------------------------------------------------------
     C_NONSEQ: cover property (@(posedge clk) disable iff (!rst_n)
         HREADY && HTRANS == TRANS_NONSEQ);
     C_WAIT_STATE: cover property (@(posedge clk) disable iff (!rst_n)

@@ -57,6 +57,9 @@ module axi4_sva #(
     input logic                          RREADY
 );
 
+    //-------------------------------------------------------------------------
+    // Protocol constants and checker state
+    //-------------------------------------------------------------------------
     localparam logic [1:0] BURST_FIXED = 2'b00;
     localparam logic [1:0] BURST_INCR  = 2'b01;
     localparam logic [1:0] BURST_WRAP  = 2'b10;
@@ -79,6 +82,9 @@ module axi4_sva #(
     bit [AXI4_ID_WIDTH-1:0] active_rid;
     bit                     active_r_burst;
 
+    //-------------------------------------------------------------------------
+    // Address helper
+    //-------------------------------------------------------------------------
     function automatic logic [AXI4_ADDR_WIDTH:0] incr_last_byte(
         input logic [AXI4_ADDR_WIDTH-1:0] addr,
         input logic [7:0]                 len,
@@ -92,6 +98,9 @@ module axi4_sva #(
         return aligned_addr + total_bytes - 1;
     endfunction : incr_last_byte
 
+    //-------------------------------------------------------------------------
+    // Parameter checks
+    //-------------------------------------------------------------------------
     initial begin
         if (AXI4_ADDR_WIDTH < 32 || AXI4_ADDR_WIDTH > 64)
             $fatal(1, "[AXI4_SVA] Illegal AXI4_ADDR_WIDTH=%0d", AXI4_ADDR_WIDTH);
@@ -104,7 +113,9 @@ module axi4_sva #(
     always @(posedge clk)
         reset_active_q <= !rst_n;
 
+    //-------------------------------------------------------------------------
     // Reset
+    //-------------------------------------------------------------------------
     property p_valid_low_in_reset;
         @(posedge clk)
         (!rst_n && reset_active_q) |->
@@ -114,7 +125,9 @@ module axi4_sva #(
     VALID_LOW_IN_RESET: assert property (p_valid_low_in_reset)
         else $error("[AXI4_SVA] VALID asserted during reset");
 
+    //-------------------------------------------------------------------------
     // Handshake and payload stability
+    //-------------------------------------------------------------------------
     property p_aw_stable;
         @(posedge clk) disable iff (!rst_n)
         AWVALID && !AWREADY |=>
@@ -158,7 +171,9 @@ module axi4_sva #(
     R_STABLE: assert property (p_r_stable)
         else $error("[AXI4_SVA] R channel changed while stalled");
 
+    //-------------------------------------------------------------------------
     // Signal integrity
+    //-------------------------------------------------------------------------
     property p_handshake_known;
         @(posedge clk) disable iff (!rst_n)
         !$isunknown({AWVALID, AWREADY, WVALID, WREADY, BVALID, BREADY,
@@ -205,7 +220,9 @@ module axi4_sva #(
     R_PAYLOAD_KNOWN: assert property (p_r_payload_known)
         else $error("[AXI4_SVA] R payload contains X/Z");
 
+    //-------------------------------------------------------------------------
     // Burst legality
+    //-------------------------------------------------------------------------
     property p_aw_burst_legal;
         @(posedge clk) disable iff (!rst_n)
         AWVALID && AWREADY |->
@@ -251,7 +268,9 @@ module axi4_sva #(
     AR_4KB_BOUNDARY: assert property (p_ar_4kb_boundary)
         else $error("[AXI4_SVA] Read burst crosses 4-KB boundary");
 
+    //-------------------------------------------------------------------------
     // WLAST and RLAST
+    //-------------------------------------------------------------------------
     always @(posedge clk) begin
         if (!rst_n) begin
             aw_len_fifo.delete();
@@ -361,7 +380,9 @@ module axi4_sva #(
         end
     end
 
+    //-------------------------------------------------------------------------
     // Bridge profile
+    //-------------------------------------------------------------------------
     generate
         if (CHECK_BRIDGE_PROFILE) begin : g_bridge_profile
             property p_lock_unsupported;
@@ -395,7 +416,9 @@ module axi4_sva #(
         end
     endgenerate
 
+    //-------------------------------------------------------------------------
     // Scenario coverage
+    //-------------------------------------------------------------------------
     C_AW_HANDSHAKE: cover property (@(posedge clk) disable iff (!rst_n)
         AWVALID && AWREADY);
     C_W_STALL: cover property (@(posedge clk) disable iff (!rst_n)
