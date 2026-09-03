@@ -1,0 +1,34 @@
+# vsim -c work.tb_ahb_mstr_rd_wait -l rd_wait.log -wlf rd_wait.wlf -do "onerror {quit -code 1}; log -r /*; run -all; quit -code 0" 
+# Start time: 12:22:29 on Sep 03,2026
+# ** Note: (vsim-3812) Design is being optimized...
+# //  Questa Sim-64
+# //  Version 10.6b linux_x86_64 May 25 2017
+# //
+# //  Copyright 1991-2017 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.tb_ahb_mstr_rd_wait(fast)
+# onerror {quit -code 1}
+#  Warning: onerror command for use within macro
+#  log -r /*
+#  run -all
+# [0] TEST: AHB_RD_WAIT restart for AXI FIXED
+# [120000] TEST: AHB_RD_WAIT restart for AXI WRAP2
+# [240000] TEST: AHB_RD_WAIT restart after 1-KB split
+# [360000] TEST: AHB_RD_WAIT continuation for regular AXI INCR
+# ============================================================
+# TEST PASS: AHB_RD_WAIT restart regression completed
+# ============================================================
+# ** Note: $finish    : /home/hle/Desktop/bridge_axi4_ahblite_vip/src/dut/dut_tb_basic/tb_ahb_mstr_rd_wait.sv(324)
+#    Time: 495 ns  Iteration: 1  Instance: /tb_ahb_mstr_rd_wait
+# End time: 12:22:29 on Sep 03,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0

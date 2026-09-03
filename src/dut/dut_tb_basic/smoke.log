@@ -1,6 +1,6 @@
 # vsim -c work.tb_axi_ahblite_bridge_smoke -l smoke.log -wlf smoke.wlf -do "onerror {quit -code 1}; log -r /*; run -all; quit -code 0" 
-# Start time: 14:51:51 on Aug 27,2026
-# ** Note: (vsim-3812) Design is being optimized...
+# Start time: 12:22:28 on Sep 03,2026
+# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
 # //  Questa Sim-64
 # //  Version 10.6b linux_x86_64 May 25 2017
 # //
@@ -40,5 +40,5 @@
 # ============================================================
 # ** Note: $finish    : /home/hle/Desktop/bridge_axi4_ahblite_vip/src/dut/dut_tb_basic/tb_axi_ahblite_bridge_smoke.sv(943)
 #    Time: 1145 ns  Iteration: 1  Instance: /tb_axi_ahblite_bridge_smoke
-# End time: 14:51:51 on Aug 27,2026, Elapsed time: 0:00:00
+# End time: 12:22:28 on Sep 03,2026, Elapsed time: 0:00:00
 # Errors: 0, Warnings: 0
