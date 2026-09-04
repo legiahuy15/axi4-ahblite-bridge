@@ -111,6 +111,12 @@ class ahb_slv_monitor extends uvm_monitor;
         else
             pending_tr.rdata = vif.monitor_cb.HRDATA;
 
+        `uvm_info(get_type_name(),
+                  $sformatf({"[MON][AHB][TR] %s | data=0x%0h"},
+                            pending_tr.convert2string(),
+                            (pending_tr.write == AHB_WRITE) ?
+                                pending_tr.wdata : pending_tr.rdata),
+                  UVM_HIGH)
         ap.write(pending_tr);
         pending_tr    = null;
         pending_valid = 1'b0;

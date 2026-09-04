@@ -116,6 +116,14 @@ class scoreboard extends uvm_scoreboard;
 
             if (ahb_request_matches(expected_tr, actual_tr)) begin
                 matched_ahb++;
+                `uvm_info(get_type_name(),
+                          $sformatf({"[SCB][AHB][PASS] %s | data=0x%0h ",
+                                     "| total=%0d"},
+                                    actual_tr.convert2string(),
+                                    (actual_tr.write == AHB_WRITE) ?
+                                        actual_tr.wdata : actual_tr.rdata,
+                                    matched_ahb),
+                          UVM_HIGH)
             end else begin
                 mismatched_ahb++;
                 `uvm_error(get_type_name(),
@@ -203,6 +211,20 @@ class scoreboard extends uvm_scoreboard;
 
             if (axi_transaction_matches(expected_tr, actual_tr)) begin
                 matched_axi++;
+                if (actual_tr.dir == AXI4_WRITE)
+                    `uvm_info(get_type_name(),
+                              $sformatf({"[SCB][AXI][PASS] %s | bresp=%s ",
+                                         "| total=%0d"},
+                                        actual_tr.convert2string(),
+                                        actual_tr.bresp.name(), matched_axi),
+                              UVM_HIGH)
+                else
+                    `uvm_info(get_type_name(),
+                              $sformatf({"[SCB][AXI][PASS] %s | ",
+                                         "read beats=%0d | total=%0d"},
+                                        actual_tr.convert2string(),
+                                        actual_tr.data.size(), matched_axi),
+                              UVM_HIGH)
             end else begin
                 mismatched_axi++;
                 `uvm_error(get_type_name(),

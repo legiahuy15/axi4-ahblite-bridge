@@ -69,6 +69,10 @@ class predictor extends uvm_component;
             `uvm_fatal(get_type_name(), "AXI4 request clone failed")
         entry = new(copy_tr, $time);
         request_queue.push_back(entry);
+        `uvm_info(get_type_name(),
+                  $sformatf("[PRED][AXI][IN] %s | queued=%0d",
+                            copy_tr.convert2string(), request_queue.size()),
+                  UVM_HIGH)
     endfunction : write_axi_request
 
     //-------------------------------------------------------------------------
@@ -126,6 +130,13 @@ class predictor extends uvm_component;
         ahb_burst      = get_ahb_burst(axi_tr.burst, beat_count,
                                        crosses_1kb);
 
+        `uvm_info(get_type_name(),
+                  $sformatf({"[PRED][MAP] %s -> AHB burst=%s ",
+                             "size=%0dB crosses_1kb=%0b"},
+                            axi_tr.convert2string(), ahb_burst.name(),
+                            bytes_per_beat, crosses_1kb),
+                  UVM_HIGH)
+
         for (int unsigned i = 0; i < beat_count; i++) begin
             ahb_transfer ahb_tr;
 
@@ -149,6 +160,19 @@ class predictor extends uvm_component;
             ahb_tr.rdata    = '0;
             ahb_tr.resp     = AHB_RESP_OKAY;
             ahb_tr.wait_cycles = 0;
+            if (ahb_tr.write == AHB_WRITE)
+                `uvm_info(get_type_name(),
+                          $sformatf({"[PRED][AHB] beat=%0d/%0d | %s ",
+                                     "| wdata=0x%0h"},
+                                    i + 1, beat_count,
+                                    ahb_tr.convert2string(), ahb_tr.wdata),
+                          UVM_HIGH)
+            else
+                `uvm_info(get_type_name(),
+                          $sformatf("[PRED][AHB] beat=%0d/%0d | %s",
+                                    i + 1, beat_count,
+                                    ahb_tr.convert2string()),
+                          UVM_HIGH)
             expected_ahb_ap.write(ahb_tr);
         end
     endfunction : predict_request

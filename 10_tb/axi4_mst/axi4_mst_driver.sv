@@ -112,6 +112,10 @@ class axi4_mst_driver extends uvm_driver #(axi4_transaction);
             end
 
             outstanding_count++;
+            `uvm_info(get_type_name(),
+                      $sformatf("[DRV][AXI][REQ] %s | outstanding=%0d",
+                                tr.convert2string(), outstanding_count),
+                      UVM_HIGH)
             seq_item_port.item_done();
         end
     endtask : dispatch_items
@@ -179,6 +183,12 @@ class axi4_mst_driver extends uvm_driver #(axi4_transaction);
         do @(vif.master_cb);
         while (vif.master_cb.AWREADY !== 1'b1);
 
+        `uvm_info(get_type_name(),
+                  $sformatf({"[DRV][AXI][AW] id=0x%0h addr=0x%0h ",
+                             "burst=%s beats=%0d size=%0dB"},
+                            tr.id, tr.addr, tr.burst.name(),
+                            int'(tr.len) + 1, 1 << int'(tr.size)),
+                  UVM_HIGH)
         vif.master_cb.AWVALID <= 1'b0;
     endtask : drive_aw
 
@@ -192,6 +202,13 @@ class axi4_mst_driver extends uvm_driver #(axi4_transaction);
 
             do @(vif.master_cb);
             while (vif.master_cb.WREADY !== 1'b1);
+
+            `uvm_info(get_type_name(),
+                      $sformatf({"[DRV][AXI][W] id=0x%0h beat=%0d/%0d ",
+                                 "data=0x%0h strb=0x%0h last=%0b"},
+                                tr.id, i + 1, tr.data.size(), tr.data[i],
+                                tr.strb[i], i == tr.data.size() - 1),
+                      UVM_HIGH)
         end
 
         vif.master_cb.WVALID <= 1'b0;
@@ -213,6 +230,12 @@ class axi4_mst_driver extends uvm_driver #(axi4_transaction);
         do @(vif.master_cb);
         while (vif.master_cb.ARREADY !== 1'b1);
 
+        `uvm_info(get_type_name(),
+                  $sformatf({"[DRV][AXI][AR] id=0x%0h addr=0x%0h ",
+                             "burst=%s beats=%0d size=%0dB"},
+                            tr.id, tr.addr, tr.burst.name(),
+                            int'(tr.len) + 1, 1 << int'(tr.size)),
+                  UVM_HIGH)
         vif.master_cb.ARVALID <= 1'b0;
     endtask : drive_ar
 
@@ -234,6 +257,10 @@ class axi4_mst_driver extends uvm_driver #(axi4_transaction);
 
             ctx = pending_b[bid].pop_front();
             ctx.tr.bresp = axi4_resp_e'(bresp);
+            `uvm_info(get_type_name(),
+                      $sformatf("[DRV][AXI][B] id=0x%0h resp=%s",
+                                bid, ctx.tr.bresp.name()),
+                      UVM_HIGH)
             complete_item(ctx.tr);
         end
     endtask : receive_b_loop
@@ -268,6 +295,12 @@ class axi4_mst_driver extends uvm_driver #(axi4_transaction);
 
                 ctx.tr.data[i]  = rdata;
                 ctx.tr.rresp[i] = axi4_resp_e'(rresp);
+                `uvm_info(get_type_name(),
+                          $sformatf({"[DRV][AXI][R] id=0x%0h beat=%0d/%0d ",
+                                     "data=0x%0h resp=%s last=%0b"},
+                                    rid, i + 1, ctx.tr.data.size(), rdata,
+                                    ctx.tr.rresp[i].name(), rlast),
+                          UVM_HIGH)
             end
 
             complete_item(ctx.tr);

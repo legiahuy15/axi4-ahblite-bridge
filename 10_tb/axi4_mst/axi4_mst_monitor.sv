@@ -145,6 +145,10 @@ class axi4_mst_monitor extends uvm_monitor;
                                          i, tr.id))
             end
 
+            `uvm_info(get_type_name(),
+                      $sformatf("[MON][AXI][REQ] %s",
+                                tr.convert2string()),
+                      UVM_HIGH)
             write_clone(req_ap, tr);
             pending_b[tr.id].push_back(tr);
         end
@@ -167,6 +171,10 @@ class axi4_mst_monitor extends uvm_monitor;
 
                 tr       = pending_b[bid].pop_front();
                 tr.bresp = axi4_resp_e'(vif.monitor_cb.BRESP);
+                `uvm_info(get_type_name(),
+                          $sformatf("[MON][AXI][RSP] WRITE id=0x%0h resp=%s",
+                                    tr.id, tr.bresp.name()),
+                          UVM_HIGH)
                 write_clone(ap, tr);
             end
         end
@@ -197,6 +205,10 @@ class axi4_mst_monitor extends uvm_monitor;
                 tr.strb     = new[0];
                 tr.rresp    = new[int'(tr.len) + 1];
                 pending_r[tr.id].push_back(tr);
+                `uvm_info(get_type_name(),
+                          $sformatf("[MON][AXI][REQ] %s",
+                                    tr.convert2string()),
+                          UVM_HIGH)
                 write_clone(req_ap, tr);
             end
         end
@@ -236,8 +248,18 @@ class axi4_mst_monitor extends uvm_monitor;
 
                 tr.data[i]  = vif.monitor_cb.RDATA;
                 tr.rresp[i] = axi4_resp_e'(vif.monitor_cb.RRESP);
+                `uvm_info(get_type_name(),
+                          $sformatf({"[MON][AXI][R] id=0x%0h beat=%0d/%0d ",
+                                     "data=0x%0h resp=%s last=%0b"},
+                                    tr.id, i + 1, tr.data.size(), tr.data[i],
+                                    tr.rresp[i].name(), vif.monitor_cb.RLAST),
+                          UVM_HIGH)
             end
 
+            `uvm_info(get_type_name(),
+                      $sformatf("[MON][AXI][RSP] READ id=0x%0h beats=%0d",
+                                tr.id, tr.data.size()),
+                      UVM_HIGH)
             write_clone(ap, tr);
         end
     endtask : monitor_r

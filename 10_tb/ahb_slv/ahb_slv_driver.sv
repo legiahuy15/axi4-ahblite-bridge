@@ -78,6 +78,13 @@ class ahb_slv_driver extends uvm_driver #(ahb_slave_response);
                 bit [AHB_DATA_WIDTH-1:0] rdata;
 
                 req = capture_request(htrans);
+                `uvm_info(get_type_name(),
+                          $sformatf({"[DRV][AHB][REQ] %s addr=0x%0h ",
+                                     "trans=%s burst=%s size=%0dB"},
+                                    req.write.name(), req.addr,
+                                    req.trans.name(), req.burst.name(),
+                                    1 << int'(req.size)),
+                          UVM_HIGH)
                 resolve_response(req, delay_cycles, resp, rdata);
                 drive_response(req, delay_cycles, resp, rdata);
             end else begin
@@ -151,6 +158,8 @@ class ahb_slv_driver extends uvm_driver #(ahb_slave_response);
         input ahb_resp_e               resp,
         input bit [AHB_DATA_WIDTH-1:0] rdata
     );
+        bit [AHB_DATA_WIDTH-1:0] transfer_data;
+
         if (req.write == AHB_READ)
             vif.slave_cb.HRDATA <= rdata;
 
@@ -172,10 +181,24 @@ class ahb_slv_driver extends uvm_driver #(ahb_slave_response);
             vif.slave_cb.HRESP  <= AHB_RESP_OKAY;
             @(vif.slave_cb);
 
-            if (req.write == AHB_WRITE)
+            if (req.write == AHB_WRITE) begin
+                transfer_data = vif.slave_cb.HWDATA;
                 write_memory_transfer(req.addr, req.size,
-                                      vif.slave_cb.HWDATA);
+                                      transfer_data);
+            end
         end
+
+        if (req.write == AHB_READ)
+            transfer_data = rdata;
+        else if (resp == AHB_RESP_ERROR)
+            transfer_data = vif.slave_cb.HWDATA;
+
+        `uvm_info(get_type_name(),
+                  $sformatf({"[DRV][AHB][RSP] %s addr=0x%0h data=0x%0h ",
+                             "resp=%s ready_delay=%0d"},
+                            req.write.name(), req.addr, transfer_data,
+                            resp.name(), delay_cycles),
+                  UVM_HIGH)
     endtask : drive_response
 
     //-------------------------------------------------------------------------
