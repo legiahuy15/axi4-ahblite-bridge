@@ -329,7 +329,7 @@ class e2e_cov extends uvm_component;
             bins zero   = {0};
             bins one    = {1};
             bins short  = {[2:3]};
-            bins medium = {[4:15]};
+            bins mid    = {[4:15]};
             bins long   = {[16:$]};
         }
         cp_position: coverpoint m_ahb_beat_pos {

@@ -134,18 +134,18 @@ class scoreboard extends uvm_scoreboard;
         ahb_transfer expected_tr,
         ahb_transfer actual_tr
     );
-        bit matches;
+        bit is_match;
 
-        matches  = (expected_tr.addr     == actual_tr.addr);
-        matches &= (expected_tr.write    == actual_tr.write);
-        matches &= (expected_tr.trans    == actual_tr.trans);
-        matches &= (expected_tr.burst    == actual_tr.burst);
-        matches &= (expected_tr.size     == actual_tr.size);
-        matches &= (expected_tr.prot     == actual_tr.prot);
-        matches &= (expected_tr.mastlock == actual_tr.mastlock);
+        is_match  = (expected_tr.addr     == actual_tr.addr);
+        is_match &= (expected_tr.write    == actual_tr.write);
+        is_match &= (expected_tr.trans    == actual_tr.trans);
+        is_match &= (expected_tr.burst    == actual_tr.burst);
+        is_match &= (expected_tr.size     == actual_tr.size);
+        is_match &= (expected_tr.prot     == actual_tr.prot);
+        is_match &= (expected_tr.mastlock == actual_tr.mastlock);
         if (expected_tr.write == AHB_WRITE)
-            matches &= (expected_tr.wdata == actual_tr.wdata);
-        return matches;
+            is_match &= (expected_tr.wdata == actual_tr.wdata);
+        return is_match;
     endfunction : ahb_request_matches
 
     //-------------------------------------------------------------------------
@@ -219,41 +219,41 @@ class scoreboard extends uvm_scoreboard;
         axi4_transaction expected_tr,
         axi4_transaction actual_tr
     );
-        bit matches;
+        bit is_match;
 
-        matches  = (expected_tr.dir   == actual_tr.dir);
-        matches &= (expected_tr.id    == actual_tr.id);
-        matches &= (expected_tr.addr  == actual_tr.addr);
-        matches &= (expected_tr.len   == actual_tr.len);
-        matches &= (expected_tr.size  == actual_tr.size);
-        matches &= (expected_tr.burst == actual_tr.burst);
-        matches &= (expected_tr.lock  == actual_tr.lock);
-        matches &= (expected_tr.cache == actual_tr.cache);
-        matches &= (expected_tr.prot  == actual_tr.prot);
-        matches &= (expected_tr.data.size() == actual_tr.data.size());
+        is_match  = (expected_tr.dir   == actual_tr.dir);
+        is_match &= (expected_tr.id    == actual_tr.id);
+        is_match &= (expected_tr.addr  == actual_tr.addr);
+        is_match &= (expected_tr.len   == actual_tr.len);
+        is_match &= (expected_tr.size  == actual_tr.size);
+        is_match &= (expected_tr.burst == actual_tr.burst);
+        is_match &= (expected_tr.lock  == actual_tr.lock);
+        is_match &= (expected_tr.cache == actual_tr.cache);
+        is_match &= (expected_tr.prot  == actual_tr.prot);
+        is_match &= (expected_tr.data.size() == actual_tr.data.size());
 
         if (expected_tr.dir == AXI4_WRITE) begin
-            matches &= (expected_tr.strb.size() == actual_tr.strb.size());
-            matches &= (expected_tr.bresp == actual_tr.bresp);
+            is_match &= (expected_tr.strb.size() == actual_tr.strb.size());
+            is_match &= (expected_tr.bresp == actual_tr.bresp);
             if ((expected_tr.data.size() == actual_tr.data.size()) &&
                 (expected_tr.strb.size() == actual_tr.strb.size())) begin
                 foreach (expected_tr.data[i]) begin
-                    matches &= (expected_tr.data[i] == actual_tr.data[i]);
-                    matches &= (expected_tr.strb[i] == actual_tr.strb[i]);
+                    is_match &= (expected_tr.data[i] == actual_tr.data[i]);
+                    is_match &= (expected_tr.strb[i] == actual_tr.strb[i]);
                 end
             end
         end else begin
-            matches &= (expected_tr.rresp.size() == actual_tr.rresp.size());
+            is_match &= (expected_tr.rresp.size() == actual_tr.rresp.size());
             if ((expected_tr.data.size() == actual_tr.data.size()) &&
                 (expected_tr.rresp.size() == actual_tr.rresp.size())) begin
                 foreach (expected_tr.data[i]) begin
-                    matches &= (expected_tr.data[i] == actual_tr.data[i]);
-                    matches &= (expected_tr.rresp[i] == actual_tr.rresp[i]);
+                    is_match &= (expected_tr.data[i] == actual_tr.data[i]);
+                    is_match &= (expected_tr.rresp[i] == actual_tr.rresp[i]);
                 end
             end
         end
 
-        return matches;
+        return is_match;
     endfunction : axi_transaction_matches
 
     //-------------------------------------------------------------------------

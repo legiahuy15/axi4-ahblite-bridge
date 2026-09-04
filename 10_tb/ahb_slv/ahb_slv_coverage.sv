@@ -65,7 +65,7 @@ class ahb_slv_coverage extends uvm_subscriber #(ahb_transfer);
         cp_wait: coverpoint m_wait_cycles {
             bins zero   = {0};
             bins short  = {[1:3]};
-            bins medium = {[4:15]};
+            bins mid    = {[4:15]};
             bins long   = {[16:$]};
         }
         cp_lock: coverpoint m_mastlock {
