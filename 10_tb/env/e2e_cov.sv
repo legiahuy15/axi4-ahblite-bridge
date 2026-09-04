@@ -124,7 +124,7 @@ class e2e_cov extends uvm_component;
             bins len16  = {16};
             bins len17  = {17};
             bins len256 = {256};
-            bins other  = default;
+            bins other  = {[6:7], [9:15], [18:255]};
         }
         cp_narrow: coverpoint m_axi_narrow {
             bins full_width = {1'b0};
