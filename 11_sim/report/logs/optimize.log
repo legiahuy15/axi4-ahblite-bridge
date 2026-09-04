@@ -1,0 +1,47 @@
+QuestaSim-64 vopt 10.6b Compiler 2017.05 May 25 2017
+Start time: 10:30:40 on Sep 04,2026
+vopt "+acc" -work work -l report/logs/optimize.log -cover sbcet work.bridge_tb_top -o opt_bridge_tb_top 
+
+Top level modules:
+	bridge_tb_top
+
+Analyzing design...
+-- Loading module bridge_tb_top
+-- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+-- Importing package bridge_vip_pkg
+-- Importing package bridge_seq_pkg
+-- Importing package bridge_test_pkg
+-- Loading interface axi4_if
+-- Loading interface ahb_if
+-- Loading module axi_ahblite_bridge
+-- Loading module ahb_skid_buf
+-- Loading module axi_slv_if
+-- Loading module ahb_mstr_if
+-- Loading module time_out
+-- Loading module axi4_sva
+-- Loading module ahb_sva
+-- Loading package mtiUvm.questa_uvm_pkg
+Optimizing 17 design-units (inlining 0/10 module instances):
+-- Optimizing module axi4_sva(fast)
+-- Optimizing module ahb_mstr_if(fast)
+** Note: (vopt-143) Recognized 1 FSM in module "ahb_mstr_if(fast)".
+-- Optimizing module ahb_sva(fast)
+-- Optimizing module axi_slv_if(fast)
+** Note: (vopt-143) Recognized 2 FSMs in module "axi_slv_if(fast)".
+-- Optimizing interface axi4_if(fast)
+-- Optimizing module bridge_tb_top(fast)
+-- Optimizing module ahb_skid_buf(fast)
+-- Optimizing interface ahb_if(fast)
+-- Optimizing module axi_ahblite_bridge(fast)
+-- Optimizing module time_out(fast)
+-- Optimizing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)(fast)
+-- Optimizing package mtiUvm.questa_uvm_pkg(fast)
+-- Optimizing package bridge_vip_pkg(fast)
+** Error (suppressible): (vopt-13196) ../10_tb/env/e2e_cov.sv(154): Found an illegal/ignore/default bin 'cp_beats.other' in bin select expression of Cross bin 'cx_burst_beats.wrap_illegal_length'.
+-- Optimizing package bridge_seq_pkg(fast)
+-- Optimizing package bridge_test_pkg(fast)
+-- Optimizing interface axi4_if(fast)
+-- Optimizing interface ahb_if(fast)
+** Error: (vopt-2064) Compiler back-end code generation process terminated with code 2.
+End time: 10:30:42 on Sep 04,2026, Elapsed time: 0:00:02
+Errors: 2, Warnings: 0

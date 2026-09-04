@@ -1,214 +1,41 @@
 QuestaSim-64 vlog 10.6b Compiler 2017.05 May 25 2017
-Start time: 10:22:43 on Sep 04,2026
+Start time: 10:30:39 on Sep 04,2026
 vlog -sv -mfcu -work work -timescale 1ns/1ps -l report/logs/compile.log -cover sbcet -f bridge_files.f 
 -- Compiling interface axi4_if
 -- Compiling interface ahb_if
 -- Compiling package bridge_vip_pkg
 ** Note: (vlog-2286) ../10_tb/bridge_vip_pkg.sv(16): Using implicit +incdir+/cadtools/mentor/Questa_10.6b/questasim/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
 -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** at ../10_tb/ahb_slv/ahb_slv_coverage.sv(68): near "medium": syntax error, unexpected medium, expecting IDENTIFIER or TYPE_IDENTIFIER or NETTYPE_IDENTIFIER.
 -- Compiling package bridge_seq_pkg
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(9): Identifier 'axi4_transaction' is not directly visible.
-   Found multiple Declaration of 'axi4_transaction' through wildcard imports from these packages : bridge_vip_pkg, bridge_vip_pkg
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(9): Illegal to use typedef "axi4_transaction" as a variable.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
-** while parsing macro expansion: 'uvm_declare_p_sequencer' starting at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(12)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(12): Invalid type 'axi4_mst_sequencer'. Please check the type of the variable 'p_sequencer'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(17): Invalid type 'axi4_mst_agent_cfg'. Please check the type of the variable 'cfg'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(40): (vlog-2730) Undefined variable: 'p_sequencer'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(45): (vlog-2730) Undefined variable: 'cfg'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(53): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(62): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(45): near ";": syntax error, unexpected ';', expecting '('.
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(46): near ";": syntax error, unexpected ';', expecting '('.
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(47): near ";": syntax error, unexpected ';', expecting '('.
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(48): near ";": syntax error, unexpected ';', expecting '('.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(54): (vlog-2730) Undefined variable: 'wr_req'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(58): (vlog-2730) Undefined variable: 'rd_req'.
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(71): near "create_write_request": syntax error, unexpected IDENTIFIER, expecting ';' or '('.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(78): (vlog-2164) Class or package 'axi4_transaction' not found.
-** Error (suppressible): ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(98): (vlog-13163) End label 'create_write_request' does not match function name on line 71.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(100): 'axi4_transaction' already exists; must not be redefined as a function.
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(100): near "create_read_request": syntax error, unexpected IDENTIFIER, expecting ';' or '('.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(106): (vlog-2164) Class or package 'axi4_transaction' not found.
-** Error (suppressible): ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(124): (vlog-13163) End label 'create_read_request' does not match function name on line 100.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(130): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
-** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(143): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
-** at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(9): Identifier 'ahb_slave_response' is not directly visible.
-   Found multiple Declaration of 'ahb_slave_response' through wildcard imports from these packages : bridge_vip_pkg, bridge_vip_pkg
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
-** at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(9): Illegal to use typedef "ahb_slave_response" as a variable.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
-** while parsing macro expansion: 'uvm_declare_p_sequencer' starting at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(12)
-** at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(12): Invalid type 'ahb_slv_sequencer'. Please check the type of the variable 'p_sequencer'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
-** at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(17): Invalid type 'ahb_slv_agent_cfg'. Please check the type of the variable 'cfg'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
-** at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(32): (vlog-2730) Undefined variable: 'p_sequencer'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
-** at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(37): (vlog-2730) Undefined variable: 'cfg'.
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
-** at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(48): near "req": syntax error, unexpected IDENTIFIER, expecting ')'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
-** at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(53): (vlog-2400) Identifier ('ahb_slave_response') found where a type or type identifier is required.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(34)
-** while parsing macro expansion: 'uvm_declare_p_sequencer' starting at ../10_tb/seq/bridge_vip_seq/bridge_base_seq.sv(12)
-** at ../10_tb/seq/bridge_vip_seq/bridge_base_seq.sv(12): Invalid type 'virtual_sequencer'. Please check the type of the variable 'p_sequencer'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(34)
-** at ../10_tb/seq/bridge_vip_seq/bridge_base_seq.sv(17): Invalid type 'vip_env_cfg'. Please check the type of the variable 'cfg'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(34)
-** at ../10_tb/seq/bridge_vip_seq/bridge_base_seq.sv(32): (vlog-2730) Undefined variable: 'p_sequencer'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(56)
-** while parsing file included at ../10_tb/bridge_seq_pkg.sv(34)
-** at ../10_tb/seq/bridge_vip_seq/bridge_base_seq.sv(37): (vlog-2730) Undefined variable: 'cfg'.
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(64)
-** at ../10_tb/env/scoreboard.sv(137): near "matches": syntax error, unexpected "SystemVerilog keyword 'matches'", expecting IDENTIFIER or TYPE_IDENTIFIER or NETTYPE_IDENTIFIER or '='.
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(64)
-** at ../10_tb/env/scoreboard.sv(147): near "matches": syntax error, unexpected "SystemVerilog keyword 'matches'".
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(64)
-** at ../10_tb/env/scoreboard.sv(222): near "matches": syntax error, unexpected "SystemVerilog keyword 'matches'", expecting IDENTIFIER or TYPE_IDENTIFIER or NETTYPE_IDENTIFIER or '='.
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(64)
-** at ../10_tb/env/scoreboard.sv(236): near "matches": syntax error, unexpected "SystemVerilog keyword 'matches'".
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(64)
-** at ../10_tb/env/scoreboard.sv(241): near "matches": syntax error, unexpected "SystemVerilog keyword 'matches'".
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(64)
-** at ../10_tb/env/scoreboard.sv(246): near "matches": syntax error, unexpected "SystemVerilog keyword 'matches'".
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(64)
-** at ../10_tb/env/scoreboard.sv(250): near "matches": syntax error, unexpected "SystemVerilog keyword 'matches'".
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(64)
-** at ../10_tb/env/scoreboard.sv(256): near "matches": syntax error, unexpected "SystemVerilog keyword 'matches'".
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** at ../10_tb/env/e2e_cov.sv(332): near "medium": syntax error, unexpected medium, expecting IDENTIFIER or TYPE_IDENTIFIER or NETTYPE_IDENTIFIER.
+-- Importing package bridge_vip_pkg
 -- Compiling package bridge_test_pkg
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** at ../10_tb/bridge_test_pkg.sv(19): (vlog-13006) Could not find the package (bridge_seq_pkg).  Design read will continue, but expect a cascade of errors after this failure.  Furthermore if you experience a vopt-7 error immediately before this error then please check the package names or the library search paths on the command line.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
-** at ../10_tb/test/bridge_base_test.sv(16): Invalid type 'vip_env'. Please check the type of the variable 'env'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
-** at ../10_tb/test/bridge_base_test.sv(17): Invalid type 'vip_env_cfg'. Please check the type of the variable 'env_cfg'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
-** at ../10_tb/test/bridge_base_test.sv(32): (vlog-2730) Undefined variable: 'env_cfg'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
-** at ../10_tb/test/bridge_base_test.sv(32): (vlog-2164) Class or package 'vip_env_cfg' not found.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
-** at ../10_tb/test/bridge_base_test.sv(32): Identifier 'vip_env_cfg' is not directly visible.
-   Found multiple Declaration of 'vip_env_cfg' through wildcard imports from these packages : bridge_vip_pkg, bridge_vip_pkg
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
-** at ../10_tb/test/bridge_base_test.sv(32): Illegal to use typedef "vip_env_cfg" as a variable.
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
-** at ../10_tb/test/bridge_base_test.sv(32): near "::": syntax error, unexpected ::, expecting ';'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
-** at ../10_tb/test/bridge_base_test.sv(53): Identifier 'vip_env_cfg' is not directly visible.
-   Found multiple Declaration of 'vip_env_cfg' through wildcard imports from these packages : bridge_vip_pkg, bridge_vip_pkg
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
-** at ../10_tb/test/bridge_base_test.sv(53): Illegal to use typedef "vip_env_cfg" as a variable.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
-** at ../10_tb/test/bridge_base_test.sv(54): (vlog-2730) Undefined variable: 'env'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
-** at ../10_tb/test/bridge_base_test.sv(54): (vlog-2164) Class or package 'vip_env' not found.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
-** at ../10_tb/test/bridge_base_test.sv(54): (vlog-2730) Undefined variable: 'vip_env'.
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
-** at ../10_tb/test/bridge_base_test.sv(54): near "::": syntax error, unexpected ::, expecting ';'.
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(25)
-** at ../10_tb/test/bridge_sanity_test.sv(47): near ";": syntax error, unexpected ';', expecting '('.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(25)
-** at ../10_tb/test/bridge_sanity_test.sv(51): (vlog-2730) Undefined variable: 'seq'.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(25)
-** at ../10_tb/test/bridge_sanity_test.sv(51): (vlog-2164) Class or package 'bridge_sanity_seq' not found.
-** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(25)
-** at ../10_tb/test/bridge_sanity_test.sv(51): (vlog-2730) Undefined variable: 'bridge_sanity_seq'.
-** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(65)
-** while parsing file included at ../10_tb/bridge_test_pkg.sv(25)
-** at ../10_tb/test/bridge_sanity_test.sv(51): near "::": syntax error, unexpected ::, expecting ';'.
-** Error: (vlog-13069) ../10_tb/bridge_vip_pkg.sv(68): near "endpackage": syntax error, unexpected "SystemVerilog keyword 'endpackage'", expecting class.
+-- Importing package bridge_seq_pkg
 -- Compiling module axi4_sva
-** Warning: (vlog-2051) coverage is still off at the end of file '../10_tb/bridge_vip_pkg.sv'.
 -- Compiling module ahb_sva
 -- Compiling module counter_f
 -- Compiling module time_out
+** Warning: ../01_src/dut/time_out.sv(54): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
 -- Compiling module ahb_skid_buf
 -- Compiling module axi_slv_if
+** Warning: ../01_src/dut/axi_slv_if.sv(145): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(149): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(151): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(152): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(156): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(164): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(168): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(170): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(174): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(175): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(176): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(177): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(419): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
 -- Compiling module ahb_mstr_if
 -- Compiling module axi_ahblite_bridge
 -- Compiling module bridge_tb_top
-** Error: ../10_tb/bridge_tb_top.sv(23): (vlog-13006) Could not find the package (bridge_seq_pkg).  Design read will continue, but expect a cascade of errors after this failure.  Furthermore if you experience a vopt-7 error immediately before this error then please check the package names or the library search paths on the command line.
-** Error: ../10_tb/bridge_tb_top.sv(24): (vlog-13006) Could not find the package (bridge_test_pkg).  Design read will continue, but expect a cascade of errors after this failure.  Furthermore if you experience a vopt-7 error immediately before this error then please check the package names or the library search paths on the command line.
-** Error: End of source encountered before `endif directive closing region starting at file '../10_tb/bridge_vip_pkg.sv' line 8.
-End time: 10:22:43 on Sep 04,2026, Elapsed time: 0:00:00
-Errors: 68, Warnings: 1
+-- Importing package bridge_test_pkg
+
+Top level modules:
+	bridge_tb_top
+End time: 10:30:40 on Sep 04,2026, Elapsed time: 0:00:01
+Errors: 0, Warnings: 14
