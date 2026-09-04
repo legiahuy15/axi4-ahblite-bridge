@@ -11,6 +11,11 @@ class ahb_slv_sequencer extends uvm_sequencer #(ahb_slave_response);
     `uvm_component_utils(ahb_slv_sequencer)
 
     //-------------------------------------------------------------------------
+    // Configuration
+    //-------------------------------------------------------------------------
+    ahb_slv_agent_cfg cfg;
+
+    //-------------------------------------------------------------------------
     // Current request
     //-------------------------------------------------------------------------
     // Address phase currently awaiting a response item

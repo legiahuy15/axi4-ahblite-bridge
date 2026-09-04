@@ -54,6 +54,7 @@ class ahb_slv_agent extends uvm_agent;
         if (is_active == UVM_ACTIVE) begin
             uvm_config_db#(ahb_slv_agent_cfg)::set(this, "drv", "cfg", cfg);
             sqr = ahb_slv_sequencer::type_id::create("sqr", this);
+            sqr.cfg = cfg;
             drv = ahb_slv_driver::type_id::create("drv", this);
         end
     endfunction : build_phase

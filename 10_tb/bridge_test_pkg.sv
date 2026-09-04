@@ -1,25 +1,29 @@
 //=============================================================================
-// File        : axi4_mst_sequencer.sv
+// File        : bridge_test_pkg.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : AXI4 master sequencer.
-//               Included inside the bridge package.
+// Description : Test package for bridge-level verification.
 //=============================================================================
 
-class axi4_mst_sequencer extends uvm_sequencer #(axi4_transaction);
+`ifndef BRIDGE_TEST_PKG_INCLUDED_
+`define BRIDGE_TEST_PKG_INCLUDED_
 
-    `uvm_component_utils(axi4_mst_sequencer)
-
-    //-------------------------------------------------------------------------
-    // Configuration
-    //-------------------------------------------------------------------------
-    axi4_mst_agent_cfg cfg;
+package bridge_test_pkg;
 
     //-------------------------------------------------------------------------
-    // Constructor
+    // Imports and macros
     //-------------------------------------------------------------------------
-    function new(string name, uvm_component parent);
-        super.new(name, parent);
-    endfunction : new
+    `include "uvm_macros.svh"
+    import uvm_pkg::*;
+    import bridge_vip_pkg::*;
+    import bridge_seq_pkg::*;
 
-endclass : axi4_mst_sequencer
+    //-------------------------------------------------------------------------
+    // Tests
+    //-------------------------------------------------------------------------
+    `include "test/bridge_base_test.sv"
+    `include "test/bridge_sanity_test.sv"
+
+endpackage : bridge_test_pkg
+
+`endif // BRIDGE_TEST_PKG_INCLUDED_

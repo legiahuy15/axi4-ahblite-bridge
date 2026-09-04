@@ -54,6 +54,7 @@ class axi4_mst_agent extends uvm_agent;
         if (is_active == UVM_ACTIVE) begin
             uvm_config_db#(axi4_mst_agent_cfg)::set(this, "drv", "cfg", cfg);
             sqr = axi4_mst_sequencer::type_id::create("sqr", this);
+            sqr.cfg = cfg;
             drv = axi4_mst_driver::type_id::create("drv", this);
         end
     endfunction : build_phase
