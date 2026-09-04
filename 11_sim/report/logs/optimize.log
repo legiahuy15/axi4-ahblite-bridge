@@ -1,5 +1,5 @@
 QuestaSim-64 vopt 10.6b Compiler 2017.05 May 25 2017
-Start time: 10:30:40 on Sep 04,2026
+Start time: 10:35:14 on Sep 04,2026
 vopt "+acc" -work work -l report/logs/optimize.log -cover sbcet work.bridge_tb_top -o opt_bridge_tb_top 
 
 Top level modules:
@@ -37,11 +37,10 @@ Optimizing 17 design-units (inlining 0/10 module instances):
 -- Optimizing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)(fast)
 -- Optimizing package mtiUvm.questa_uvm_pkg(fast)
 -- Optimizing package bridge_vip_pkg(fast)
-** Error (suppressible): (vopt-13196) ../10_tb/env/e2e_cov.sv(154): Found an illegal/ignore/default bin 'cp_beats.other' in bin select expression of Cross bin 'cx_burst_beats.wrap_illegal_length'.
 -- Optimizing package bridge_seq_pkg(fast)
 -- Optimizing package bridge_test_pkg(fast)
 -- Optimizing interface axi4_if(fast)
 -- Optimizing interface ahb_if(fast)
-** Error: (vopt-2064) Compiler back-end code generation process terminated with code 2.
-End time: 10:30:42 on Sep 04,2026, Elapsed time: 0:00:02
-Errors: 2, Warnings: 0
+Optimized design name is opt_bridge_tb_top
+End time: 10:35:16 on Sep 04,2026, Elapsed time: 0:00:02
+Errors: 0, Warnings: 0
