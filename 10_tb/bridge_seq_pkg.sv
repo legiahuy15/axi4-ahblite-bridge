@@ -22,6 +22,7 @@ package bridge_seq_pkg;
     //-------------------------------------------------------------------------
     `include "seq/axi4_mst_seq/axi4_mst_base_seq.sv"
     `include "seq/axi4_mst_seq/axi4_mst_sanity_seq.sv"
+    `include "seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv"
 
     //-------------------------------------------------------------------------
     // AHB-Lite slave sequences
@@ -33,6 +34,7 @@ package bridge_seq_pkg;
     //-------------------------------------------------------------------------
     `include "seq/bridge_vip_seq/bridge_base_seq.sv"
     `include "seq/bridge_vip_seq/bridge_sanity_seq.sv"
+    `include "seq/bridge_vip_seq/bridge_data_integrity_seq.sv"
 
 endpackage : bridge_seq_pkg
 

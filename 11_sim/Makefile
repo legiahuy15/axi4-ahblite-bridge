@@ -41,7 +41,7 @@ NUM_RUNS      ?= 5
 USE_COVERAGE  ?= 1
 PLUSARGS      ?=
 
-TEST_LIST ?= bridge_sanity_test
+TEST_LIST ?= bridge_sanity_test bridge_data_integrity_test
 
 VLOG_FLAGS ?= -sv -mfcu -work work -timescale 1ns/1ps
 VOPT_FLAGS ?= +acc -work work

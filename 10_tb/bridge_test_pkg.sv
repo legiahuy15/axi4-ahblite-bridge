@@ -23,6 +23,7 @@ package bridge_test_pkg;
     //-------------------------------------------------------------------------
     `include "test/bridge_base_test.sv"
     `include "test/bridge_sanity_test.sv"
+    `include "test/bridge_data_integrity_test.sv"
 
 endpackage : bridge_test_pkg
 
