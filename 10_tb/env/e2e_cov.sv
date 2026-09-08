@@ -38,6 +38,7 @@ class e2e_cov extends uvm_component;
     protected axi4_transaction   map_axi_queue[$];
     protected axi4_transaction   rsp_axi_queue[$];
     protected axi4_transaction   actual_axi_queue[$];
+    protected ahb_transfer       pending_actual_ahb_queue[$];
     protected response_summary_t response_queue[$];
     protected int unsigned       map_beat_index;
     protected int unsigned       rsp_beat_index;
@@ -409,6 +410,7 @@ class e2e_cov extends uvm_component;
             `uvm_fatal(get_type_name(), "AXI request clone failed")
         map_axi_queue.push_back(map_tr);
         rsp_axi_queue.push_back(rsp_tr);
+        drain_actual_ahb();
 
         byte_count       = 1 << int'(tr.size);
         m_axi_dir        = tr.dir;
@@ -475,43 +477,52 @@ class e2e_cov extends uvm_component;
     // Actual AHB callback
     //-------------------------------------------------------------------------
     function void write_e2e_actual_ahb(ahb_transfer tr);
+        ahb_transfer copy_tr;
+
+        if (!$cast(copy_tr, tr.clone()))
+            `uvm_fatal(get_type_name(), "Actual AHB transfer clone failed")
+        pending_actual_ahb_queue.push_back(copy_tr);
+        drain_actual_ahb();
+    endfunction : write_e2e_actual_ahb
+
+    protected function void drain_actual_ahb();
+        ahb_transfer       tr;
         axi4_transaction axi_tr;
         response_summary_t summary;
         int unsigned beat_count;
 
-        if (rsp_axi_queue.size() == 0) begin
-            `uvm_warning(get_type_name(),
-                         "Actual AHB transfer has no AXI coverage context")
-            return;
+        while ((pending_actual_ahb_queue.size() != 0) &&
+               (rsp_axi_queue.size() != 0)) begin
+            tr = pending_actual_ahb_queue.pop_front();
+
+            axi_tr     = rsp_axi_queue[0];
+            beat_count = int'(axi_tr.len) + 1;
+            m_ahb_dir         = tr.write;
+            m_ahb_burst       = tr.burst;
+            m_ahb_size        = tr.size;
+            m_ahb_resp        = tr.resp;
+            m_ahb_wait_cycles = tr.wait_cycles;
+            m_ahb_beat_pos    = get_beat_position(rsp_beat_index, beat_count);
+            cg_ahb_response.sample();
+
+            if (tr.resp == AHB_RESP_ERROR)
+                rsp_saw_error = 1'b1;
+            if (tr.wait_cycles != 0)
+                rsp_saw_wait = 1'b1;
+
+            rsp_beat_index++;
+            if (rsp_beat_index == beat_count) begin
+                void'(rsp_axi_queue.pop_front());
+                summary.ahb_error = rsp_saw_error;
+                summary.ahb_wait  = rsp_saw_wait;
+                response_queue.push_back(summary);
+                rsp_beat_index = 0;
+                rsp_saw_error  = 1'b0;
+                rsp_saw_wait   = 1'b0;
+                sample_response_queue();
+            end
         end
-
-        axi_tr     = rsp_axi_queue[0];
-        beat_count = int'(axi_tr.len) + 1;
-        m_ahb_dir         = tr.write;
-        m_ahb_burst       = tr.burst;
-        m_ahb_size        = tr.size;
-        m_ahb_resp        = tr.resp;
-        m_ahb_wait_cycles = tr.wait_cycles;
-        m_ahb_beat_pos    = get_beat_position(rsp_beat_index, beat_count);
-        cg_ahb_response.sample();
-
-        if (tr.resp == AHB_RESP_ERROR)
-            rsp_saw_error = 1'b1;
-        if (tr.wait_cycles != 0)
-            rsp_saw_wait = 1'b1;
-
-        rsp_beat_index++;
-        if (rsp_beat_index == beat_count) begin
-            void'(rsp_axi_queue.pop_front());
-            summary.ahb_error = rsp_saw_error;
-            summary.ahb_wait  = rsp_saw_wait;
-            response_queue.push_back(summary);
-            rsp_beat_index = 0;
-            rsp_saw_error  = 1'b0;
-            rsp_saw_wait   = 1'b0;
-            sample_response_queue();
-        end
-    endfunction : write_e2e_actual_ahb
+    endfunction : drain_actual_ahb
 
     //-------------------------------------------------------------------------
     // AXI completion callback
@@ -658,6 +669,7 @@ class e2e_cov extends uvm_component;
         map_axi_queue.delete();
         rsp_axi_queue.delete();
         actual_axi_queue.delete();
+        pending_actual_ahb_queue.delete();
         response_queue.delete();
         map_beat_index = 0;
         rsp_beat_index = 0;
@@ -671,6 +683,7 @@ class e2e_cov extends uvm_component;
     function void check_phase(uvm_phase phase);
         super.check_phase(phase);
         if ((map_axi_queue.size() != 0) || (rsp_axi_queue.size() != 0) ||
+            (pending_actual_ahb_queue.size() != 0) ||
             (response_queue.size() != 0) || (actual_axi_queue.size() != 0))
             `uvm_warning(get_type_name(),
                          "End-to-end coverage has unmatched input streams")

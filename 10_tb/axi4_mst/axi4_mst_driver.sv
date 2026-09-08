@@ -180,8 +180,8 @@ class axi4_mst_driver extends uvm_driver #(axi4_transaction);
     endtask : drive_aw
 
     protected task drive_w(axi4_transaction tr);
+        @(vif.master_cb);
         foreach (tr.data[i]) begin
-            @(vif.master_cb);
             vif.master_cb.WDATA  <= tr.data[i];
             vif.master_cb.WSTRB  <= tr.strb[i];
             vif.master_cb.WLAST  <= (i == tr.data.size() - 1);
