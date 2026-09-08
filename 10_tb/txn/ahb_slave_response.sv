@@ -9,17 +9,17 @@
 class ahb_slave_response extends uvm_sequence_item;
 
     // OKAY wait cycles; the driver adds the first ERROR response cycle.
-    rand int unsigned         ready_delay;
-    rand ahb_resp_e           resp;
+    rand int unsigned             ready_delay;
+    rand ahb_resp_e               resp;
     rand bit [AHB_DATA_WIDTH-1:0] rdata;
 
     //-------------------------------------------------------------------------
     // UVM utility macro
     //-------------------------------------------------------------------------
     `uvm_object_utils_begin(ahb_slave_response)
-        `uvm_field_int(              ready_delay, UVM_ALL_ON)
-        `uvm_field_enum(ahb_resp_e,  resp,        UVM_ALL_ON)
-        `uvm_field_int(              rdata,       UVM_ALL_ON)
+        `uvm_field_int(             ready_delay, UVM_ALL_ON)
+        `uvm_field_enum(ahb_resp_e, resp,        UVM_ALL_ON)
+        `uvm_field_int(             rdata,       UVM_ALL_ON)
     `uvm_object_utils_end
 
     //-------------------------------------------------------------------------
@@ -44,7 +44,7 @@ class ahb_slave_response extends uvm_sequence_item;
     endfunction : new
 
     //-------------------------------------------------------------------------
-    // Supporters
+    // Helpers
     //-------------------------------------------------------------------------
     function string convert2string();
         return $sformatf("AHB slave resp=%s waits=%0d rdata=0x%0h",

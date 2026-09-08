@@ -115,7 +115,7 @@ class axi4_transaction extends uvm_sequence_item;
     endfunction : new
 
     //-------------------------------------------------------------------------
-    // Supporters
+    // Helpers
     //-------------------------------------------------------------------------
     function void do_copy(uvm_object rhs);
         axi4_transaction rhs_t;

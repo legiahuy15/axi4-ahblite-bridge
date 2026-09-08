@@ -34,6 +34,7 @@ package bridge_vip_pkg;
     //-------------------------------------------------------------------------
     `include "cfg/axi4_mst_agent_cfg.sv"
     `include "cfg/ahb_slv_agent_cfg.sv"
+    `include "cfg/axi4_mst_req_ctx.sv"
     `include "cfg/predictor_req_entry.sv"
     `include "cfg/scoreboard_axi_ctx.sv"
     `include "cfg/vip_env_cfg.sv"

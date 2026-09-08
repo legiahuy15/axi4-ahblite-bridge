@@ -6,19 +6,6 @@
 //               Included inside the bridge package.
 //=============================================================================
 
-//-----------------------------------------------------------------------------
-// Internal request context
-//-----------------------------------------------------------------------------
-class axi4_mst_req_ctx;
-    axi4_transaction tr;
-    bit aw_done;
-    bit w_started;
-
-    function new(axi4_transaction tr);
-        this.tr = tr;
-    endfunction : new
-endclass : axi4_mst_req_ctx
-
 class axi4_mst_driver extends uvm_driver #(axi4_transaction);
 
     `uvm_component_utils(axi4_mst_driver)

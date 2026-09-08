@@ -82,7 +82,7 @@ module bridge_tb_top #(
     axi_ahblite_bridge #(
         .C_S_AXI_ADDR_WIDTH            (AXI4_ADDR_WIDTH),
         .C_S_AXI_DATA_WIDTH            (AXI4_DATA_WIDTH),
-        .C_S_AXI_SUPPORTS_NARROW_BURST(C_S_AXI_SUPPORTS_NARROW_BURST),
+        .C_S_AXI_SUPPORTS_NARROW_BURST (C_S_AXI_SUPPORTS_NARROW_BURST),
         .C_S_AXI_ID_WIDTH              (AXI4_ID_WIDTH),
         .C_M_AHB_ADDR_WIDTH            (AHB_ADDR_WIDTH),
         .C_M_AHB_DATA_WIDTH            (AHB_DATA_WIDTH),
