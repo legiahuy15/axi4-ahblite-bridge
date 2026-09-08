@@ -1,5 +1,5 @@
 # vsim -c -coverage -sv_seed 12345 "+UVM_TESTNAME=bridge_data_integrity_test" "+UVM_VERBOSITY=UVM_HIGH" -l report/logs/bridge_data_integrity_test_seed_12345.log -wlf report/wlf/bridge_data_integrity_test_seed_12345.wlf -do "coverage save -onexit report/coverage/bridge_data_integrity_test_seed_12345.ucdb; run -all; quit -f" work.opt_bridge_tb_top 
-# Start time: 13:09:08 on Sep 08,2026
+# Start time: 13:16:36 on Sep 08,2026
 # //  Questa Sim-64
 # //  Version 10.6b linux_x86_64 May 25 2017
 # //
@@ -160,21 +160,14 @@
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 285000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x1100 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_INCR4 size=4B
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 295000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1100 data=0x2b2a2928 resp=AHB_RESP_OKAY ready_delay=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 295000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1100 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x2b2a2928
-# UVM_WARNING ../10_tb/env/e2e_cov.sv(484) @ 295000: uvm_test_top.env.cov [e2e_cov] Actual AHB transfer has no AXI coverage context
-# ** Error: [AXI4_SVA] W channel changed while stalled
-#    Time: 295 ns Started: 285 ns  Scope: bridge_tb_top.axi_checker.W_STABLE File: ../10_tb/sva/axi4_sva.sv Line: 166
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 305000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x1104 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 305000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0xd beat=2/4 data=0x2f2e2d2c strb=0xf last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 315000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1104 data=0x2f2e2d2c resp=AHB_RESP_OKAY ready_delay=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 315000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1104 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x2f2e2d2c
-# UVM_WARNING ../10_tb/env/e2e_cov.sv(484) @ 315000: uvm_test_top.env.cov [e2e_cov] Actual AHB transfer has no AXI coverage context
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 325000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x1108 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 325000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0xd beat=3/4 data=0x33323130 strb=0xf last=0
-# ** Error: [AXI4_SVA] W channel changed while stalled
-#    Time: 325 ns Started: 315 ns  Scope: bridge_tb_top.axi_checker.W_STABLE File: ../10_tb/sva/axi4_sva.sv Line: 166
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 335000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1108 data=0x2f2e2d2c resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 335000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1108 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x2f2e2d2c
-# UVM_WARNING ../10_tb/env/e2e_cov.sv(484) @ 335000: uvm_test_top.env.cov [e2e_cov] Actual AHB transfer has no AXI coverage context
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 335000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1108 data=0x33323130 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 335000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1108 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x33323130
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 345000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x110c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 345000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0xd beat=4/4 data=0x37363534 strb=0xf last=1
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(151) @ 345000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][REQ] AXI4 AXI4_WRITE id=0xd addr=0x1100 burst=AXI4_BURST_INCR beats=4 size=4B
@@ -185,81 +178,11 @@
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 345000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=2/4 | AHB AHB_WRITE addr=0x1104 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x2f2e2d2c
 # UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 345000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1104 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x2f2e2d2c | total=4
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 345000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=3/4 | AHB AHB_WRITE addr=0x1108 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x33323130
-# UVM_ERROR ../10_tb/env/scoreboard.sv(134) @ 345000: uvm_test_top.env.scb [scoreboard] AHB request mismatch
-#   expected: ----------------------------------------------------
-# Name             Type          Size  Value          
-# ----------------------------------------------------
-# expected_ahb_tr  ahb_transfer  -     @1495          
-#   addr           integral      32    'h1108         
-#   write          ahb_dir_e     1     AHB_WRITE      
-#   trans          ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst          ahb_burst_e   3     AHB_BURST_INCR4
-#   size           ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot           integral      4     'h1            
-#   mastlock       integral      1     'h0            
-#   wdata          integral      32    'h33323130     
-#   rdata          integral      32    'h0            
-#   resp           ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles    integral      32    'h0            
-# ----------------------------------------------------
-# 
-#   actual  : --------------------------------------------------
-# Name           Type          Size  Value          
-# --------------------------------------------------
-# mon_tr         ahb_transfer  -     @1439          
-#   addr         integral      32    'h1108         
-#   write        ahb_dir_e     1     AHB_WRITE      
-#   trans        ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst        ahb_burst_e   3     AHB_BURST_INCR4
-#   size         ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot         integral      4     'h1            
-#   mastlock     integral      1     'h0            
-#   wdata        integral      32    'h2f2e2d2c     
-#   rdata        integral      32    'h0            
-#   resp         ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles  integral      32    'h0            
-# --------------------------------------------------
-# 
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 345000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1108 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x33323130 | total=5
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 345000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=4/4 | AHB AHB_WRITE addr=0x110c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x37363534
-# ** Error: [AXI4_SVA] W channel changed while stalled
-#    Time: 345 ns Started: 335 ns  Scope: bridge_tb_top.axi_checker.W_STABLE File: ../10_tb/sva/axi4_sva.sv Line: 166
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 355000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x110c data=0x33323130 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 355000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x110c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x33323130
-# UVM_ERROR ../10_tb/env/scoreboard.sv(134) @ 355000: uvm_test_top.env.scb [scoreboard] AHB request mismatch
-#   expected: ----------------------------------------------------
-# Name             Type          Size  Value          
-# ----------------------------------------------------
-# expected_ahb_tr  ahb_transfer  -     @1503          
-#   addr           integral      32    'h110c         
-#   write          ahb_dir_e     1     AHB_WRITE      
-#   trans          ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst          ahb_burst_e   3     AHB_BURST_INCR4
-#   size           ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot           integral      4     'h1            
-#   mastlock       integral      1     'h0            
-#   wdata          integral      32    'h37363534     
-#   rdata          integral      32    'h0            
-#   resp           ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles    integral      32    'h0            
-# ----------------------------------------------------
-# 
-#   actual  : --------------------------------------------------
-# Name           Type          Size  Value          
-# --------------------------------------------------
-# mon_tr         ahb_transfer  -     @1507          
-#   addr         integral      32    'h110c         
-#   write        ahb_dir_e     1     AHB_WRITE      
-#   trans        ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst        ahb_burst_e   3     AHB_BURST_INCR4
-#   size         ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot         integral      4     'h1            
-#   mastlock     integral      1     'h0            
-#   wdata        integral      32    'h33323130     
-#   rdata        integral      32    'h0            
-#   resp         ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles  integral      32    'h0            
-# --------------------------------------------------
-# 
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 355000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x110c data=0x37363534 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 355000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x110c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x37363534
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 355000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x110c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x37363534 | total=6
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(250) @ 365000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][B] id=0xd resp=AXI4_RESP_OKAY
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(177) @ 365000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][RSP] WRITE id=0xd resp=AXI4_RESP_OKAY
 # UVM_INFO ../10_tb/env/scoreboard.sv(220) @ 365000: uvm_test_top.env.scb [scoreboard] [SCB][AXI][PASS] AXI4 AXI4_WRITE id=0xd addr=0x1100 burst=AXI4_BURST_INCR beats=4 size=4B | bresp=AXI4_RESP_OKAY | total=3
@@ -275,306 +198,82 @@
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 405000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x1100 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_INCR4 size=4B
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 415000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1100 data=0x2b2a2928 resp=AHB_RESP_OKAY ready_delay=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 415000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1100 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x2b2a2928
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 415000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1100 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x2b2a2928 | total=5
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 415000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1100 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x2b2a2928 | total=7
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 425000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x1104 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 435000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1104 data=0x2f2e2d2c resp=AHB_RESP_OKAY ready_delay=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 435000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1104 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x2f2e2d2c
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 435000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1104 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x2f2e2d2c | total=6
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 435000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1104 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x2f2e2d2c | total=8
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 435000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=1/4 data=0x2b2a2928 resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 435000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=1/4 data=0x2b2a2928 resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 445000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x1108 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 455000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1108 data=0x2f2e2d2c resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 455000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1108 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x2f2e2d2c
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 455000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1108 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x2f2e2d2c | total=7
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 455000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1108 data=0x33323130 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 455000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1108 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x33323130
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 455000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1108 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x33323130 | total=9
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 455000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=2/4 data=0x2f2e2d2c resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 455000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=2/4 data=0x2f2e2d2c resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 465000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x110c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 475000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x110c data=0x33323130 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 475000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x110c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x33323130
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 475000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x110c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x33323130 | total=8
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 475000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=3/4 data=0x2f2e2d2c resp=AXI4_RESP_OKAY last=0
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 475000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=3/4 data=0x2f2e2d2c resp=AXI4_RESP_OKAY last=0
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 495000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=4/4 data=0x33323130 resp=AXI4_RESP_OKAY last=1
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 495000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=4/4 data=0x33323130 resp=AXI4_RESP_OKAY last=1
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 475000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x110c data=0x37363534 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 475000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x110c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x37363534
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 475000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x110c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x37363534 | total=10
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 475000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=3/4 data=0x33323130 resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 475000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=3/4 data=0x33323130 resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 495000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=4/4 data=0x37363534 resp=AXI4_RESP_OKAY last=1
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 495000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=4/4 data=0x37363534 resp=AXI4_RESP_OKAY last=1
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(262) @ 495000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][RSP] READ id=0x5 beats=4
 # UVM_INFO ../10_tb/env/scoreboard.sv(227) @ 495000: uvm_test_top.env.scb [scoreboard] [SCB][AXI][PASS] AXI4 AXI4_READ id=0x5 addr=0x1100 burst=AXI4_BURST_INCR beats=4 size=4B | read beats=4 | total=4
-# UVM_ERROR ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(246) @ 495000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] FULL data mismatch at 0x1100 beat=2: expected=0x33323130 actual=0x2f2e2d2c
-# UVM_ERROR ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(246) @ 495000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] FULL data mismatch at 0x1100 beat=3: expected=0x37363534 actual=0x33323130
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(105) @ 495000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][REQ] AXI4 AXI4_WRITE id=0x0 addr=0x1200 burst=AXI4_BURST_INCR beats=8 size=4B | outstanding=1
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(178) @ 535000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][AW] id=0x0 addr=0x1200 burst=AXI4_BURST_INCR beats=8 size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 535000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0x0 beat=1/8 data=0x33323130 strb=0xf last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 545000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x1200 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_INCR8 size=4B
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 555000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1200 data=0x33323130 resp=AHB_RESP_OKAY ready_delay=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 555000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1200 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x33323130
-# ** Error: [AXI4_SVA] W channel changed while stalled
-#    Time: 555 ns Started: 545 ns  Scope: bridge_tb_top.axi_checker.W_STABLE File: ../10_tb/sva/axi4_sva.sv Line: 166
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 565000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x1204 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 565000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0x0 beat=2/8 data=0x37363534 strb=0xf last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 575000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1204 data=0x37363534 resp=AHB_RESP_OKAY ready_delay=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 575000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1204 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x37363534
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 585000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x1208 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 585000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0x0 beat=3/8 data=0x3b3a3938 strb=0xf last=0
-# ** Error: [AXI4_SVA] W channel changed while stalled
-#    Time: 585 ns Started: 575 ns  Scope: bridge_tb_top.axi_checker.W_STABLE File: ../10_tb/sva/axi4_sva.sv Line: 166
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 595000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1208 data=0x37363534 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 595000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1208 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x37363534
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 595000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1208 data=0x3b3a3938 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 595000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1208 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3b3a3938
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 605000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x120c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 605000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0x0 beat=4/8 data=0x3f3e3d3c strb=0xf last=0
-# ** Error: [AXI4_SVA] W channel changed while stalled
-#    Time: 605 ns Started: 595 ns  Scope: bridge_tb_top.axi_checker.W_STABLE File: ../10_tb/sva/axi4_sva.sv Line: 166
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 615000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x120c data=0x3b3a3938 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 615000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x120c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3b3a3938
-# UVM_WARNING ../10_tb/env/e2e_cov.sv(484) @ 615000: uvm_test_top.env.cov [e2e_cov] Actual AHB transfer has no AXI coverage context
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 615000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x120c data=0x3f3e3d3c resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 615000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x120c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3f3e3d3c
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 625000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x1210 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 625000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0x0 beat=5/8 data=0x43424140 strb=0xf last=0
-# ** Error: [AXI4_SVA] W channel changed while stalled
-#    Time: 625 ns Started: 615 ns  Scope: bridge_tb_top.axi_checker.W_STABLE File: ../10_tb/sva/axi4_sva.sv Line: 166
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 635000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1210 data=0x3f3e3d3c resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 635000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1210 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3f3e3d3c
-# UVM_WARNING ../10_tb/env/e2e_cov.sv(484) @ 635000: uvm_test_top.env.cov [e2e_cov] Actual AHB transfer has no AXI coverage context
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 635000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1210 data=0x43424140 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 635000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1210 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 645000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x1214 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 645000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0x0 beat=6/8 data=0x47464544 strb=0xf last=0
-# ** Error: [AXI4_SVA] W channel changed while stalled
-#    Time: 645 ns Started: 635 ns  Scope: bridge_tb_top.axi_checker.W_STABLE File: ../10_tb/sva/axi4_sva.sv Line: 166
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 655000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1214 data=0x43424140 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 655000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1214 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140
-# UVM_WARNING ../10_tb/env/e2e_cov.sv(484) @ 655000: uvm_test_top.env.cov [e2e_cov] Actual AHB transfer has no AXI coverage context
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 655000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1214 data=0x47464544 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 655000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1214 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x47464544
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 665000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x1218 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 665000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0x0 beat=7/8 data=0x4b4a4948 strb=0xf last=0
-# ** Error: [AXI4_SVA] W channel changed while stalled
-#    Time: 665 ns Started: 655 ns  Scope: bridge_tb_top.axi_checker.W_STABLE File: ../10_tb/sva/axi4_sva.sv Line: 166
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 675000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1218 data=0x47464544 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 675000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1218 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x47464544
-# UVM_WARNING ../10_tb/env/e2e_cov.sv(484) @ 675000: uvm_test_top.env.cov [e2e_cov] Actual AHB transfer has no AXI coverage context
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 675000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1218 data=0x4b4a4948 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 675000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1218 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 685000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x121c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 685000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0x0 beat=8/8 data=0x4f4e4d4c strb=0xf last=1
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(151) @ 685000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][REQ] AXI4 AXI4_WRITE id=0x0 addr=0x1200 burst=AXI4_BURST_INCR beats=8 size=4B
 # UVM_INFO ../10_tb/env/predictor.sv(75) @ 685000: uvm_test_top.env.pred [predictor] [PRED][AXI][IN] AXI4 AXI4_WRITE id=0x0 addr=0x1200 burst=AXI4_BURST_INCR beats=8 size=4B | queued=1
 # UVM_INFO ../10_tb/env/predictor.sv(138) @ 685000: uvm_test_top.env.pred [predictor] [PRED][MAP] AXI4 AXI4_WRITE id=0x0 addr=0x1200 burst=AXI4_BURST_INCR beats=8 size=4B -> AHB burst=AHB_BURST_INCR8 size=4B crosses_1kb=0
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 685000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=1/8 | AHB AHB_WRITE addr=0x1200 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x33323130
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 685000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1200 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x33323130 | total=9
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 685000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1200 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x33323130 | total=11
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 685000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=2/8 | AHB AHB_WRITE addr=0x1204 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x37363534
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 685000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1204 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x37363534 | total=10
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 685000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1204 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x37363534 | total=12
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 685000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=3/8 | AHB AHB_WRITE addr=0x1208 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x3b3a3938
-# UVM_ERROR ../10_tb/env/scoreboard.sv(134) @ 685000: uvm_test_top.env.scb [scoreboard] AHB request mismatch
-#   expected: ----------------------------------------------------
-# Name             Type          Size  Value          
-# ----------------------------------------------------
-# expected_ahb_tr  ahb_transfer  -     @1807          
-#   addr           integral      32    'h1208         
-#   write          ahb_dir_e     1     AHB_WRITE      
-#   trans          ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst          ahb_burst_e   3     AHB_BURST_INCR8
-#   size           ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot           integral      4     'h1            
-#   mastlock       integral      1     'h0            
-#   wdata          integral      32    'h3b3a3938     
-#   rdata          integral      32    'h0            
-#   resp           ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles    integral      32    'h0            
-# ----------------------------------------------------
-# 
-#   actual  : --------------------------------------------------
-# Name           Type          Size  Value          
-# --------------------------------------------------
-# mon_tr         ahb_transfer  -     @1703          
-#   addr         integral      32    'h1208         
-#   write        ahb_dir_e     1     AHB_WRITE      
-#   trans        ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst        ahb_burst_e   3     AHB_BURST_INCR8
-#   size         ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot         integral      4     'h1            
-#   mastlock     integral      1     'h0            
-#   wdata        integral      32    'h37363534     
-#   rdata        integral      32    'h0            
-#   resp         ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles  integral      32    'h0            
-# --------------------------------------------------
-# 
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 685000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1208 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3b3a3938 | total=13
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 685000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=4/8 | AHB AHB_WRITE addr=0x120c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x3f3e3d3c
-# UVM_ERROR ../10_tb/env/scoreboard.sv(134) @ 685000: uvm_test_top.env.scb [scoreboard] AHB request mismatch
-#   expected: ----------------------------------------------------
-# Name             Type          Size  Value          
-# ----------------------------------------------------
-# expected_ahb_tr  ahb_transfer  -     @1815          
-#   addr           integral      32    'h120c         
-#   write          ahb_dir_e     1     AHB_WRITE      
-#   trans          ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst          ahb_burst_e   3     AHB_BURST_INCR8
-#   size           ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot           integral      4     'h1            
-#   mastlock       integral      1     'h0            
-#   wdata          integral      32    'h3f3e3d3c     
-#   rdata          integral      32    'h0            
-#   resp           ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles    integral      32    'h0            
-# ----------------------------------------------------
-# 
-#   actual  : --------------------------------------------------
-# Name           Type          Size  Value          
-# --------------------------------------------------
-# mon_tr         ahb_transfer  -     @1715          
-#   addr         integral      32    'h120c         
-#   write        ahb_dir_e     1     AHB_WRITE      
-#   trans        ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst        ahb_burst_e   3     AHB_BURST_INCR8
-#   size         ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot         integral      4     'h1            
-#   mastlock     integral      1     'h0            
-#   wdata        integral      32    'h3b3a3938     
-#   rdata        integral      32    'h0            
-#   resp         ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles  integral      32    'h0            
-# --------------------------------------------------
-# 
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 685000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x120c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3f3e3d3c | total=14
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 685000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=5/8 | AHB AHB_WRITE addr=0x1210 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x43424140
-# UVM_ERROR ../10_tb/env/scoreboard.sv(134) @ 685000: uvm_test_top.env.scb [scoreboard] AHB request mismatch
-#   expected: ----------------------------------------------------
-# Name             Type          Size  Value          
-# ----------------------------------------------------
-# expected_ahb_tr  ahb_transfer  -     @1823          
-#   addr           integral      32    'h1210         
-#   write          ahb_dir_e     1     AHB_WRITE      
-#   trans          ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst          ahb_burst_e   3     AHB_BURST_INCR8
-#   size           ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot           integral      4     'h1            
-#   mastlock       integral      1     'h0            
-#   wdata          integral      32    'h43424140     
-#   rdata          integral      32    'h0            
-#   resp           ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles    integral      32    'h0            
-# ----------------------------------------------------
-# 
-#   actual  : --------------------------------------------------
-# Name           Type          Size  Value          
-# --------------------------------------------------
-# mon_tr         ahb_transfer  -     @1727          
-#   addr         integral      32    'h1210         
-#   write        ahb_dir_e     1     AHB_WRITE      
-#   trans        ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst        ahb_burst_e   3     AHB_BURST_INCR8
-#   size         ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot         integral      4     'h1            
-#   mastlock     integral      1     'h0            
-#   wdata        integral      32    'h3f3e3d3c     
-#   rdata        integral      32    'h0            
-#   resp         ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles  integral      32    'h0            
-# --------------------------------------------------
-# 
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 685000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1210 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140 | total=15
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 685000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=6/8 | AHB AHB_WRITE addr=0x1214 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x47464544
-# UVM_ERROR ../10_tb/env/scoreboard.sv(134) @ 685000: uvm_test_top.env.scb [scoreboard] AHB request mismatch
-#   expected: ----------------------------------------------------
-# Name             Type          Size  Value          
-# ----------------------------------------------------
-# expected_ahb_tr  ahb_transfer  -     @1831          
-#   addr           integral      32    'h1214         
-#   write          ahb_dir_e     1     AHB_WRITE      
-#   trans          ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst          ahb_burst_e   3     AHB_BURST_INCR8
-#   size           ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot           integral      4     'h1            
-#   mastlock       integral      1     'h0            
-#   wdata          integral      32    'h47464544     
-#   rdata          integral      32    'h0            
-#   resp           ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles    integral      32    'h0            
-# ----------------------------------------------------
-# 
-#   actual  : --------------------------------------------------
-# Name           Type          Size  Value          
-# --------------------------------------------------
-# mon_tr         ahb_transfer  -     @1739          
-#   addr         integral      32    'h1214         
-#   write        ahb_dir_e     1     AHB_WRITE      
-#   trans        ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst        ahb_burst_e   3     AHB_BURST_INCR8
-#   size         ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot         integral      4     'h1            
-#   mastlock     integral      1     'h0            
-#   wdata        integral      32    'h43424140     
-#   rdata        integral      32    'h0            
-#   resp         ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles  integral      32    'h0            
-# --------------------------------------------------
-# 
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 685000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1214 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x47464544 | total=16
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 685000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=7/8 | AHB AHB_WRITE addr=0x1218 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x4b4a4948
-# UVM_ERROR ../10_tb/env/scoreboard.sv(134) @ 685000: uvm_test_top.env.scb [scoreboard] AHB request mismatch
-#   expected: ----------------------------------------------------
-# Name             Type          Size  Value          
-# ----------------------------------------------------
-# expected_ahb_tr  ahb_transfer  -     @1839          
-#   addr           integral      32    'h1218         
-#   write          ahb_dir_e     1     AHB_WRITE      
-#   trans          ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst          ahb_burst_e   3     AHB_BURST_INCR8
-#   size           ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot           integral      4     'h1            
-#   mastlock       integral      1     'h0            
-#   wdata          integral      32    'h4b4a4948     
-#   rdata          integral      32    'h0            
-#   resp           ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles    integral      32    'h0            
-# ----------------------------------------------------
-# 
-#   actual  : --------------------------------------------------
-# Name           Type          Size  Value          
-# --------------------------------------------------
-# mon_tr         ahb_transfer  -     @1751          
-#   addr         integral      32    'h1218         
-#   write        ahb_dir_e     1     AHB_WRITE      
-#   trans        ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst        ahb_burst_e   3     AHB_BURST_INCR8
-#   size         ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot         integral      4     'h1            
-#   mastlock     integral      1     'h0            
-#   wdata        integral      32    'h47464544     
-#   rdata        integral      32    'h0            
-#   resp         ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles  integral      32    'h0            
-# --------------------------------------------------
-# 
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 685000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1218 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948 | total=17
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 685000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=8/8 | AHB AHB_WRITE addr=0x121c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x4f4e4d4c
-# ** Error: [AXI4_SVA] W channel changed while stalled
-#    Time: 685 ns Started: 675 ns  Scope: bridge_tb_top.axi_checker.W_STABLE File: ../10_tb/sva/axi4_sva.sv Line: 166
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 695000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x121c data=0x4b4a4948 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 695000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x121c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948
-# UVM_ERROR ../10_tb/env/scoreboard.sv(134) @ 695000: uvm_test_top.env.scb [scoreboard] AHB request mismatch
-#   expected: ----------------------------------------------------
-# Name             Type          Size  Value          
-# ----------------------------------------------------
-# expected_ahb_tr  ahb_transfer  -     @1847          
-#   addr           integral      32    'h121c         
-#   write          ahb_dir_e     1     AHB_WRITE      
-#   trans          ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst          ahb_burst_e   3     AHB_BURST_INCR8
-#   size           ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot           integral      4     'h1            
-#   mastlock       integral      1     'h0            
-#   wdata          integral      32    'h4f4e4d4c     
-#   rdata          integral      32    'h0            
-#   resp           ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles    integral      32    'h0            
-# ----------------------------------------------------
-# 
-#   actual  : --------------------------------------------------
-# Name           Type          Size  Value          
-# --------------------------------------------------
-# mon_tr         ahb_transfer  -     @1851          
-#   addr         integral      32    'h121c         
-#   write        ahb_dir_e     1     AHB_WRITE      
-#   trans        ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst        ahb_burst_e   3     AHB_BURST_INCR8
-#   size         ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot         integral      4     'h1            
-#   mastlock     integral      1     'h0            
-#   wdata        integral      32    'h4b4a4948     
-#   rdata        integral      32    'h0            
-#   resp         ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles  integral      32    'h0            
-# --------------------------------------------------
-# 
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 695000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x121c data=0x4f4e4d4c resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 695000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x121c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4f4e4d4c
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 695000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x121c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4f4e4d4c | total=18
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(250) @ 705000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][B] id=0x0 resp=AXI4_RESP_OKAY
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(177) @ 705000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][RSP] WRITE id=0x0 resp=AXI4_RESP_OKAY
 # UVM_INFO ../10_tb/env/scoreboard.sv(220) @ 705000: uvm_test_top.env.scb [scoreboard] [SCB][AXI][PASS] AXI4 AXI4_WRITE id=0x0 addr=0x1200 burst=AXI4_BURST_INCR beats=8 size=4B | bresp=AXI4_RESP_OKAY | total=5
@@ -594,162 +293,82 @@
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 745000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x1200 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_INCR8 size=4B
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 755000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1200 data=0x33323130 resp=AHB_RESP_OKAY ready_delay=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 755000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1200 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x33323130
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 755000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1200 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x33323130 | total=11
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 755000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1200 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x33323130 | total=19
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 765000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x1204 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 775000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1204 data=0x37363534 resp=AHB_RESP_OKAY ready_delay=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 775000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1204 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x37363534
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 775000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1204 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x37363534 | total=12
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 775000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1204 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x37363534 | total=20
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 775000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=1/8 data=0x33323130 resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 775000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=1/8 data=0x33323130 resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 785000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x1208 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 795000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1208 data=0x37363534 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 795000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1208 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x37363534
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 795000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1208 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x37363534 | total=13
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 795000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1208 data=0x3b3a3938 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 795000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1208 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3b3a3938
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 795000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1208 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3b3a3938 | total=21
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 795000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=2/8 data=0x37363534 resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 795000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=2/8 data=0x37363534 resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 805000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x120c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 815000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x120c data=0x3b3a3938 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 815000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x120c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3b3a3938
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 815000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x120c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3b3a3938 | total=14
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 815000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=3/8 data=0x37363534 resp=AXI4_RESP_OKAY last=0
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 815000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=3/8 data=0x37363534 resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 815000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x120c data=0x3f3e3d3c resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 815000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x120c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3f3e3d3c
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 815000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x120c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3f3e3d3c | total=22
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 815000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=3/8 data=0x3b3a3938 resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 815000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=3/8 data=0x3b3a3938 resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 825000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x1210 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 835000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1210 data=0x3f3e3d3c resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 835000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1210 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3f3e3d3c
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 835000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1210 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3f3e3d3c | total=15
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 835000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=4/8 data=0x3b3a3938 resp=AXI4_RESP_OKAY last=0
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 835000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=4/8 data=0x3b3a3938 resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 835000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1210 data=0x43424140 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 835000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1210 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 835000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1210 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140 | total=23
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 835000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=4/8 data=0x3f3e3d3c resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 835000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=4/8 data=0x3f3e3d3c resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 845000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x1214 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 855000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1214 data=0x43424140 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 855000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1214 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 855000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1214 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140 | total=16
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 855000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=5/8 data=0x3f3e3d3c resp=AXI4_RESP_OKAY last=0
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 855000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=5/8 data=0x3f3e3d3c resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 855000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1214 data=0x47464544 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 855000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1214 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x47464544
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 855000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1214 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x47464544 | total=24
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 855000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=5/8 data=0x43424140 resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 855000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=5/8 data=0x43424140 resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 865000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x1218 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 875000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1218 data=0x47464544 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 875000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1218 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x47464544
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 875000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1218 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x47464544 | total=17
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 875000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=6/8 data=0x43424140 resp=AXI4_RESP_OKAY last=0
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 875000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=6/8 data=0x43424140 resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 875000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1218 data=0x4b4a4948 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 875000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1218 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 875000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1218 trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948 | total=25
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 875000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=6/8 data=0x47464544 resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 875000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=6/8 data=0x47464544 resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 885000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x121c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 895000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x121c data=0x4b4a4948 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 895000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x121c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 895000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x121c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948 | total=18
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 895000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=7/8 data=0x47464544 resp=AXI4_RESP_OKAY last=0
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 895000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=7/8 data=0x47464544 resp=AXI4_RESP_OKAY last=0
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 915000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=8/8 data=0x4b4a4948 resp=AXI4_RESP_OKAY last=1
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 915000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=8/8 data=0x4b4a4948 resp=AXI4_RESP_OKAY last=1
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 895000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x121c data=0x4f4e4d4c resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 895000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x121c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4f4e4d4c
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 895000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x121c trans=AHB_TRANS_SEQ burst=AHB_BURST_INCR8 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4f4e4d4c | total=26
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 895000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=7/8 data=0x4b4a4948 resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 895000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=7/8 data=0x4b4a4948 resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 915000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x5 beat=8/8 data=0x4f4e4d4c resp=AXI4_RESP_OKAY last=1
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 915000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x5 beat=8/8 data=0x4f4e4d4c resp=AXI4_RESP_OKAY last=1
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(262) @ 915000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][RSP] READ id=0x5 beats=8
 # UVM_INFO ../10_tb/env/scoreboard.sv(227) @ 915000: uvm_test_top.env.scb [scoreboard] [SCB][AXI][PASS] AXI4 AXI4_READ id=0x5 addr=0x1200 burst=AXI4_BURST_INCR beats=8 size=4B | read beats=8 | total=6
-# UVM_ERROR ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(246) @ 915000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] FULL data mismatch at 0x1200 beat=2: expected=0x3b3a3938 actual=0x37363534
-# UVM_ERROR ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(246) @ 915000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] FULL data mismatch at 0x1200 beat=3: expected=0x3f3e3d3c actual=0x3b3a3938
-# UVM_ERROR ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(246) @ 915000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] FULL data mismatch at 0x1200 beat=4: expected=0x43424140 actual=0x3f3e3d3c
-# UVM_ERROR ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(246) @ 915000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] FULL data mismatch at 0x1200 beat=5: expected=0x47464544 actual=0x43424140
-# UVM_ERROR ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(246) @ 915000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] FULL data mismatch at 0x1200 beat=6: expected=0x4b4a4948 actual=0x47464544
-# UVM_ERROR ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(246) @ 915000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] FULL data mismatch at 0x1200 beat=7: expected=0x4f4e4d4c actual=0x4b4a4948
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(105) @ 915000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][REQ] AXI4 AXI4_WRITE id=0x1 addr=0x1300 burst=AXI4_BURST_WRAP beats=4 size=4B | outstanding=1
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(178) @ 955000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][AW] id=0x1 addr=0x1300 burst=AXI4_BURST_WRAP beats=4 size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 955000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0x1 beat=1/4 data=0x3b3a3938 strb=0xf last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 965000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x1300 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_WRAP4 size=4B
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 975000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1300 data=0x3b3a3938 resp=AHB_RESP_OKAY ready_delay=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 975000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1300 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3b3a3938
-# ** Error: [AXI4_SVA] W channel changed while stalled
-#    Time: 975 ns Started: 965 ns  Scope: bridge_tb_top.axi_checker.W_STABLE File: ../10_tb/sva/axi4_sva.sv Line: 166
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 985000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x1304 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 985000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0x1 beat=2/4 data=0x3f3e3d3c strb=0xf last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 995000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1304 data=0x3f3e3d3c resp=AHB_RESP_OKAY ready_delay=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 995000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1304 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3f3e3d3c
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 1005000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x1308 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 1005000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0x1 beat=3/4 data=0x43424140 strb=0xf last=0
-# ** Error: [AXI4_SVA] W channel changed while stalled
-#    Time: 1005 ns Started: 995 ns  Scope: bridge_tb_top.axi_checker.W_STABLE File: ../10_tb/sva/axi4_sva.sv Line: 166
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1015000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1308 data=0x3f3e3d3c resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1015000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1308 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3f3e3d3c
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1015000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1308 data=0x43424140 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1015000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1308 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 1025000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x130c trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 1025000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0x1 beat=4/4 data=0x47464544 strb=0xf last=1
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(151) @ 1025000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][REQ] AXI4 AXI4_WRITE id=0x1 addr=0x1300 burst=AXI4_BURST_WRAP beats=4 size=4B
 # UVM_INFO ../10_tb/env/predictor.sv(75) @ 1025000: uvm_test_top.env.pred [predictor] [PRED][AXI][IN] AXI4 AXI4_WRITE id=0x1 addr=0x1300 burst=AXI4_BURST_WRAP beats=4 size=4B | queued=1
 # UVM_INFO ../10_tb/env/predictor.sv(138) @ 1025000: uvm_test_top.env.pred [predictor] [PRED][MAP] AXI4 AXI4_WRITE id=0x1 addr=0x1300 burst=AXI4_BURST_WRAP beats=4 size=4B -> AHB burst=AHB_BURST_WRAP4 size=4B crosses_1kb=0
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 1025000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=1/4 | AHB AHB_WRITE addr=0x1300 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x3b3a3938
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1025000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1300 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3b3a3938 | total=19
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1025000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1300 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3b3a3938 | total=27
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 1025000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=2/4 | AHB AHB_WRITE addr=0x1304 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x3f3e3d3c
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1025000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1304 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3f3e3d3c | total=20
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1025000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1304 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3f3e3d3c | total=28
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 1025000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=3/4 | AHB AHB_WRITE addr=0x1308 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x43424140
-# UVM_ERROR ../10_tb/env/scoreboard.sv(134) @ 1025000: uvm_test_top.env.scb [scoreboard] AHB request mismatch
-#   expected: ----------------------------------------------------
-# Name             Type          Size  Value          
-# ----------------------------------------------------
-# expected_ahb_tr  ahb_transfer  -     @2183          
-#   addr           integral      32    'h1308         
-#   write          ahb_dir_e     1     AHB_WRITE      
-#   trans          ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst          ahb_burst_e   3     AHB_BURST_WRAP4
-#   size           ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot           integral      4     'h1            
-#   mastlock       integral      1     'h0            
-#   wdata          integral      32    'h43424140     
-#   rdata          integral      32    'h0            
-#   resp           ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles    integral      32    'h0            
-# ----------------------------------------------------
-# 
-#   actual  : --------------------------------------------------
-# Name           Type          Size  Value          
-# --------------------------------------------------
-# mon_tr         ahb_transfer  -     @2127          
-#   addr         integral      32    'h1308         
-#   write        ahb_dir_e     1     AHB_WRITE      
-#   trans        ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst        ahb_burst_e   3     AHB_BURST_WRAP4
-#   size         ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot         integral      4     'h1            
-#   mastlock     integral      1     'h0            
-#   wdata        integral      32    'h3f3e3d3c     
-#   rdata        integral      32    'h0            
-#   resp         ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles  integral      32    'h0            
-# --------------------------------------------------
-# 
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1025000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1308 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140 | total=29
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 1025000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=4/4 | AHB AHB_WRITE addr=0x130c trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x47464544
-# ** Error: [AXI4_SVA] W channel changed while stalled
-#    Time: 1025 ns Started: 1015 ns  Scope: bridge_tb_top.axi_checker.W_STABLE File: ../10_tb/sva/axi4_sva.sv Line: 166
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1035000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x130c data=0x43424140 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1035000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x130c trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140
-# UVM_ERROR ../10_tb/env/scoreboard.sv(134) @ 1035000: uvm_test_top.env.scb [scoreboard] AHB request mismatch
-#   expected: ----------------------------------------------------
-# Name             Type          Size  Value          
-# ----------------------------------------------------
-# expected_ahb_tr  ahb_transfer  -     @2191          
-#   addr           integral      32    'h130c         
-#   write          ahb_dir_e     1     AHB_WRITE      
-#   trans          ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst          ahb_burst_e   3     AHB_BURST_WRAP4
-#   size           ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot           integral      4     'h1            
-#   mastlock       integral      1     'h0            
-#   wdata          integral      32    'h47464544     
-#   rdata          integral      32    'h0            
-#   resp           ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles    integral      32    'h0            
-# ----------------------------------------------------
-# 
-#   actual  : --------------------------------------------------
-# Name           Type          Size  Value          
-# --------------------------------------------------
-# mon_tr         ahb_transfer  -     @2195          
-#   addr         integral      32    'h130c         
-#   write        ahb_dir_e     1     AHB_WRITE      
-#   trans        ahb_trans_e   2     AHB_TRANS_SEQ  
-#   burst        ahb_burst_e   3     AHB_BURST_WRAP4
-#   size         ahb_size_e    3     AHB_SIZE_4BYTE 
-#   prot         integral      4     'h1            
-#   mastlock     integral      1     'h0            
-#   wdata        integral      32    'h43424140     
-#   rdata        integral      32    'h0            
-#   resp         ahb_resp_e    1     AHB_RESP_OKAY  
-#   wait_cycles  integral      32    'h0            
-# --------------------------------------------------
-# 
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1035000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x130c data=0x47464544 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1035000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x130c trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x47464544
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1035000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x130c trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x47464544 | total=30
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(250) @ 1045000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][B] id=0x1 resp=AXI4_RESP_OKAY
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(177) @ 1045000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][RSP] WRITE id=0x1 resp=AXI4_RESP_OKAY
 # UVM_INFO ../10_tb/env/scoreboard.sv(220) @ 1045000: uvm_test_top.env.scb [scoreboard] [SCB][AXI][PASS] AXI4 AXI4_WRITE id=0x1 addr=0x1300 burst=AXI4_BURST_WRAP beats=4 size=4B | bresp=AXI4_RESP_OKAY | total=7
@@ -765,134 +384,58 @@
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 1085000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x1300 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_WRAP4 size=4B
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1095000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1300 data=0x3b3a3938 resp=AHB_RESP_OKAY ready_delay=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1095000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1300 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3b3a3938
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1095000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1300 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3b3a3938 | total=21
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1095000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1300 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3b3a3938 | total=31
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 1105000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x1304 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1115000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1304 data=0x3f3e3d3c resp=AHB_RESP_OKAY ready_delay=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1115000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1304 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3f3e3d3c
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1115000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1304 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3f3e3d3c | total=22
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1115000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1304 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3f3e3d3c | total=32
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 1115000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x3 beat=1/4 data=0x3b3a3938 resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 1115000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x3 beat=1/4 data=0x3b3a3938 resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 1125000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x1308 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1135000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1308 data=0x3f3e3d3c resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1135000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1308 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3f3e3d3c
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1135000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1308 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x3f3e3d3c | total=23
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1135000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1308 data=0x43424140 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1135000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1308 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1135000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1308 trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140 | total=33
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 1135000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x3 beat=2/4 data=0x3f3e3d3c resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 1135000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x3 beat=2/4 data=0x3f3e3d3c resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 1145000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x130c trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1155000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x130c data=0x43424140 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1155000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x130c trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1155000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x130c trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140 | total=24
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 1155000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x3 beat=3/4 data=0x3f3e3d3c resp=AXI4_RESP_OKAY last=0
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 1155000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x3 beat=3/4 data=0x3f3e3d3c resp=AXI4_RESP_OKAY last=0
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 1175000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x3 beat=4/4 data=0x43424140 resp=AXI4_RESP_OKAY last=1
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 1175000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x3 beat=4/4 data=0x43424140 resp=AXI4_RESP_OKAY last=1
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1155000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x130c data=0x47464544 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1155000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x130c trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x47464544
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1155000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x130c trans=AHB_TRANS_SEQ burst=AHB_BURST_WRAP4 size=4B resp=AHB_RESP_OKAY waits=0 | data=0x47464544 | total=34
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 1155000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x3 beat=3/4 data=0x43424140 resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 1155000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x3 beat=3/4 data=0x43424140 resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 1175000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x3 beat=4/4 data=0x47464544 resp=AXI4_RESP_OKAY last=1
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 1175000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x3 beat=4/4 data=0x47464544 resp=AXI4_RESP_OKAY last=1
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(262) @ 1175000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][RSP] READ id=0x3 beats=4
 # UVM_INFO ../10_tb/env/scoreboard.sv(227) @ 1175000: uvm_test_top.env.scb [scoreboard] [SCB][AXI][PASS] AXI4 AXI4_READ id=0x3 addr=0x1300 burst=AXI4_BURST_WRAP beats=4 size=4B | read beats=4 | total=8
-# UVM_ERROR ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(246) @ 1175000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] FULL data mismatch at 0x1300 beat=2: expected=0x43424140 actual=0x3f3e3d3c
-# UVM_ERROR ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(246) @ 1175000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] FULL data mismatch at 0x1300 beat=3: expected=0x47464544 actual=0x43424140
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(105) @ 1175000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][REQ] AXI4 AXI4_WRITE id=0x3 addr=0x1400 burst=AXI4_BURST_FIXED beats=4 size=4B | outstanding=1
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(178) @ 1215000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][AW] id=0x3 addr=0x1400 burst=AXI4_BURST_FIXED beats=4 size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 1215000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0x3 beat=1/4 data=0x43424140 strb=0xf last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 1225000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1235000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1400 data=0x43424140 resp=AHB_RESP_OKAY ready_delay=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1235000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140
-# ** Error: [AXI4_SVA] W channel changed while stalled
-#    Time: 1235 ns Started: 1225 ns  Scope: bridge_tb_top.axi_checker.W_STABLE File: ../10_tb/sva/axi4_sva.sv Line: 166
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 1245000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 1245000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0x3 beat=2/4 data=0x47464544 strb=0xf last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1255000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1400 data=0x47464544 resp=AHB_RESP_OKAY ready_delay=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1255000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x47464544
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 1265000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 1265000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0x3 beat=3/4 data=0x4b4a4948 strb=0xf last=0
-# ** Error: [AXI4_SVA] W channel changed while stalled
-#    Time: 1265 ns Started: 1255 ns  Scope: bridge_tb_top.axi_checker.W_STABLE File: ../10_tb/sva/axi4_sva.sv Line: 166
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1275000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1400 data=0x47464544 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1275000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x47464544
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1275000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1400 data=0x4b4a4948 resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1275000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 1285000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(198) @ 1285000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][W] id=0x3 beat=4/4 data=0x4f4e4d4c strb=0xf last=1
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(151) @ 1285000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][REQ] AXI4 AXI4_WRITE id=0x3 addr=0x1400 burst=AXI4_BURST_FIXED beats=4 size=4B
 # UVM_INFO ../10_tb/env/predictor.sv(75) @ 1285000: uvm_test_top.env.pred [predictor] [PRED][AXI][IN] AXI4 AXI4_WRITE id=0x3 addr=0x1400 burst=AXI4_BURST_FIXED beats=4 size=4B | queued=1
 # UVM_INFO ../10_tb/env/predictor.sv(138) @ 1285000: uvm_test_top.env.pred [predictor] [PRED][MAP] AXI4 AXI4_WRITE id=0x3 addr=0x1400 burst=AXI4_BURST_FIXED beats=4 size=4B -> AHB burst=AHB_BURST_SINGLE size=4B crosses_1kb=0
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 1285000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=1/4 | AHB AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x43424140
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1285000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140 | total=25
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1285000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x43424140 | total=35
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 1285000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=2/4 | AHB AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x47464544
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1285000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x47464544 | total=26
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1285000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x47464544 | total=36
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 1285000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=3/4 | AHB AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x4b4a4948
-# UVM_ERROR ../10_tb/env/scoreboard.sv(134) @ 1285000: uvm_test_top.env.scb [scoreboard] AHB request mismatch
-#   expected: -----------------------------------------------------
-# Name             Type          Size  Value           
-# -----------------------------------------------------
-# expected_ahb_tr  ahb_transfer  -     @2447           
-#   addr           integral      32    'h1400          
-#   write          ahb_dir_e     1     AHB_WRITE       
-#   trans          ahb_trans_e   2     AHB_TRANS_NONSEQ
-#   burst          ahb_burst_e   3     AHB_BURST_SINGLE
-#   size           ahb_size_e    3     AHB_SIZE_4BYTE  
-#   prot           integral      4     'h1             
-#   mastlock       integral      1     'h0             
-#   wdata          integral      32    'h4b4a4948      
-#   rdata          integral      32    'h0             
-#   resp           ahb_resp_e    1     AHB_RESP_OKAY   
-#   wait_cycles    integral      32    'h0             
-# -----------------------------------------------------
-# 
-#   actual  : ---------------------------------------------------
-# Name           Type          Size  Value           
-# ---------------------------------------------------
-# mon_tr         ahb_transfer  -     @2391           
-#   addr         integral      32    'h1400          
-#   write        ahb_dir_e     1     AHB_WRITE       
-#   trans        ahb_trans_e   2     AHB_TRANS_NONSEQ
-#   burst        ahb_burst_e   3     AHB_BURST_SINGLE
-#   size         ahb_size_e    3     AHB_SIZE_4BYTE  
-#   prot         integral      4     'h1             
-#   mastlock     integral      1     'h0             
-#   wdata        integral      32    'h47464544      
-#   rdata        integral      32    'h0             
-#   resp         ahb_resp_e    1     AHB_RESP_OKAY   
-#   wait_cycles  integral      32    'h0             
-# ---------------------------------------------------
-# 
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1285000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948 | total=37
 # UVM_INFO ../10_tb/env/predictor.sv(169) @ 1285000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=4/4 | AHB AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | wdata=0x4f4e4d4c
-# ** Error: [AXI4_SVA] W channel changed while stalled
-#    Time: 1285 ns Started: 1275 ns  Scope: bridge_tb_top.axi_checker.W_STABLE File: ../10_tb/sva/axi4_sva.sv Line: 166
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1295000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1400 data=0x4b4a4948 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1295000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948
-# UVM_ERROR ../10_tb/env/scoreboard.sv(134) @ 1295000: uvm_test_top.env.scb [scoreboard] AHB request mismatch
-#   expected: -----------------------------------------------------
-# Name             Type          Size  Value           
-# -----------------------------------------------------
-# expected_ahb_tr  ahb_transfer  -     @2455           
-#   addr           integral      32    'h1400          
-#   write          ahb_dir_e     1     AHB_WRITE       
-#   trans          ahb_trans_e   2     AHB_TRANS_NONSEQ
-#   burst          ahb_burst_e   3     AHB_BURST_SINGLE
-#   size           ahb_size_e    3     AHB_SIZE_4BYTE  
-#   prot           integral      4     'h1             
-#   mastlock       integral      1     'h0             
-#   wdata          integral      32    'h4f4e4d4c      
-#   rdata          integral      32    'h0             
-#   resp           ahb_resp_e    1     AHB_RESP_OKAY   
-#   wait_cycles    integral      32    'h0             
-# -----------------------------------------------------
-# 
-#   actual  : ---------------------------------------------------
-# Name           Type          Size  Value           
-# ---------------------------------------------------
-# mon_tr         ahb_transfer  -     @2459           
-#   addr         integral      32    'h1400          
-#   write        ahb_dir_e     1     AHB_WRITE       
-#   trans        ahb_trans_e   2     AHB_TRANS_NONSEQ
-#   burst        ahb_burst_e   3     AHB_BURST_SINGLE
-#   size         ahb_size_e    3     AHB_SIZE_4BYTE  
-#   prot         integral      4     'h1             
-#   mastlock     integral      1     'h0             
-#   wdata        integral      32    'h4b4a4948      
-#   rdata        integral      32    'h0             
-#   resp         ahb_resp_e    1     AHB_RESP_OKAY   
-#   wait_cycles  integral      32    'h0             
-# ---------------------------------------------------
-# 
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1295000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_WRITE addr=0x1400 data=0x4f4e4d4c resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1295000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4f4e4d4c
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1295000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_WRITE addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4f4e4d4c | total=38
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(250) @ 1305000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][B] id=0x3 resp=AXI4_RESP_OKAY
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(177) @ 1305000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][RSP] WRITE id=0x3 resp=AXI4_RESP_OKAY
 # UVM_INFO ../10_tb/env/scoreboard.sv(220) @ 1305000: uvm_test_top.env.scb [scoreboard] [SCB][AXI][PASS] AXI4 AXI4_WRITE id=0x3 addr=0x1400 burst=AXI4_BURST_FIXED beats=4 size=4B | bresp=AXI4_RESP_OKAY | total=9
@@ -906,49 +449,44 @@
 # UVM_INFO ../10_tb/env/predictor.sv(175) @ 1335000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=3/4 | AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0
 # UVM_INFO ../10_tb/env/predictor.sv(175) @ 1335000: uvm_test_top.env.pred [predictor] [PRED][AHB] beat=4/4 | AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 1345000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1355000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1400 data=0x4b4a4948 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1355000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1355000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948 | total=27
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1355000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1400 data=0x4f4e4d4c resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1355000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4f4e4d4c
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1355000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4f4e4d4c | total=39
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 1365000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1375000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1400 data=0x4b4a4948 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1375000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1375000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948 | total=28
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 1375000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x2 beat=1/4 data=0x4b4a4948 resp=AXI4_RESP_OKAY last=0
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 1375000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x2 beat=1/4 data=0x4b4a4948 resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1375000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1400 data=0x4f4e4d4c resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1375000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4f4e4d4c
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1375000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4f4e4d4c | total=40
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 1375000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x2 beat=1/4 data=0x4f4e4d4c resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 1375000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x2 beat=1/4 data=0x4f4e4d4c resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 1385000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1395000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1400 data=0x4b4a4948 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1395000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1395000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948 | total=29
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 1395000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x2 beat=2/4 data=0x4b4a4948 resp=AXI4_RESP_OKAY last=0
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 1395000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x2 beat=2/4 data=0x4b4a4948 resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1395000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1400 data=0x4f4e4d4c resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1395000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4f4e4d4c
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1395000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4f4e4d4c | total=41
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 1395000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x2 beat=2/4 data=0x4f4e4d4c resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 1395000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x2 beat=2/4 data=0x4f4e4d4c resp=AXI4_RESP_OKAY last=0
 # UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(87) @ 1405000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][REQ] AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1415000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1400 data=0x4b4a4948 resp=AHB_RESP_OKAY ready_delay=0
-# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1415000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948
-# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1415000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4b4a4948 | total=30
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 1415000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x2 beat=3/4 data=0x4b4a4948 resp=AXI4_RESP_OKAY last=0
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 1415000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x2 beat=3/4 data=0x4b4a4948 resp=AXI4_RESP_OKAY last=0
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 1435000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x2 beat=4/4 data=0x4b4a4948 resp=AXI4_RESP_OKAY last=1
-# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 1435000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x2 beat=4/4 data=0x4b4a4948 resp=AXI4_RESP_OKAY last=1
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_driver.sv(201) @ 1415000: uvm_test_top.env.ahb_agent.drv [ahb_slv_driver] [DRV][AHB][RSP] AHB_READ addr=0x1400 data=0x4f4e4d4c resp=AHB_RESP_OKAY ready_delay=0
+# UVM_INFO ../10_tb/ahb_slv/ahb_slv_monitor.sv(119) @ 1415000: uvm_test_top.env.ahb_agent.mon [ahb_slv_monitor] [MON][AHB][TR] AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4f4e4d4c
+# UVM_INFO ../10_tb/env/scoreboard.sv(126) @ 1415000: uvm_test_top.env.scb [scoreboard] [SCB][AHB][PASS] AHB AHB_READ addr=0x1400 trans=AHB_TRANS_NONSEQ burst=AHB_BURST_SINGLE size=4B resp=AHB_RESP_OKAY waits=0 | data=0x4f4e4d4c | total=42
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 1415000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x2 beat=3/4 data=0x4f4e4d4c resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 1415000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x2 beat=3/4 data=0x4f4e4d4c resp=AXI4_RESP_OKAY last=0
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_driver.sv(290) @ 1435000: uvm_test_top.env.axi_agent.drv [axi4_mst_driver] [DRV][AXI][R] id=0x2 beat=4/4 data=0x4f4e4d4c resp=AXI4_RESP_OKAY last=1
+# UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(256) @ 1435000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][R] id=0x2 beat=4/4 data=0x4f4e4d4c resp=AXI4_RESP_OKAY last=1
 # UVM_INFO ../10_tb/axi4_mst/axi4_mst_monitor.sv(262) @ 1435000: uvm_test_top.env.axi_agent.mon [axi4_mst_monitor] [MON][AXI][RSP] READ id=0x2 beats=4
 # UVM_INFO ../10_tb/env/scoreboard.sv(227) @ 1435000: uvm_test_top.env.scb [scoreboard] [SCB][AXI][PASS] AXI4 AXI4_READ id=0x2 addr=0x1400 burst=AXI4_BURST_FIXED beats=4 size=4B | read beats=4 | total=10
-# UVM_ERROR ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(246) @ 1435000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] FULL data mismatch at 0x1400 beat=0: expected=0x4f4e4d4c actual=0x4b4a4948
-# UVM_ERROR ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(246) @ 1435000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] FULL data mismatch at 0x1400 beat=1: expected=0x4f4e4d4c actual=0x4b4a4948
-# UVM_ERROR ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(246) @ 1435000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] FULL data mismatch at 0x1400 beat=2: expected=0x4f4e4d4c actual=0x4b4a4948
-# UVM_ERROR ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(246) @ 1435000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] FULL data mismatch at 0x1400 beat=3: expected=0x4f4e4d4c actual=0x4b4a4948
 # UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(87) @ 1435000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] Narrow data-integrity cases disabled by test configuration
-# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(93) @ 1435000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] Data-integrity summary: checked=10 failed=4
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(93) @ 1435000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_data_integrity_seq] Data-integrity summary: checked=10 failed=0
 # UVM_INFO verilog_src/uvm-1.1d/src/base/uvm_objection.svh(1268) @ 1535000: reporter [TEST_DONE] 'run' phase is ready to proceed to the 'extract' phase
-# UVM_WARNING ../10_tb/env/e2e_cov.sv(676) @ 1535000: uvm_test_top.env.cov [e2e_cov] End-to-end coverage has unmatched input streams
-# UVM_INFO ../10_tb/env/e2e_cov.sv(691) @ 1535000: uvm_test_top.env.cov [e2e_cov] E2E coverage: AXI=49.86% strobe=29.17% translation=60.58% AHB=46.75% response=42.86%
-# UVM_INFO ../10_tb/env/scoreboard.sv(325) @ 1535000: uvm_test_top.env.scb [scoreboard] Scoreboard summary: AHB match/mismatch=30/12, AXI match/mismatch=10/0
-# UVM_INFO ../10_tb/test/bridge_base_test.sv(82) @ 1535000: uvm_test_top [bridge_data_integrity_test] === TEST FAILED === (26 errors)
+# UVM_INFO ../10_tb/env/e2e_cov.sv(704) @ 1535000: uvm_test_top.env.cov [e2e_cov] E2E coverage: AXI=49.86% strobe=29.17% translation=60.58% AHB=46.75% response=42.86%
+# UVM_INFO ../10_tb/env/scoreboard.sv(325) @ 1535000: uvm_test_top.env.scb [scoreboard] Scoreboard summary: AHB match/mismatch=42/0, AXI match/mismatch=10/0
+# UVM_INFO ../10_tb/test/bridge_base_test.sv(78) @ 1535000: uvm_test_top [bridge_data_integrity_test] === TEST PASSED ===
 # 
 # --- UVM Report Summary ---
 # 
 # ** Report counts by severity
-# UVM_INFO :  348
-# UVM_WARNING :    8
-# UVM_ERROR :   26
+# UVM_INFO :  360
+# UVM_WARNING :    0
+# UVM_ERROR :    0
 # UVM_FATAL :    0
 # ** Report counts by id
 # [BRIDGE_TB_TOP]     1
@@ -958,15 +496,15 @@
 # [UVMTOP]     1
 # [ahb_slv_driver]    84
 # [ahb_slv_monitor]    42
-# [axi4_mst_data_integrity_seq]    16
+# [axi4_mst_data_integrity_seq]     2
 # [axi4_mst_driver]    67
 # [axi4_mst_monitor]    41
 # [bridge_data_integrity_test]     1
-# [e2e_cov]     9
+# [e2e_cov]     1
 # [predictor]    62
 # [scoreboard]    53
 # ** Note: $finish    : /cadtools/mentor/Questa_10.6b/questasim/linux_x86_64/../verilog_src/uvm-1.1d/src/base/uvm_root.svh(430)
 #    Time: 1535 ns  Iteration: 56  Instance: /bridge_tb_top
 # Saving coverage database on exit...
-# End time: 13:09:09 on Sep 08,2026, Elapsed time: 0:00:01
-# Errors: 16, Warnings: 0
+# End time: 13:16:37 on Sep 08,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
