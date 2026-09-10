@@ -26,6 +26,7 @@ package bridge_test_pkg;
     `include "test/bridge_data_integrity_test.sv"
     `include "test/bridge_burst_matrix_test.sv"
     `include "test/bridge_incr_mapping_test.sv"
+    `include "test/bridge_fixed_mapping_test.sv"
 
 endpackage : bridge_test_pkg
 
