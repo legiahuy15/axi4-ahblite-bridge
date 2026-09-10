@@ -56,22 +56,22 @@ class axi4_mst_incr_mapping_seq extends axi4_mst_base_seq;
         build_entries(entries);
 
         `uvm_info(get_type_name(),
-                  $sformatf("INCR mapping: %0d lengths x %0d sizes = %0d cases",
-                            entries.size(), NUM_SIZES,
-                            entries.size() * NUM_SIZES),
+                  $sformatf("INCR mapping: %0d length entries",
+                            entries.size()),
                   UVM_LOW)
 
         foreach (entries[e]) begin
-            for (int unsigned sz = 0; sz < NUM_SIZES; sz++) begin
-                // Skip sizes that make the burst too large to fit without
-                // crossing 1 KB (256 beats x 8B = 2048 > 1024)
-                if (!is_legal_combination(entries[e].len, sz))
-                    continue;
-
-                // Write
-                run_incr_case(AXI4_WRITE, entries[e], sz);
-                // Read
-                run_incr_case(AXI4_READ,  entries[e], sz);
+            if (entries[e].len == 0) begin
+                // Single-beat INCR: sweep all legal AxSIZE values
+                // (bridge supports narrow only for single transfers)
+                for (int unsigned sz = 0; sz < NUM_SIZES; sz++) begin
+                    run_incr_case(AXI4_WRITE, entries[e], sz);
+                    run_incr_case(AXI4_READ,  entries[e], sz);
+                end
+            end else begin
+                // Multi-beat INCR: bridge always uses full bus width
+                run_incr_case(AXI4_WRITE, entries[e], FULL_SIZE);
+                run_incr_case(AXI4_READ,  entries[e], FULL_SIZE);
             end
         end
 
@@ -104,21 +104,6 @@ class axi4_mst_incr_mapping_seq extends axi4_mst_base_seq;
         entries.push_back('{255, "AHB_BURST_INCR",   "INCR_256beat"});
     endfunction : build_entries
 
-    //-------------------------------------------------------------------------
-    // Check if a length/size combination fits within 1 KB
-    //-------------------------------------------------------------------------
-    protected function bit is_legal_combination(
-        int unsigned len,
-        int unsigned size_code
-    );
-        int unsigned beats;
-        int unsigned total_bytes;
-
-        beats       = len + 1;
-        total_bytes = beats * (1 << size_code);
-        // Must fit within a 1 KB page to avoid boundary crossing
-        return (total_bytes <= 1024);
-    endfunction : is_legal_combination
 
     //-------------------------------------------------------------------------
     // Run a single INCR case
