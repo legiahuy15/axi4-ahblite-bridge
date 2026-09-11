@@ -269,7 +269,7 @@ class axi4_mst_monitor extends uvm_monitor;
     //-------------------------------------------------------------------------
     protected function void write_clone(
         uvm_analysis_port #(axi4_transaction) port_h,
-        axi4_transaction                         tr
+        axi4_transaction                      tr
     );
         axi4_transaction copy_tr;
 
