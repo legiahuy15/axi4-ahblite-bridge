@@ -6,8 +6,8 @@ verification checklist, not a replacement for the licensed product guide or the 
 protocol specifications.
 
 **Last re-reviewed: 2026-09-17**, against the PG177 text in `00_doc/`, the translated RTL in
-`01_src/dut/`, the environment in `10_tb/`, and the second regression (40/40 runs passing:
-35 on the default build, 5 on the `C_S_AXI_SUPPORTS_NARROW_BURST=1` build). Items marked
+`01_src/dut/`, the environment in `10_tb/`, and the third regression (45/45 runs passing:
+40 on the default build, 5 on the `C_S_AXI_SUPPORTS_NARROW_BURST=1` build). Items marked
 **RTL observation** describe the translated RTL, not PG177; they are not requirements
 until confirmed against the reference VHDL (`00_doc/axi_ahblite_bridge_v3_0_vh_rfs.vhd`).
 
@@ -159,6 +159,13 @@ Transaction log lines print `lock=` (AXI) and `mastlock=` (AHB) so the lock valu
 visible at `UVM_HIGH`. The `C_LOCKED_IDLE` cover property in `ahb_sva` records the
 held-lock IDLE characteristic and prints its first occurrence to the log.
 
+**Result (third regression, 5 seeds):** every run passes with `run=30 failed=0` and 0
+scoreboard mismatches (95 AHB beats, 30 AXI transactions). The AXI monitor shows the
+intended lock order on all six burst types; the observed `HMASTLOCK` stream matches the
+predicted stream on all 95 beats (57 locked beats = 3 locked transactions x 19 beats), with
+no EXOKAY. `C_LOCKED_IDLE` fires at 155 ns, right after the first locked write completes.
+None of the 40 legal-profile runs shows `lock=1`, `mastlock=1` or `C_LOCKED_IDLE`.
+
 ## 5. RTL traceability and audit findings
 
 The SystemVerilog DUT visibly contains implementations corresponding to important PG177
@@ -178,7 +185,7 @@ the priority audit risks as of 2026-09-17:
 
 | # | Risk | Status |
 |---|---|---|
-| 1 | **Unsupported lock handling:** the RTL captures `AWLOCK`/`ARLOCK` and drives `HMASTLOCK` from it, while PG177 lists locked and exclusive operations as unsupported. | **Decided (Section 4.1):** matches the reference VHDL; keep it. `bridge_unsupported_feature_test` is implemented but has not yet run in a regression. |
+| 1 | **Unsupported lock handling:** the RTL captures `AWLOCK`/`ARLOCK` and drives `HMASTLOCK` from it, while PG177 lists locked and exclusive operations as unsupported. | **Closed (Section 4.1):** matches the reference VHDL; kept. Verified by `bridge_unsupported_feature_test` in the third regression. |
 | 2 | **Parameter legality:** equal AXI/AHB data widths, data width 32/64, address width 32–64, timeout 0/16/32/64/128/256. | **Open in the DUT** (no elaboration guards). The environment checks widths and timeout values in `vip_env_cfg.is_valid()`, the transaction constructors and the SVA; no negative elaboration test exists. |
 | 3 | **Single-write `WSTRB` decoding:** every legal lane and every sparse/zero/illegal pattern. | **Partial.** On the 32-bit narrow build, all seven legal patterns (`0x1`, `0x2`, `0x4`, `0x8`, `0x3`, `0xC`, `0xF`) are checked. Zero/sparse patterns and 64-bit are not tested. |
 | 4 | **1-KB split off-by-one behavior** at every transfer size. | **Partial.** No-cross, exact-edge (last byte at `0x3FF`) and crossing cases pass at full width only; crossings start one beat before the boundary only. Narrow sizes, other crossing positions and the 64-bit multi-boundary case are not tested. |
@@ -213,8 +220,9 @@ axi4_mst_agent (active) --> DUT --> ahb_slv_agent (reactive slave + memory model
 
 ## 7. Minimum compliance regression
 
-Status as of the second regression (2026-09-17). All stimulus is currently 32-bit, one
-outstanding transaction, zero AHB wait, AHB OKAY only, `AxCACHE = AxPROT = 0`. The random
+Status as of the third regression (2026-09-17). All stimulus is currently 32-bit, one
+outstanding transaction, zero AHB wait, AHB OKAY only, `AxCACHE = AxPROT = 0`, and
+`AxLOCK = 0` except in `bridge_unsupported_feature_test`. The random
 seed only changes AXI IDs (and FIXED lengths), so repeated runs of the same test are
 nearly identical.
 
@@ -253,7 +261,7 @@ nearly identical.
 
 | Item | Status |
 |---|---|
-| Locked/exclusive requests complete with OKAY and correct data; `HMASTLOCK` follows `AxLOCK` (Section 4.1) | Implemented — `bridge_unsupported_feature_test`; not yet run in a regression. |
+| Locked/exclusive requests complete with OKAY and correct data; `HMASTLOCK` follows `AxLOCK` (Section 4.1) | Done — `bridge_unsupported_feature_test` (third regression, 5 seeds). |
 | Sparse `WSTRB` and unaligned narrow requests classified as negative tests | Not started. |
 
 ### P1 — response and timeout matrix

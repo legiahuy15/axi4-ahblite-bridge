@@ -29,6 +29,7 @@ package bridge_seq_pkg;
     `include "seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv"
     `include "seq/axi4_mst_seq/axi4_mst_1kb_boundary_seq.sv"
     `include "seq/axi4_mst_seq/axi4_mst_lock_seq.sv"
+    `include "seq/axi4_mst_seq/axi4_mst_size_mapping_seq.sv"
 
     //-------------------------------------------------------------------------
     // AHB-Lite slave sequences
@@ -47,6 +48,7 @@ package bridge_seq_pkg;
     `include "seq/bridge_vip_seq/bridge_wrap_mapping_seq.sv"
     `include "seq/bridge_vip_seq/bridge_1kb_boundary_seq.sv"
     `include "seq/bridge_vip_seq/bridge_unsupported_feature_seq.sv"
+    `include "seq/bridge_vip_seq/bridge_size_mapping_seq.sv"
 
 endpackage : bridge_seq_pkg
 
