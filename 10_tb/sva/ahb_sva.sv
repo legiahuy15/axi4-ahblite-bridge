@@ -317,10 +317,20 @@ module ahb_sva #(
                 active_transfer |-> !HPROT[3];
             endproperty
 
+            // PG177 default HPROT: non-cacheable, non-bufferable, privileged
+            // data access. Checked from the second reset cycle so the
+            // synchronous reset has taken effect.
+            property p_reset_hprot;
+                @(posedge clk)
+                (!rst_n && reset_active_q) |-> (HPROT == 4'b0011);
+            endproperty
+
             NO_LOCK: assert property (p_no_lock)
                 else $error("[AHB_SVA] HMASTLOCK asserted by bridge");
             NONCACHEABLE: assert property (p_noncacheable)
                 else $error("[AHB_SVA] Bridge generated cacheable transfer");
+            RESET_HPROT: assert property (p_reset_hprot)
+                else $error("[AHB_SVA] HPROT is not 4'b0011 during reset");
         end
     endgenerate
 

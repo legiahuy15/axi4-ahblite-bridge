@@ -1,0 +1,15 @@
+# Office lock files (e.g. an open vplan workbook)
+~$*
+
+# Questa compiled libraries and waveforms
+11_sim/work/
+11_sim/report/wlf/
+*.wlf
+
+# Simulator scratch output
+transcript
+vsim_stacktrace.vstf
+*.vcd
+
+# Regression logs, UCDB files and the merged HTML report under
+# 11_sim/report/ stay tracked: they are synced to review regression results.

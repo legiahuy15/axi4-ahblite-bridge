@@ -255,8 +255,9 @@ cov_report: merge_cov
 #-----------------------------------------------------------------------------
 # Cleanup
 #-----------------------------------------------------------------------------
+# modelsim.ini is part of the source tree (library mappings); keep it
 clean:
 	@echo "[CLEAN] Removing generated files under $(MAKEFILE_DIR)"
 	@cd "$(MAKEFILE_DIR)" && rm -rf -- work report
 	@cd "$(MAKEFILE_DIR)" && rm -f -- \
-		transcript vsim.wlf vsim_stacktrace.vstf modelsim.ini *.vcd *.ucdb
+		transcript vsim.wlf vsim_stacktrace.vstf *.vcd *.ucdb

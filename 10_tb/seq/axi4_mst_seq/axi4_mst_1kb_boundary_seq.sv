@@ -33,7 +33,9 @@ class axi4_mst_1kb_boundary_seq extends axi4_mst_base_seq;
     typedef enum {
         BOUNDARY_NO_CROSS,    // wholly inside 1 KB
         BOUNDARY_EXACT_EDGE,  // last byte at offset 0x3FF
-        BOUNDARY_CROSSING     // burst crosses 1 KB
+        BOUNDARY_CROSSING,    // crosses after the first beat
+        BOUNDARY_CROSS_MID,   // crosses in the middle of the burst
+        BOUNDARY_CROSS_LATE   // only the last beat is past the boundary
     } boundary_class_e;
 
     typedef struct {
@@ -105,7 +107,8 @@ class axi4_mst_1kb_boundary_seq extends axi4_mst_base_seq;
         entries.push_back('{4, BOUNDARY_EXACT_EDGE, "EXACT_EDGE_INCR5"});
 
         // ---- BRG_1KB_003: Crossing cases ----
-        // Burst crosses the 1 KB boundary
+        // Burst crosses the 1 KB boundary after the first beat, in the
+        // middle, or on the last beat
         foreach (fixed_lens[i])
             entries.push_back('{fixed_lens[i], BOUNDARY_CROSSING,
                                 $sformatf("CROSS_INCR%0d",
@@ -113,6 +116,19 @@ class axi4_mst_1kb_boundary_seq extends axi4_mst_base_seq;
         entries.push_back('{4, BOUNDARY_CROSSING, "CROSS_INCR5"});
         // 256-beat crossing
         entries.push_back('{255, BOUNDARY_CROSSING, "CROSS_INCR256"});
+
+        foreach (fixed_lens[i]) begin
+            entries.push_back('{fixed_lens[i], BOUNDARY_CROSS_MID,
+                                $sformatf("CROSS_MID_INCR%0d",
+                                          fixed_lens[i] + 1)});
+            entries.push_back('{fixed_lens[i], BOUNDARY_CROSS_LATE,
+                                $sformatf("CROSS_LATE_INCR%0d",
+                                          fixed_lens[i] + 1)});
+        end
+        entries.push_back('{4,   BOUNDARY_CROSS_MID,  "CROSS_MID_INCR5"});
+        entries.push_back('{4,   BOUNDARY_CROSS_LATE, "CROSS_LATE_INCR5"});
+        entries.push_back('{255, BOUNDARY_CROSS_MID,  "CROSS_MID_INCR256"});
+        entries.push_back('{255, BOUNDARY_CROSS_LATE, "CROSS_LATE_INCR256"});
     endfunction : build_entries
 
     //-------------------------------------------------------------------------
@@ -193,13 +209,24 @@ class axi4_mst_1kb_boundary_seq extends axi4_mst_base_seq;
             end
 
             BOUNDARY_CROSSING: begin
-                // Start so the burst straddles the 1 KB boundary
-                // Place start one beat before the boundary
-                if (total_bytes <= BYTES_PER_BEAT)
-                    // Single beat can't cross; start just at boundary
-                    offset = 'h400 - BYTES_PER_BEAT;
+                // First beat is the last one below the boundary
+                offset = 'h400 - BYTES_PER_BEAT;
+            end
+
+            BOUNDARY_CROSS_MID: begin
+                // About half of the beats on each side of the boundary
+                offset = 'h400 - (((beats / 2) > 0 ? (beats / 2) : 1) *
+                                  BYTES_PER_BEAT);
+            end
+
+            BOUNDARY_CROSS_LATE: begin
+                // Only the last beat starts at the boundary. A burst longer
+                // than 1 KB (e.g. 256 beats on 64-bit) cannot do that; start
+                // at offset 0 instead.
+                if (((beats - 1) * BYTES_PER_BEAT) > 'h400)
+                    offset = 0;
                 else
-                    offset = 'h400 - BYTES_PER_BEAT;
+                    offset = 'h400 - ((beats - 1) * BYTES_PER_BEAT);
             end
 
             default:

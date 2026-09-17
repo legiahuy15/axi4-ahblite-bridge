@@ -19,8 +19,9 @@ class axi4_mst_incr_mapping_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Sequence knobs
     //-------------------------------------------------------------------------
-    bit [AXI4_ADDR_WIDTH-1:0] base_addr    = 'h1000;
-    int unsigned              case_stride  = 'h400;
+    bit [AXI4_ADDR_WIDTH-1:0] base_addr     = 'h1000;
+    int unsigned              case_stride   = 'h400;
+    bit                       enable_narrow = 1'b0;
 
     //-------------------------------------------------------------------------
     // Statistics
@@ -56,15 +57,21 @@ class axi4_mst_incr_mapping_seq extends axi4_mst_base_seq;
         build_entries(entries);
 
         `uvm_info(get_type_name(),
-                  $sformatf("INCR mapping: %0d length entries",
-                            entries.size()),
+                  $sformatf("INCR mapping: %0d length entries, narrow=%0b",
+                            entries.size(), enable_narrow),
                   UVM_LOW)
+        if (!enable_narrow)
+            `uvm_info(get_type_name(),
+                      "Narrow INCR mapping cases disabled by test configuration",
+                      UVM_LOW)
 
         foreach (entries[e]) begin
             if (entries[e].len == 0) begin
-                // Single-beat INCR: sweep all legal AxSIZE values
-                // (bridge supports narrow only for single transfers)
-                for (int unsigned sz = 0; sz < NUM_SIZES; sz++) begin
+                // Single-beat INCR: sweep every AxSIZE. Narrow sizes are
+                // outside the supported profile unless the DUT is built
+                // with narrow support.
+                for (int unsigned sz = (enable_narrow ? 0 : FULL_SIZE);
+                     sz < NUM_SIZES; sz++) begin
                     run_incr_case(AXI4_WRITE, entries[e], sz);
                     run_incr_case(AXI4_READ,  entries[e], sz);
                 end

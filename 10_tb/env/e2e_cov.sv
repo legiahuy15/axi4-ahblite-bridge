@@ -11,6 +11,24 @@
 `uvm_analysis_imp_decl(_e2e_actual_ahb)
 `uvm_analysis_imp_decl(_e2e_axi_rsp)
 
+// Response-side correlation state for one predicted AXI request
+class e2e_rsp_ctx;
+
+    axi4_transaction tr;
+    bit              has_first_beat;  // first predicted AHB beat recorded
+    ahb_dir_e        first_write;
+    bit [AHB_ADDR_WIDTH-1:0] first_addr;
+    bit              started;         // an observed AHB beat was assigned
+    int unsigned     beat_index;
+    bit              saw_error;
+    bit              saw_wait;
+
+    function new(axi4_transaction tr);
+        this.tr = tr;
+    endfunction : new
+
+endclass : e2e_rsp_ctx
+
 class e2e_cov extends uvm_component;
 
     `uvm_component_utils(e2e_cov)
@@ -30,20 +48,18 @@ class e2e_cov extends uvm_component;
     //-------------------------------------------------------------------------
     // Correlation state
     //-------------------------------------------------------------------------
-    typedef struct packed {
-        bit ahb_error;
-        bit ahb_wait;
-    } response_summary_t;
-
+    // Predicted side: the predictor sends a request and then all of its
+    // beats in one call, so a FIFO is exact.
     protected axi4_transaction   map_axi_queue[$];
-    protected axi4_transaction   rsp_axi_queue[$];
-    protected axi4_transaction   actual_axi_queue[$];
-    protected ahb_transfer       pending_actual_ahb_queue[$];
-    protected response_summary_t response_queue[$];
     protected int unsigned       map_beat_index;
-    protected int unsigned       rsp_beat_index;
-    protected bit                rsp_saw_error;
-    protected bit                rsp_saw_wait;
+    // Observed side: matched like the scoreboard, independent of request
+    // order (first beat direction/address, then AXI completion by ID).
+    protected e2e_rsp_ctx        rsp_ctx_queue[$];
+    protected e2e_rsp_ctx        rsp_active_ctx;
+    protected e2e_rsp_ctx        rsp_predict_ctx;
+    protected e2e_rsp_ctx        rsp_done_queue[$];
+    protected ahb_transfer       pending_actual_ahb_queue[$];
+    protected axi4_transaction   actual_axi_queue[$];
 
     //-------------------------------------------------------------------------
     // AXI request sample fields
@@ -365,9 +381,10 @@ class e2e_cov extends uvm_component;
             bins waited    = {1'b1};
         }
         cp_axi_status: coverpoint m_rsp_axi_status {
-            bins okay        = {2'd0};
-            bins slverr      = {2'd1};
-            bins unsupported = {2'd2};
+            bins okay   = {2'd0};
+            bins slverr = {2'd1};
+            // The bridge never generates EXOKAY/DECERR (PG177)
+            illegal_bins unsupported = {2'd2};
         }
 
         cx_error_map: cross cp_ahb_error, cp_axi_status;
@@ -409,8 +426,8 @@ class e2e_cov extends uvm_component;
         if (!$cast(map_tr, tr.clone()) || !$cast(rsp_tr, tr.clone()))
             `uvm_fatal(get_type_name(), "AXI request clone failed")
         map_axi_queue.push_back(map_tr);
-        rsp_axi_queue.push_back(rsp_tr);
-        drain_actual_ahb();
+        rsp_predict_ctx = new(rsp_tr);
+        rsp_ctx_queue.push_back(rsp_predict_ctx);
 
         byte_count       = 1 << int'(tr.size);
         m_axi_dir        = tr.dir;
@@ -471,6 +488,13 @@ class e2e_cov extends uvm_component;
             void'(map_axi_queue.pop_front());
             map_beat_index = 0;
         end
+
+        if ((rsp_predict_ctx != null) && !rsp_predict_ctx.has_first_beat) begin
+            rsp_predict_ctx.has_first_beat = 1'b1;
+            rsp_predict_ctx.first_write    = tr.write;
+            rsp_predict_ctx.first_addr     = tr.addr;
+            drain_actual_ahb();
+        end
     endfunction : write_e2e_expected_ahb
 
     //-------------------------------------------------------------------------
@@ -486,43 +510,66 @@ class e2e_cov extends uvm_component;
     endfunction : write_e2e_actual_ahb
 
     protected function void drain_actual_ahb();
-        ahb_transfer       tr;
-        axi4_transaction axi_tr;
-        response_summary_t summary;
-        int unsigned beat_count;
+        while (pending_actual_ahb_queue.size() != 0) begin
+            ahb_transfer tr;
+            int unsigned beat_count;
 
-        while ((pending_actual_ahb_queue.size() != 0) &&
-               (rsp_axi_queue.size() != 0)) begin
-            tr = pending_actual_ahb_queue.pop_front();
+            if (rsp_active_ctx == null) begin
+                rsp_active_ctx = find_rsp_ctx(pending_actual_ahb_queue[0]);
+                // Request not predicted yet; retry when it is
+                if (rsp_active_ctx == null)
+                    break;
+                rsp_active_ctx.started = 1'b1;
+            end
 
-            axi_tr     = rsp_axi_queue[0];
-            beat_count = int'(axi_tr.len) + 1;
+            tr         = pending_actual_ahb_queue.pop_front();
+            beat_count = int'(rsp_active_ctx.tr.len) + 1;
             m_ahb_dir         = tr.write;
             m_ahb_burst       = tr.burst;
             m_ahb_size        = tr.size;
             m_ahb_resp        = tr.resp;
             m_ahb_wait_cycles = tr.wait_cycles;
-            m_ahb_beat_pos    = get_beat_position(rsp_beat_index, beat_count);
+            m_ahb_beat_pos    = get_beat_position(rsp_active_ctx.beat_index,
+                                                  beat_count);
             cg_ahb_response.sample();
 
             if (tr.resp == AHB_RESP_ERROR)
-                rsp_saw_error = 1'b1;
+                rsp_active_ctx.saw_error = 1'b1;
             if (tr.wait_cycles != 0)
-                rsp_saw_wait = 1'b1;
+                rsp_active_ctx.saw_wait = 1'b1;
 
-            rsp_beat_index++;
-            if (rsp_beat_index == beat_count) begin
-                void'(rsp_axi_queue.pop_front());
-                summary.ahb_error = rsp_saw_error;
-                summary.ahb_wait  = rsp_saw_wait;
-                response_queue.push_back(summary);
-                rsp_beat_index = 0;
-                rsp_saw_error  = 1'b0;
-                rsp_saw_wait   = 1'b0;
+            rsp_active_ctx.beat_index++;
+            if (rsp_active_ctx.beat_index >= beat_count) begin
+                foreach (rsp_ctx_queue[i]) begin
+                    if (rsp_ctx_queue[i] == rsp_active_ctx) begin
+                        rsp_ctx_queue.delete(i);
+                        break;
+                    end
+                end
+                rsp_done_queue.push_back(rsp_active_ctx);
+                rsp_active_ctx = null;
                 sample_response_queue();
             end
         end
     endfunction : drain_actual_ahb
+
+    // Same selection rule as the scoreboard: oldest unstarted request whose
+    // first predicted beat has the same direction and address, otherwise the
+    // oldest unstarted request of the same direction.
+    protected function e2e_rsp_ctx find_rsp_ctx(ahb_transfer tr);
+        foreach (rsp_ctx_queue[i]) begin
+            if (!rsp_ctx_queue[i].started && rsp_ctx_queue[i].has_first_beat &&
+                (rsp_ctx_queue[i].first_write == tr.write) &&
+                (rsp_ctx_queue[i].first_addr  == tr.addr))
+                return rsp_ctx_queue[i];
+        end
+        foreach (rsp_ctx_queue[i]) begin
+            if (!rsp_ctx_queue[i].started && rsp_ctx_queue[i].has_first_beat &&
+                (rsp_ctx_queue[i].first_write == tr.write))
+                return rsp_ctx_queue[i];
+        end
+        return null;
+    endfunction : find_rsp_ctx
 
     //-------------------------------------------------------------------------
     // AXI completion callback
@@ -539,17 +586,38 @@ class e2e_cov extends uvm_component;
     //-------------------------------------------------------------------------
     // Response correlation
     //-------------------------------------------------------------------------
+    // Each AXI completion is paired with the oldest AHB-complete request of
+    // the same direction and ID.
     protected function void sample_response_queue();
-        while ((response_queue.size() > 0) &&
-               (actual_axi_queue.size() > 0)) begin
-            response_summary_t summary;
-            axi4_transaction   axi_tr;
+        int unsigned actual_index;
 
-            summary = response_queue.pop_front();
-            axi_tr   = actual_axi_queue.pop_front();
+        actual_index = 0;
+        while (actual_index < actual_axi_queue.size()) begin
+            axi4_transaction axi_tr;
+            e2e_rsp_ctx      ctx;
+            int              done_index;
+
+            axi_tr     = actual_axi_queue[actual_index];
+            done_index = -1;
+            foreach (rsp_done_queue[i]) begin
+                if ((rsp_done_queue[i].tr.dir == axi_tr.dir) &&
+                    (rsp_done_queue[i].tr.id  == axi_tr.id)) begin
+                    done_index = i;
+                    break;
+                end
+            end
+            if (done_index < 0) begin
+                actual_index++;
+                continue;
+            end
+
+            ctx = rsp_done_queue[done_index];
+            rsp_done_queue.delete(done_index);
+            actual_axi_queue.delete(actual_index);
+
             m_rsp_dir        = axi_tr.dir;
-            m_rsp_ahb_error  = summary.ahb_error;
-            m_rsp_ahb_wait   = summary.ahb_wait;
+            m_rsp_ahb_error  = ctx.saw_error;
+            m_rsp_ahb_wait   = ctx.saw_wait;
             m_rsp_axi_status = get_axi_status(axi_tr);
             cg_response_map.sample();
         end
@@ -667,14 +735,13 @@ class e2e_cov extends uvm_component;
     //-------------------------------------------------------------------------
     function void reset_state();
         map_axi_queue.delete();
-        rsp_axi_queue.delete();
-        actual_axi_queue.delete();
-        pending_actual_ahb_queue.delete();
-        response_queue.delete();
         map_beat_index = 0;
-        rsp_beat_index = 0;
-        rsp_saw_error  = 1'b0;
-        rsp_saw_wait   = 1'b0;
+        rsp_ctx_queue.delete();
+        rsp_active_ctx  = null;
+        rsp_predict_ctx = null;
+        rsp_done_queue.delete();
+        pending_actual_ahb_queue.delete();
+        actual_axi_queue.delete();
     endfunction : reset_state
 
     //-------------------------------------------------------------------------
@@ -682,9 +749,9 @@ class e2e_cov extends uvm_component;
     //-------------------------------------------------------------------------
     function void check_phase(uvm_phase phase);
         super.check_phase(phase);
-        if ((map_axi_queue.size() != 0) || (rsp_axi_queue.size() != 0) ||
+        if ((map_axi_queue.size() != 0) || (rsp_ctx_queue.size() != 0) ||
             (pending_actual_ahb_queue.size() != 0) ||
-            (response_queue.size() != 0) || (actual_axi_queue.size() != 0))
+            (rsp_done_queue.size() != 0) || (actual_axi_queue.size() != 0))
             `uvm_warning(get_type_name(),
                          "End-to-end coverage has unmatched input streams")
     endfunction : check_phase

@@ -75,9 +75,8 @@ class axi4_mst_coverage extends uvm_subscriber #(axi4_transaction);
         cp_lane: coverpoint m_addr[1:0] {
             bins lanes[] = {[0:3]};
         }
-        cp_region: coverpoint m_addr[31:28] {
-            bins regions[] = {[0:15]};
-        }
+        // No address-region coverpoint: the bridge does not remap addresses
+        // and PG177 defines no address map to cover
         cp_aligned: coverpoint m_aligned {
             bins aligned   = {1'b1};
             bins unaligned = {1'b0};
@@ -93,9 +92,10 @@ class axi4_mst_coverage extends uvm_subscriber #(axi4_transaction);
             bins write = {AXI4_WRITE};
         }
         cp_resp: coverpoint m_resp {
-            bins okay        = {AXI4_RESP_OKAY};
-            bins slverr      = {AXI4_RESP_SLVERR};
-            bins unsupported = {AXI4_RESP_EXOKAY, AXI4_RESP_DECERR};
+            bins okay   = {AXI4_RESP_OKAY};
+            bins slverr = {AXI4_RESP_SLVERR};
+            // The bridge never generates EXOKAY/DECERR (PG177)
+            illegal_bins unsupported = {AXI4_RESP_EXOKAY, AXI4_RESP_DECERR};
         }
         cx_dir_resp: cross cp_dir, cp_resp;
     endgroup : cg_response
