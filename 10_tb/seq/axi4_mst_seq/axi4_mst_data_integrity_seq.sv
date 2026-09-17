@@ -84,7 +84,7 @@ class axi4_mst_data_integrity_seq extends axi4_mst_base_seq;
         end else begin
             `uvm_info(get_type_name(),
                       "Narrow data-integrity cases disabled by test configuration",
-                      UVM_MEDIUM)
+                      UVM_LOW)
         end
 
         `uvm_info(get_type_name(),
@@ -110,14 +110,18 @@ class axi4_mst_data_integrity_seq extends axi4_mst_base_seq;
         axi4_transaction              rd_req;
         axi4_transaction              rd_rsp;
         bit [AXI4_DATA_WIDTH-1:0]     expected_data[];
+        bit [AXI4_DATA_WIDTH-1:0]     expected_mask[];
         int unsigned                  beats;
 
         beats = len + 1;
         wr_req = create_write_request(index, addr, len, size_code, burst,
                                       strobe);
         expected_data = new[beats];
-        foreach (expected_data[i])
+        expected_mask = new[beats];
+        foreach (expected_data[i]) begin
             expected_data[i] = wr_req.data[i];
+            expected_mask[i] = '1;
+        end
 
         send_axi_request_wait(wr_req, wr_rsp);
         cases_checked++;
@@ -129,10 +133,11 @@ class axi4_mst_data_integrity_seq extends axi4_mst_base_seq;
         end
 
         if ((len == 0) && (size_code != FULL_SIZE)) begin
-            expected_data[0] = '0;
+            // Only strobed lanes were written; other lanes hold unrelated data
+            expected_mask[0] = '0;
             for (int unsigned lane = 0; lane < AXI4_STRB_WIDTH; lane++) begin
                 if (strobe[lane])
-                    expected_data[0][8*lane +: 8] = wr_req.data[0][8*lane +: 8];
+                    expected_mask[0][8*lane +: 8] = 8'hFF;
             end
         end else if (burst == AXI4_BURST_FIXED) begin
             foreach (expected_data[i])
@@ -141,7 +146,7 @@ class axi4_mst_data_integrity_seq extends axi4_mst_base_seq;
 
         rd_req = create_read_request(index, addr, len, size_code, burst);
         send_axi_request_wait(rd_req, rd_rsp);
-        check_read_response(kind, addr, rd_rsp, expected_data);
+        check_read_response(kind, addr, rd_rsp, expected_data, expected_mask);
     endtask : run_integrity_case
 
     //-------------------------------------------------------------------------
@@ -216,7 +221,8 @@ class axi4_mst_data_integrity_seq extends axi4_mst_base_seq;
         string                    kind,
         bit [AXI4_ADDR_WIDTH-1:0] addr,
         axi4_transaction          rsp,
-        bit [AXI4_DATA_WIDTH-1:0] expected_data[]
+        bit [AXI4_DATA_WIDTH-1:0] expected_data[],
+        bit [AXI4_DATA_WIDTH-1:0] expected_mask[]
     );
         bit failed;
 
@@ -237,13 +243,15 @@ class axi4_mst_data_integrity_seq extends axi4_mst_base_seq;
                                $sformatf("%s read response error at 0x%0h beat=%0d: %s",
                                          kind, addr, i, rsp.rresp[i].name()))
                 end
-                if (rsp.data[i] !== expected_data[i]) begin
+                if ((rsp.data[i] & expected_mask[i]) !==
+                    (expected_data[i] & expected_mask[i])) begin
                     failed = 1'b1;
                     `uvm_error(get_type_name(),
                                $sformatf({"%s data mismatch at 0x%0h beat=%0d: ",
-                                          "expected=0x%0h actual=0x%0h"},
+                                          "expected=0x%0h actual=0x%0h ",
+                                          "mask=0x%0h"},
                                          kind, addr, i, expected_data[i],
-                                         rsp.data[i]))
+                                         rsp.data[i], expected_mask[i]))
                 end
             end
         end

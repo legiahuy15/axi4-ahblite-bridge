@@ -211,7 +211,8 @@ class ahb_slv_driver extends uvm_driver #(ahb_slave_response);
         bit [AHB_ADDR_WIDTH-1:0] base_addr;
 
         base_addr = addr - (addr % AHB_BYTE_LANES);
-        data      = cfg.default_read_data;
+        data      = cfg.addr_pattern_read ?
+                        get_unwritten_word(base_addr) : cfg.default_read_data;
         for (int unsigned lane = 0; lane < AHB_BYTE_LANES; lane++) begin
             bit [AHB_ADDR_WIDTH-1:0] byte_addr;
 
@@ -221,6 +222,19 @@ class ahb_slv_driver extends uvm_driver #(ahb_slave_response);
         end
         return data;
     endfunction : read_memory_word
+
+    // Distinct per word address so dropped, repeated or reordered read beats
+    // are visible to the scoreboard even without a prior write.
+    protected function bit [AHB_DATA_WIDTH-1:0] get_unwritten_word(
+        bit [AHB_ADDR_WIDTH-1:0] base_addr
+    );
+        bit [63:0] addr64;
+        bit [63:0] pattern;
+
+        addr64  = base_addr;
+        pattern = {addr64[31:0], ~addr64[31:0]};
+        return pattern[AHB_DATA_WIDTH-1:0] ^ cfg.default_read_data;
+    endfunction : get_unwritten_word
 
     protected function void write_memory_transfer(
         bit [AHB_ADDR_WIDTH-1:0] addr,

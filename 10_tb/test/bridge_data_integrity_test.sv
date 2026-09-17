@@ -15,7 +15,7 @@ class bridge_data_integrity_test extends bridge_base_test;
     //-------------------------------------------------------------------------
     int unsigned              num_iter       = 5;
     int unsigned              narrow_cases  = 8;
-    bit                       enable_narrow = 1'b1;
+    bit                       enable_narrow;  // follows DUT narrow support
     bit [AXI4_ADDR_WIDTH-1:0] base_addr     = 'h1000;
     bit [AXI4_ADDR_WIDTH-1:0] narrow_base   = 'h8000;
     int unsigned              case_stride   = 'h100;
@@ -40,6 +40,7 @@ class bridge_data_integrity_test extends bridge_base_test;
         env_cfg.ahb_cfg.ready_delay_max  = 0;
         env_cfg.ahb_cfg.clear_mem_on_reset = 1'b1;
 
+        enable_narrow = env_cfg.supports_narrow_burst;
         void'($value$plusargs("NUM_ITER=%d", num_iter));
         void'($value$plusargs("NARROW_CASES=%d", narrow_cases));
         void'($value$plusargs("ENABLE_NARROW=%d", enable_narrow));

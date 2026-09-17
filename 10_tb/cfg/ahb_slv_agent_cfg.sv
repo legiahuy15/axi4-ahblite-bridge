@@ -29,7 +29,10 @@ class ahb_slv_agent_cfg extends uvm_object;
     int unsigned ready_delay_max = 0;
 
     // Memory controls
-    bit [AHB_DATA_WIDTH-1:0] default_read_data = '0;
+    // Unwritten bytes read as an address-derived word XOR default_read_data
+    // when addr_pattern_read is set, otherwise as default_read_data.
+    bit [AHB_DATA_WIDTH-1:0] default_read_data  = '0;
+    bit                      addr_pattern_read  = 1'b1;
     bit                      clear_mem_on_reset = 1'b0;
 
     // Interface handle
@@ -45,6 +48,7 @@ class ahb_slv_agent_cfg extends uvm_object;
         `uvm_field_int(                         ready_delay_min,     UVM_DEFAULT)
         `uvm_field_int(                         ready_delay_max,     UVM_DEFAULT)
         `uvm_field_int(                         default_read_data,   UVM_DEFAULT)
+        `uvm_field_int(                         addr_pattern_read,   UVM_DEFAULT)
         `uvm_field_int(                         clear_mem_on_reset,  UVM_DEFAULT)
     `uvm_object_utils_end
 

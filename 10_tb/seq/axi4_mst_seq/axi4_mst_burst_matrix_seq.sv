@@ -18,7 +18,7 @@ class axi4_mst_burst_matrix_seq extends axi4_mst_base_seq;
     // Sequence knobs
     //-------------------------------------------------------------------------
     bit [AXI4_ADDR_WIDTH-1:0] base_addr    = 'h1000;
-    int unsigned              case_stride  = 'h200;
+    int unsigned              case_stride  = 256 * AXI4_STRB_WIDTH;
     bit                       enable_write = 1'b1;
     bit                       enable_read  = 1'b1;
 
@@ -182,13 +182,13 @@ class axi4_mst_burst_matrix_seq extends axi4_mst_base_seq;
         addr = (addr / byte_per_beat) * byte_per_beat;
 
         // For WRAP, alignment must be on size boundary (already done above)
-        // For INCR, keep well within 1 KB boundary
+        // For INCR, move the start to the next 1 KB boundary if the burst
+        // would cross the current one
         if (burst == AXI4_BURST_INCR) begin
-            bit [AXI4_ADDR_WIDTH-1:0] page_start;
-            page_start = (addr >> 12) << 12;
-            // If burst would cross 1KB, start at page boundary
-            if ((addr + total_bytes) > (page_start + 'h400))
-                addr = page_start;
+            bit [AXI4_ADDR_WIDTH-1:0] kb_start;
+            kb_start = (addr >> 10) << 10;
+            if ((addr - kb_start + total_bytes) > 'h400)
+                addr = kb_start + 'h400;
         end
 
         return addr;

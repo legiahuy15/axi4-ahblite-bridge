@@ -14,7 +14,7 @@ class bridge_burst_matrix_seq extends bridge_base_seq;
     // Sequence knobs
     //-------------------------------------------------------------------------
     bit [AXI4_ADDR_WIDTH-1:0] base_addr    = 'h1000;
-    int unsigned              case_stride  = 'h200;
+    int unsigned              case_stride  = 256 * AXI4_STRB_WIDTH;
     bit                       enable_write = 1'b1;
     bit                       enable_read  = 1'b1;
 
