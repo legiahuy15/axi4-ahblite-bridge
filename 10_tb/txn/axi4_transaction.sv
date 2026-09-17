@@ -150,9 +150,9 @@ class axi4_transaction extends uvm_sequence_item;
     endfunction : do_print
 
     function string convert2string();
-        return $sformatf("AXI4 %s id=0x%0h addr=0x%0h burst=%s beats=%0d size=%0dB",
+        return $sformatf("AXI4 %s id=0x%0h addr=0x%0h burst=%s beats=%0d size=%0dB lock=%0b",
                          dir.name(), id, addr, burst.name(), int'(len) + 1,
-                         1 << size);
+                         1 << size, lock);
     endfunction : convert2string
 
 endclass : axi4_transaction

@@ -155,6 +155,9 @@ Verification: legal-profile tests keep `LOCK_UNSUPPORTED`, `ARLOCK_UNSUPPORTED` 
 which makes `bridge_tb_top` turn those three assertions off with `$assertoff`, then runs
 interleaved locked and normal reads/writes. The predictor expects `HMASTLOCK = AxLOCK` per
 beat and the scoreboard compares it; the sequence checks responses and read-back data.
+Transaction log lines print `lock=` (AXI) and `mastlock=` (AHB) so the lock values are
+visible at `UVM_HIGH`. The `C_LOCKED_IDLE` cover property in `ahb_sva` records the
+held-lock IDLE characteristic and prints its first occurrence to the log.
 
 ## 5. RTL traceability and audit findings
 

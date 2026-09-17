@@ -77,9 +77,9 @@ class ahb_transfer extends uvm_sequence_item;
     // Helpers
     //-------------------------------------------------------------------------
     function string convert2string();
-        return $sformatf("AHB %s addr=0x%0h trans=%s burst=%s size=%0dB resp=%s waits=%0d",
+        return $sformatf("AHB %s addr=0x%0h trans=%s burst=%s size=%0dB mastlock=%0b resp=%s waits=%0d",
                          write.name(), addr, trans.name(), burst.name(),
-                         1 << size, resp.name(), wait_cycles);
+                         1 << size, mastlock, resp.name(), wait_cycles);
     endfunction : convert2string
 
 endclass : ahb_transfer

@@ -339,4 +339,18 @@ module ahb_sva #(
         HREADY && HTRANS == TRANS_NONSEQ &&
         (HBURST inside {BURST_WRAP4, BURST_WRAP8, BURST_WRAP16}));
 
+    // HMASTLOCK held high on an IDLE bus. The bridge reference design does
+    // this after a locked request until the next request is accepted; the
+    // first occurrence is reported so the behavior is visible in the log.
+    bit locked_idle_reported;
+
+    C_LOCKED_IDLE: cover property (@(posedge clk) disable iff (!rst_n)
+        HREADY && HTRANS == TRANS_IDLE && HMASTLOCK)
+        begin
+            if (!locked_idle_reported)
+                $display("%0t: [AHB_SVA] C_LOCKED_IDLE: HMASTLOCK high during IDLE (first occurrence)",
+                         $realtime);
+            locked_idle_reported = 1'b1;
+        end
+
 endmodule : ahb_sva
