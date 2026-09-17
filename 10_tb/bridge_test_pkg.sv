@@ -29,6 +29,7 @@ package bridge_test_pkg;
     `include "test/bridge_fixed_mapping_test.sv"
     `include "test/bridge_wrap_mapping_test.sv"
     `include "test/bridge_1kb_boundary_test.sv"
+    `include "test/bridge_unsupported_feature_test.sv"
 
 endpackage : bridge_test_pkg
 

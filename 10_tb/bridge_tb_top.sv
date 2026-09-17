@@ -213,6 +213,31 @@ module bridge_tb_top #(
     );
 
     //-------------------------------------------------------------------------
+    // Unsupported-lock policy
+    //-------------------------------------------------------------------------
+    // PG177 lists locked/exclusive access as unsupported, but the reference
+    // design completes such requests and drives HMASTLOCK from AxLOCK. A test
+    // that verifies this behavior triggers "bridge_allow_lock" to turn off the
+    // assertions that forbid lock in the legal profile.
+    generate
+        if (CHECK_BRIDGE_PROFILE) begin : g_lock_policy
+            initial begin
+                uvm_event allow_lock_event;
+
+                allow_lock_event = uvm_event_pool::get_global("bridge_allow_lock");
+                allow_lock_event.wait_on();
+                $assertoff(0, axi_checker.g_bridge_profile.LOCK_UNSUPPORTED,
+                              axi_checker.g_bridge_profile.ARLOCK_UNSUPPORTED,
+                              ahb_checker.g_bridge_profile.NO_LOCK);
+                `uvm_info("BRIDGE_TB_TOP",
+                          {"Lock-profile assertions disabled: ",
+                           "LOCK_UNSUPPORTED, ARLOCK_UNSUPPORTED, NO_LOCK"},
+                          UVM_LOW)
+            end
+        end
+    endgenerate
+
+    //-------------------------------------------------------------------------
     // Time-zero driver outputs
     //-------------------------------------------------------------------------
     initial begin
