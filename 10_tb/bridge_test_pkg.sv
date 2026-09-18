@@ -33,6 +33,7 @@ package bridge_test_pkg;
     `include "test/bridge_size_mapping_test.sv"
     `include "test/bridge_single_wstrb_test.sv"
     `include "test/bridge_unaligned_read_test.sv"
+    `include "test/bridge_protection_mapping_test.sv"
 
 endpackage : bridge_test_pkg
 
