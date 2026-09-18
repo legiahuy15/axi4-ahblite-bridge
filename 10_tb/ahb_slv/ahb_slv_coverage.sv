@@ -72,7 +72,12 @@ class ahb_slv_coverage extends uvm_subscriber #(ahb_transfer);
             bins normal      = {1'b0};
             bins unsupported = {1'b1};
         }
-        cp_prot: coverpoint m_prot;
+        cp_prot: coverpoint m_prot {
+            bins values[] = {[4'b0000:4'b0111]};
+            // The bridge always drives HPROT[3]=0 (PG177 Table 3-1); the
+            // NONCACHEABLE assertion checks it
+            ignore_bins cacheable = {[4'b1000:4'b1111]};
+        }
         cp_lane: coverpoint m_addr[1:0] {
             bins lanes[] = {[0:3]};
         }

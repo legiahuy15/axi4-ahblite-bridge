@@ -76,9 +76,11 @@ class axi4_mst_burst_matrix_seq extends axi4_mst_base_seq;
     // Build the sweep matrix
     //-------------------------------------------------------------------------
     protected function void build_matrix(ref burst_entry_t matrix[$]);
-        // INCR lengths: 1,2,3,4,5,8,16,17,256
-        //   len = beats-1 => 0,1,2,3,4,7,15,16,255
-        int unsigned incr_lens[] = '{0, 1, 2, 3, 4, 7, 15, 16, 255};
+        // INCR lengths: 1,2,3,4,5,8,10,16,17,32,128,256
+        //   len = beats-1 => 0,1,2,3,4,7,9,15,16,31,127,255
+        // 10, 32 and 128 are non-fixed-length AHB INCR bursts between the
+        // AHB INCR4/8/16 lengths; 128 also covers AxLEN 64..254
+        int unsigned incr_lens[] = '{0, 1, 2, 3, 4, 7, 9, 15, 16, 31, 127, 255};
         foreach (incr_lens[i])
             matrix.push_back('{AXI4_BURST_INCR, incr_lens[i],
                                $sformatf("INCR_%0d", incr_lens[i] + 1)});

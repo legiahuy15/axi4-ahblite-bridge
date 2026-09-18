@@ -79,6 +79,12 @@ class axi4_transaction extends uvm_sequence_item;
                ((int'(len) + 1) * (1 << size)) - 1) >> 12));
     }
 
+    // AXI4 reserved AxCACHE encodings (IHI0022E Table A4-5)
+    constraint c_cache_legal {
+        !(cache inside {4'b0100, 4'b0101, 4'b1000, 4'b1001,
+                        4'b1100, 4'b1101});
+    }
+
     constraint c_bridge_defaults {
         soft lock == AXI4_LOCK_NORMAL;
         soft (addr % (1 << size)) == 0;
