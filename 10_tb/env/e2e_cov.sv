@@ -206,7 +206,15 @@ class e2e_cov extends uvm_component;
             bins full_width = {1'b0};
             bins narrow     = {1'b1};
         }
-        cx_class_narrow: cross cp_class, cp_narrow;
+        cx_class_narrow: cross cp_class, cp_narrow {
+            // A narrow write may only strobe the lanes of its size (AXI4)
+            illegal_bins full_narrow = binsof(cp_class.full) &&
+                                       binsof(cp_narrow.narrow);
+            // Unreachable on 32-bit (at most two lanes); an unsupported
+            // negative case on 64-bit
+            ignore_bins sparse_narrow = binsof(cp_class.sparse) &&
+                                        binsof(cp_narrow.narrow);
+        }
     endgroup : cg_write_strobe
 
     //-------------------------------------------------------------------------
@@ -344,7 +352,11 @@ class e2e_cov extends uvm_component;
             bins write = {AHB_WRITE};
         }
         cp_burst: coverpoint m_ahb_burst;
-        cp_size:  coverpoint m_ahb_size;
+        cp_size: coverpoint m_ahb_size {
+            bins legal[] = {[AHB_SIZE_1BYTE:AHB_SIZE_128BYTE]}
+                           with ((1 << item) <= (AHB_DATA_WIDTH / 8));
+            bins wider_than_bus = default;
+        }
         cp_resp: coverpoint m_ahb_resp {
             bins okay  = {AHB_RESP_OKAY};
             bins error = {AHB_RESP_ERROR};
@@ -394,7 +406,11 @@ class e2e_cov extends uvm_component;
             illegal_bins unsupported = {2'd2};
         }
 
-        cx_error_map: cross cp_ahb_error, cp_axi_status;
+        cx_error_map: cross cp_ahb_error, cp_axi_status {
+            // An AHB ERROR must reach the AXI master as SLVERR (PG177)
+            illegal_bins error_lost = binsof(cp_ahb_error.error) &&
+                                      binsof(cp_axi_status.okay);
+        }
         cx_dir_status: cross cp_dir, cp_axi_status;
         cx_wait_status: cross cp_ahb_wait, cp_axi_status;
     endgroup : cg_response_map

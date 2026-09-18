@@ -7,7 +7,8 @@
 //               WRAP4 for read and write (HSIZE = AxSIZE).
 //               Narrow (only when enabled): every legal byte lane for each
 //               narrow single transfer, single writes whose size is carried
-//               only by WSTRB, and the same burst set at each narrow size.
+//               only by WSTRB, the same burst set at each narrow size, and
+//               INCR8, INCR16, WRAP8 and WRAP16 at each narrow size.
 //               Every case writes, then reads back with the same attributes.
 //               The scoreboard checks HSIZE/HADDR per beat; this sequence
 //               checks responses and the written byte lanes.
@@ -125,6 +126,19 @@ class axi4_mst_size_mapping_seq extends axi4_mst_base_seq;
                           $sformatf("WRAP2_%s", tag)});
         cases.push_back('{AXI4_BURST_WRAP,  3, size_code, 3 * bytes, 1'b0,
                           $sformatf("WRAP4_%s", tag)});
+
+        // Longer fixed-length bursts at narrow sizes (full width is covered
+        // by the burst-matrix and mapping tests). WRAP starts mid-burst.
+        if (size_code != FULL_SIZE) begin
+            cases.push_back('{AXI4_BURST_INCR,  7, size_code, bytes, 1'b0,
+                              $sformatf("INCR8_%s", tag)});
+            cases.push_back('{AXI4_BURST_INCR, 15, size_code, 0, 1'b0,
+                              $sformatf("INCR16_%s", tag)});
+            cases.push_back('{AXI4_BURST_WRAP,  7, size_code, 5 * bytes, 1'b0,
+                              $sformatf("WRAP8_%s", tag)});
+            cases.push_back('{AXI4_BURST_WRAP, 15, size_code, 9 * bytes, 1'b0,
+                              $sformatf("WRAP16_%s", tag)});
+        end
     endfunction : add_size_cases
 
     //-------------------------------------------------------------------------

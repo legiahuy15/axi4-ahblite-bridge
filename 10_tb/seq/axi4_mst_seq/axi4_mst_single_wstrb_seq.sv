@@ -16,7 +16,8 @@
 //                 above lane 0 with full-width AWSIZE at a word-aligned
 //                 AWADDR, so HADDR does not point at the strobed lanes.
 //               - FALLBACK (negative): zero and every non-legal pattern with
-//                 full-width AWSIZE, so HSIZE falls back to AWSIZE.
+//                 full-width AWSIZE, plus zero with each narrow AWSIZE on the
+//                 top lane (narrow build), so HSIZE falls back to AWSIZE.
 //               Each case writes a background word, applies the single write,
 //               then reads the whole word back and compares it with the lanes
 //               the bridge writes (HADDR/HSIZE and WDATA). Negative cases log
@@ -122,6 +123,14 @@ class axi4_mst_single_wstrb_seq extends axi4_mst_base_seq;
                     cases.push_back('{get_mask(size_code, lane), size_code, lane,
                                       WSTRB_LEGAL,
                                       $sformatf("AWSIZE_%0dB_LANE%0d", bytes, lane)});
+
+                // Zero strobe with narrow AWSIZE on the top lane: HSIZE falls
+                // back to AWSIZE, so the addressed lanes are written
+                if (enable_negative)
+                    cases.push_back('{'0, size_code, AXI4_STRB_WIDTH - bytes,
+                                      WSTRB_FALLBACK,
+                                      $sformatf("AWSIZE_%0dB_LANE%0d_WSTRB_0x0",
+                                                bytes, AXI4_STRB_WIDTH - bytes)});
             end
         end
 

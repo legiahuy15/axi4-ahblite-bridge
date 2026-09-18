@@ -6,7 +6,7 @@ verification checklist, not a replacement for the licensed product guide or the 
 protocol specifications.
 
 **Last re-reviewed: 2026-09-18**, against the PG177 text in `00_doc/`, the translated RTL in
-`01_src/dut/`, the environment in `10_tb/`, and the sixth regression (80/80 runs passing:
+`01_src/dut/`, the environment in `10_tb/`, and the seventh regression (80/80 runs passing:
 60 on the default build, 20 on the `C_S_AXI_SUPPORTS_NARROW_BURST=1` build). Items marked
 **RTL observation** describe the translated RTL, not PG177; they are not requirements
 until confirmed against the reference VHDL (`00_doc/axi_ahblite_bridge_v3_0_vh_rfs.vhd`).
@@ -254,12 +254,12 @@ axi4_mst_agent (active) --> DUT --> ahb_slv_agent (reactive slave + memory model
 | Virtual sequencer | `virtual_sequencer` with AXI and AHB sequencers | AHB response sequences are not used by any test (all tests use automatic OKAY, zero-wait responses). |
 | Predictor | `predictor`: Sections 2 and 3.3, strobe-derived `HSIZE`, 1-KB restart | No timeout model. |
 | Scoreboard | `scoreboard`: AHB beat compare, AXI completion compare (ID, attributes, data, strobes, responses), empty-queue check, failure when nothing was compared. Observed AHB beats are assigned to the pending request whose first predicted beat has the same direction and address; completions are matched by direction and ID, so request order does not matter. | Matching assumes the bridge serves one request at a time on AHB (true for this design). |
-| Coverage | `e2e_cov` plus agent covergroups; response-side correlation uses the same order-independent matching as the scoreboard. EXOKAY/DECERR and reserved `AxCACHE` bins are `illegal_bins`; `HPROT[3] = 1` bins are `ignore_bins`; the address-region coverpoint was removed (no address map). | The agent covergroups were reviewed bin by bin over the sixth regression (Section 7, P2). The remaining misses are AHB ERROR, wait-state and SLVERR bins, which need the P0 wait/ERROR test. |
+| Coverage | `e2e_cov` plus agent covergroups; response-side correlation uses the same order-independent matching as the scoreboard. EXOKAY/DECERR and reserved `AxCACHE` bins are `illegal_bins`; `HPROT[3] = 1` bins are `ignore_bins`; the address-region coverpoint was removed (no address map). | Every covergroup was reviewed after the seventh regression (Section 7, P2). Most remaining misses are AHB ERROR, wait-state and SLVERR bins, which need the P0 wait/ERROR test; 8 unreachable bins still need `illegal_bins` or `ignore_bins`. |
 | Protocol assertions | `axi4_sva`, `ahb_sva` bound in `bridge_tb_top`, including `RESET_HPROT` (default `HPROT` during reset); lock-profile assertions can be turned off at run time through the `bridge_allow_lock` event (Section 4.1) | Assertion failures are reported with `$error`; the regression Makefile fails a run on simulator errors (`FAIL_REGEX`), but this gate has not yet been proven by fault injection. |
 
 ## 7. Minimum compliance regression
 
-Status as of the sixth regression (2026-09-18). All stimulus is currently 32-bit, one
+Status as of the seventh regression (2026-09-18). All stimulus is currently 32-bit, one
 outstanding transaction, zero AHB wait and AHB OKAY only. `AxCACHE = AxPROT = 0` except in
 `bridge_protection_mapping_test`, and `AxLOCK = 0` except in `bridge_unsupported_feature_test`. The random
 seed only changes AXI IDs (and FIXED lengths), so repeated runs of the same test are
@@ -280,7 +280,7 @@ nearly identical.
 
 | Item | Status |
 |---|---|
-| INCR lengths 1, 2, 3, 4, 5, 8, 16, 17, and 256 | Done — `bridge_incr_mapping_test`, `bridge_burst_matrix_test`. INCR 10, 32 and 128 were added to `bridge_burst_matrix_test` after the sixth regression (to cover `AxLEN` 64–254 and other undefined-length INCR bursts); not yet run. |
+| INCR lengths 1, 2, 3, 4, 5, 8, 16, 17, and 256 | Done — `bridge_incr_mapping_test`, `bridge_burst_matrix_test`. INCR 10, 32 and 128 were added to `bridge_burst_matrix_test` (seventh regression: `run=62 failed=0`, 1614 AHB beats, 0 mismatches), covering `AxLEN` 64–254 and other undefined-length INCR bursts. |
 | WRAP lengths 2, 4, 8, and 16 at every legal wrap offset | Done at full width — `bridge_wrap_mapping_test`. |
 | FIXED lengths 1 and 16 plus random intermediate lengths | Done — `bridge_fixed_mapping_test`. |
 | 1-KB non-cross, exact-edge, and crossing cases, read and write, every supported size | Partial — full width only (`bridge_1kb_boundary_test`): crossings after the first beat, in the middle and on the last beat. |
@@ -316,7 +316,7 @@ nearly identical.
 | Item | Status |
 |---|---|
 | Constrained-random mixed read/write traffic with independent AHB delay/error policy | Not started. |
-| Functional, assertion, and code coverage review against a requirement matrix | Partial. Merged report over the sixth regression (80 tests): covergroups 84.7% (377/471 bins), assertions 78.0% (39/50), cover directives 53.8% (7/13), total 56.4% (includes testbench class code). Bin-level review of the agent covergroups and `cg_axi_request`: the reserved `AxCACHE` bins (6 per covergroup) are now `illegal_bins` and `HPROT[3] = 1` (8 bins) `ignore_bins`; `AxLEN` 64–254 and other undefined-length INCR bursts get stimulus in `bridge_burst_matrix_test`; the rest are AHB ERROR, wait-state and SLVERR bins (P0). `cg_write_strobe`, `cg_translation`, `cg_ahb_response` and `cg_response_map` in `e2e_cov` still need a bin-level review. |
+| Functional, assertion, and code coverage review against a requirement matrix | Partial. Merged report over the seventh regression (80 tests): covergroups 84.5% of bins hit (381/451; 85.9% weighted), assertions 78.0% (39/50), cover directives 53.8% (7/13), total 56.5% (includes testbench class code). `axi4_mst_coverage.cg_control`, `cg_address`, `cg_write_strobe`, `ahb_slv_coverage.cg_bus_trans` and `e2e_cov.cg_axi_request` are at 100%, after the reserved `AxCACHE` bins became `illegal_bins`, `HPROT[3] = 1` became `ignore_bins`, and INCR 10/32/128 were added. The 70 remaining misses, derived from the covergroup definitions and per-covergroup counts: 53 need AHB ERROR, wait-state or SLVERR stimulus (P0); 8 in `cg_translation.cx_mapping_size` need narrow INCR8/INCR16/WRAP8/WRAP16; 1 (`cg_write_strobe`, zero strobe on a narrow write) needs stimulus; 8 are unreachable but still counted as misses: 5 in `cg_ahb_response.cp_size` (sizes wider than the bus), 2 in `cg_write_strobe` (full or sparse strobe on a 32-bit narrow write) and 1 in `cg_response_map.cx_error_map` (AHB ERROR with an OKAY AXI response). |
 | Mutation tests (address, `HBURST`, `HSIZE`, `HPROT`, data lane, ID, response, beat count, 1-KB restart, timeout threshold) | Not started. |
 | Equivalence or side-by-side simulation against the original VHDL source | Not started; required before treating the translated DUT, or the RTL observations above, as golden. |
 
