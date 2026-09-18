@@ -6,8 +6,8 @@ verification checklist, not a replacement for the licensed product guide or the 
 protocol specifications.
 
 **Last re-reviewed: 2026-09-17**, against the PG177 text in `00_doc/`, the translated RTL in
-`01_src/dut/`, the environment in `10_tb/`, and the fourth regression (55/55 runs passing:
-45 on the default build, 10 on the `C_S_AXI_SUPPORTS_NARROW_BURST=1` build). Items marked
+`01_src/dut/`, the environment in `10_tb/`, and the fifth regression (65/65 runs passing:
+50 on the default build, 15 on the `C_S_AXI_SUPPORTS_NARROW_BURST=1` build). Items marked
 **RTL observation** describe the translated RTL, not PG177; they are not requirements
 until confirmed against the reference VHDL (`00_doc/axi_ahblite_bridge_v3_0_vh_rfs.vhd`).
 
@@ -83,7 +83,23 @@ The verification plan must distinguish legal narrow accesses from negative proto
 tests. Sparse `WSTRB` is not a supported feature to be treated as ordinary legal traffic.
 With narrow support disabled, narrow traffic is outside the supported profile: the RTL
 aligns `HADDR` to the full bus width, so narrow accesses at non-zero byte lanes do not map
-to the requested address.
+to the requested address. Tests that send narrow traffic run it only on the narrow build.
+
+**RTL observation — unsupported single-write strobes (matches the reference VHDL):** the
+bridge recognizes only one size-aligned run of byte lanes as a legal `WSTRB` pattern.
+AHB-Lite has no strobes, so the bridge cannot honour any other pattern.
+`bridge_single_wstrb_test` shows the result on memory:
+
+- Zero or non-legal `WSTRB` (for example `0x0`, `0x5`, `0x7`): `HSIZE` falls back to
+  `AWSIZE`, so the whole word is written, including lanes the master did not strobe.
+  **`WSTRB = 0` is ordinary AXI**, yet it overwrites the full word.
+- A legal narrow pattern above lane 0 with full-width `AWSIZE` at a word-aligned `AWADDR`
+  (for example `WSTRB = 0x4`): `HADDR` is `AWADDR` aligned to the strobe size, so the bytes
+  at lane 0 are written and the strobed lanes are left unchanged.
+
+The scoreboard does not flag these cases because the predictor models the same rule; only
+the whole-word read-back check does. System integrators must not rely on sparse or zero
+strobes through this bridge.
 
 ### 3.2 Address and data
 
@@ -102,6 +118,7 @@ The predictor must calculate the four AHB protection bits as follows (PG177 Tabl
 - `HPROT[1] = AxPROT[0]`: privileged versus user.
 - `HPROT[0] = ~AxPROT[2]`: data versus instruction.
 - Reset/default is `4'b0011` (non-cacheable, non-bufferable, privileged data access).
+  Checked during reset by the `RESET_HPROT` assertion.
 
 ### 3.4 Error and timeout completion
 
@@ -187,11 +204,11 @@ the priority audit risks as of 2026-09-17:
 |---|---|---|
 | 1 | **Unsupported lock handling:** the RTL captures `AWLOCK`/`ARLOCK` and drives `HMASTLOCK` from it, while PG177 lists locked and exclusive operations as unsupported. | **Closed (Section 4.1):** matches the reference VHDL; kept. Verified by `bridge_unsupported_feature_test` in the third regression. |
 | 2 | **Parameter legality:** equal AXI/AHB data widths, data width 32/64, address width 32–64, timeout 0/16/32/64/128/256. | **Open in the DUT** (no elaboration guards). The environment checks widths and timeout values in `vip_env_cfg.is_valid()`, the transaction constructors and the SVA; no negative elaboration test exists. |
-| 3 | **Single-write `WSTRB` decoding:** every legal lane and every sparse/zero/illegal pattern. | **Partial.** On the 32-bit narrow build, all seven legal patterns (`0x1`, `0x2`, `0x4`, `0x8`, `0x3`, `0xC`, `0xF`) are checked, including writes with full-width `AWSIZE` where only `WSTRB` carries the size (`bridge_size_mapping_test`: `HSIZE` follows `WSTRB`). Zero/sparse patterns and 64-bit are not tested. |
-| 4 | **1-KB split off-by-one behavior** at every transfer size. | **Partial.** No-cross, exact-edge (last byte at `0x3FF`) and crossing cases pass at full width only; crossings start one beat before the boundary only. Narrow sizes, other crossing positions and the 64-bit multi-boundary case are not tested. |
+| 3 | **Single-write `WSTRB` decoding:** every legal lane and every sparse/zero/illegal pattern. | **Partial.** On 32-bit, `bridge_single_wstrb_test` applies every one of the 16 `WSTRB` values with full-width `AWSIZE`, plus every legal narrow pattern with matching `AWSIZE` on its lane, and checks `HSIZE`/`HADDR` and the whole written word. All seven legal patterns behave correctly; zero, sparse and misdirected patterns behave as described in Section 3.1. 64-bit is not tested. |
+| 4 | **1-KB split off-by-one behavior** at every transfer size. | **Partial.** At full width, no-cross, exact-edge (last byte at `0x3FF`) and crossings after the first beat, in the middle and on the last beat all pass for INCR4/5/8/16/256, with the NONSEQ restart at the predicted beat. Narrow sizes and the 64-bit multi-boundary case are not tested. |
 | 5 | **AHB error timing:** ERROR on every beat position with and without wait states. | **Open.** No ERROR or wait-state stimulus yet; see Section 3.4 for the unconfirmed oracle. |
 | 6 | **Timeout boundaries:** completion one clock before, on and after each timeout value; AHB IDLE, AXI SLVERR, reset recovery. | **Open.** Only `C_DPHASE_TIMEOUT=0` is built, and the predictor does not model timeout. |
-| 7 | **Read priority:** simultaneous read and write requests with varied AW/W ordering. | **Open.** All traffic runs with one outstanding transaction. The predictor orders requests by monitor timestamp, and write requests are published only at `WLAST`, so it must be extended before this test can pass reliably. |
+| 7 | **Read priority:** simultaneous read and write requests with varied AW/W ordering. | **Open.** All traffic runs with one outstanding transaction. The scoreboard and end-to-end coverage no longer depend on request order (observed beats are matched by first-beat direction/address, completions by direction/ID), so a contention test can now be written; the stimulus and a read-first check are still missing. |
 | 8 | **Synchronous reset:** reset away from a clock edge and during every transaction phase. | **Open.** The testbench only releases power-on reset on a clock edge; a mid-test reset event exists in `bridge_tb_top` but no test uses it. |
 
 ## 6. Bridge-level UVM topology (implemented)
@@ -213,14 +230,14 @@ axi4_mst_agent (active) --> DUT --> ahb_slv_agent (reactive slave + memory model
 |---|---|---|
 | Environment configuration | `vip_env_cfg`: agent configs, narrow support, timeout value, scoreboard/coverage switches | No supported-feature/negative-test policy. |
 | Virtual sequencer | `virtual_sequencer` with AXI and AHB sequencers | AHB response sequences are not used by any test (all tests use automatic OKAY, zero-wait responses). |
-| Predictor | `predictor`: Sections 2 and 3.3, strobe-derived `HSIZE`, 1-KB restart | No timeout model; request ordering assumes one outstanding transaction. |
-| Scoreboard | `scoreboard`: AHB beat compare, AXI completion compare (ID, attributes, data, strobes, responses), empty-queue check | No check that at least one transaction was compared. |
-| Coverage | `e2e_cov` plus agent covergroups | A merged report exists (`make cov_report`, fourth regression) but has not been reviewed bin by bin; several bins are unreachable by design and need waivers. |
-| Protocol assertions | `axi4_sva`, `ahb_sva` bound in `bridge_tb_top`; lock-profile assertions can be turned off at run time through the `bridge_allow_lock` event (Section 4.1) | Assertion failures are reported with `$error`; the regression Makefile fails a run on simulator errors (`FAIL_REGEX`), but this gate has not yet been proven by fault injection. |
+| Predictor | `predictor`: Sections 2 and 3.3, strobe-derived `HSIZE`, 1-KB restart | No timeout model. |
+| Scoreboard | `scoreboard`: AHB beat compare, AXI completion compare (ID, attributes, data, strobes, responses), empty-queue check, failure when nothing was compared. Observed AHB beats are assigned to the pending request whose first predicted beat has the same direction and address; completions are matched by direction and ID, so request order does not matter. | Matching assumes the bridge serves one request at a time on AHB (true for this design). |
+| Coverage | `e2e_cov` plus agent covergroups; response-side correlation uses the same order-independent matching as the scoreboard. EXOKAY/DECERR bins are `illegal_bins`; the address-region coverpoint was removed (no address map). | Merged report exists (`make cov_report`) but has not been reviewed bin by bin. |
+| Protocol assertions | `axi4_sva`, `ahb_sva` bound in `bridge_tb_top`, including `RESET_HPROT` (default `HPROT` during reset); lock-profile assertions can be turned off at run time through the `bridge_allow_lock` event (Section 4.1) | Assertion failures are reported with `$error`; the regression Makefile fails a run on simulator errors (`FAIL_REGEX`), but this gate has not yet been proven by fault injection. |
 
 ## 7. Minimum compliance regression
 
-Status as of the fourth regression (2026-09-17). All stimulus is currently 32-bit, one
+Status as of the fifth regression (2026-09-17). All stimulus is currently 32-bit, one
 outstanding transaction, zero AHB wait, AHB OKAY only, `AxCACHE = AxPROT = 0`, and
 `AxLOCK = 0` except in `bridge_unsupported_feature_test`. The random
 seed only changes AXI IDs (and FIXED lengths), so repeated runs of the same test are
@@ -235,7 +252,7 @@ nearly identical.
 | AHB fixed wait and ERROR | Not started (slave agent supports `ready_delay_*` and response sequences). |
 | AXI B/R backpressure | Not started (driver supports `bready_delay_*`/`rready_delay_*`). |
 | Reset idle and mid-transfer | Not started. |
-| Zero UVM errors/fatals, zero simulator/assertion errors, all expected queues empty | Done — enforced by `bridge_base_test`, `scoreboard.check_phase` and the Makefile `FAIL_REGEX`. |
+| Zero UVM errors/fatals, zero simulator/assertion errors, all expected queues empty, at least one transaction compared | Done — enforced by `bridge_base_test`, `scoreboard.check_phase` and the Makefile `FAIL_REGEX`. |
 
 ### P1 — PG177 conversion matrix
 
@@ -244,7 +261,7 @@ nearly identical.
 | INCR lengths 1, 2, 3, 4, 5, 8, 16, 17, and 256 | Done — `bridge_incr_mapping_test`, `bridge_burst_matrix_test`. |
 | WRAP lengths 2, 4, 8, and 16 at every legal wrap offset | Done at full width — `bridge_wrap_mapping_test`. |
 | FIXED lengths 1 and 16 plus random intermediate lengths | Done — `bridge_fixed_mapping_test`. |
-| 1-KB non-cross, exact-edge, and crossing cases, read and write, every supported size | Partial — full width only (`bridge_1kb_boundary_test`). |
+| 1-KB non-cross, exact-edge, and crossing cases, read and write, every supported size | Partial — full width only (`bridge_1kb_boundary_test`): crossings after the first beat, in the middle and on the last beat. |
 | All `AxPROT` values crossed with relevant `AxCACHE` bufferable encodings | Not started. |
 | Simultaneous read/write arbitration | Not started. |
 
@@ -253,16 +270,16 @@ nearly identical.
 | Item | Status |
 |---|---|
 | 32-bit and 64-bit equal-width configurations | 32-bit only. |
-| Narrow disabled and enabled | Both builds run. The enabled build runs `bridge_data_integrity_test` and `bridge_size_mapping_test`; on the disabled build `bridge_size_mapping_test` runs full-width cases only. Note: `bridge_incr_mapping_test` sends single-beat 8/16-bit requests on the narrow-disabled build; they pass only because they use byte lane 0, and they are outside the supported profile. |
+| Narrow disabled and enabled | Both builds run. The enabled build runs `bridge_data_integrity_test`, `bridge_size_mapping_test` and `bridge_single_wstrb_test`. On the disabled build every test keeps to full-width traffic (`incr_mapping`, `size_mapping`, `single_wstrb` and `data_integrity` skip their narrow cases and log it). |
 | Every legal byte lane for each supported narrow size | Partial — 32-bit only: 8/16-bit single transfers on every legal lane, and 8/16-bit INCR4, undefined INCR, FIXED, WRAP2 and WRAP4 bursts (`bridge_size_mapping_test`, with read-back checks that filler bytes in non-strobed lanes never reach memory). No 64-bit. |
-| Directed unsupported sparse and unaligned narrow requests, classified separately | Not started. |
+| Directed unsupported sparse and unaligned narrow requests, classified separately | Partial — single writes with zero, sparse and misdirected strobes are negative cases in `bridge_single_wstrb_test` (Section 3.1). Sparse strobes inside bursts and unaligned narrow reads are not tested. |
 
 ### P1 — unsupported-feature policy
 
 | Item | Status |
 |---|---|
 | Locked/exclusive requests complete with OKAY and correct data; `HMASTLOCK` follows `AxLOCK` (Section 4.1) | Done — `bridge_unsupported_feature_test` (third regression, 5 seeds). |
-| Sparse `WSTRB` and unaligned narrow requests classified as negative tests | Not started. |
+| Sparse `WSTRB` and unaligned narrow requests classified as negative tests | Partial — single-write zero/sparse/misdirected strobes in `bridge_single_wstrb_test` (fifth regression, both builds); burst strobes and unaligned narrow reads not started. |
 
 ### P1 — response and timeout matrix
 
@@ -277,7 +294,7 @@ nearly identical.
 | Item | Status |
 |---|---|
 | Constrained-random mixed read/write traffic with independent AHB delay/error policy | Not started. |
-| Functional, assertion, and code coverage review against a requirement matrix | Baseline only. Merged report over the fourth regression (55 tests): covergroups 67.2%, assertions 77.6%, cover directives 53.8%, DUT code 66.4% (79.2% hits), total 52.8% (includes testbench class code). No bin-level review or waivers yet. |
+| Functional, assertion, and code coverage review against a requirement matrix | Baseline only. Merged report over the fifth regression (65 tests): covergroups 77.7% (327/471 bins), assertions 78.0% (39/50), cover directives 53.8% (7/13), DUT code 67.1% (79.4% hits), total 54.0% (includes testbench class code). Impossible response bins are now `illegal_bins`; no bin-level review yet. |
 | Mutation tests (address, `HBURST`, `HSIZE`, `HPROT`, data lane, ID, response, beat count, 1-KB restart, timeout threshold) | Not started. |
 | Equivalence or side-by-side simulation against the original VHDL source | Not started; required before treating the translated DUT, or the RTL observations above, as golden. |
 
@@ -294,5 +311,6 @@ candidate should have:
 - Coverage goals and reviewed waivers rather than an unqualified “100% coverage” claim.
 - Multi-seed parameter regression and reproducible failing commands/seeds.
 - Simulator/version support matrix, clean compile file lists, documentation, changelog, and
-  generated artifacts excluded from source control (regression logs and UCDB files are
-  currently committed).
+  generated artifacts excluded from source control. Compiled libraries and waveforms are
+  ignored (`.gitignore`); regression logs, UCDB files and the coverage report are still
+  committed on purpose to share results.

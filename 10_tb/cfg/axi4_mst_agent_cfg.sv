@@ -20,8 +20,8 @@ class axi4_mst_agent_cfg extends uvm_object;
 
     // Agent controls
     uvm_active_passive_enum is_active = UVM_ACTIVE;
-    bit has_coverage                 = 1'b1;
-    bit return_responses             = 1'b0;
+    bit has_coverage                  = 1'b1;
+    bit return_responses              = 1'b0;
 
     // Master response backpressure
     int unsigned bready_delay_min = 0;
@@ -40,15 +40,15 @@ class axi4_mst_agent_cfg extends uvm_object;
     // UVM utility macro
     //-------------------------------------------------------------------------
     `uvm_object_utils_begin(axi4_mst_agent_cfg)
-        `uvm_field_enum(uvm_active_passive_enum, is_active,          UVM_DEFAULT)
-        `uvm_field_int(                         has_coverage,        UVM_DEFAULT)
-        `uvm_field_int(                         return_responses,    UVM_DEFAULT)
-        `uvm_field_int(                         bready_delay_min,    UVM_DEFAULT)
-        `uvm_field_int(                         bready_delay_max,    UVM_DEFAULT)
-        `uvm_field_int(                         rready_delay_min,    UVM_DEFAULT)
-        `uvm_field_int(                         rready_delay_max,    UVM_DEFAULT)
-        `uvm_field_int(                         max_outstanding,     UVM_DEFAULT)
-        `uvm_field_int(                         w_before_aw_delay,   UVM_DEFAULT)
+        `uvm_field_enum(uvm_active_passive_enum, is_active,         UVM_DEFAULT)
+        `uvm_field_int(                          has_coverage,      UVM_DEFAULT)
+        `uvm_field_int(                          return_responses,  UVM_DEFAULT)
+        `uvm_field_int(                          bready_delay_min,  UVM_DEFAULT)
+        `uvm_field_int(                          bready_delay_max,  UVM_DEFAULT)
+        `uvm_field_int(                          rready_delay_min,  UVM_DEFAULT)
+        `uvm_field_int(                          rready_delay_max,  UVM_DEFAULT)
+        `uvm_field_int(                          max_outstanding,   UVM_DEFAULT)
+        `uvm_field_int(                          w_before_aw_delay, UVM_DEFAULT)
     `uvm_object_utils_end
 
     //-------------------------------------------------------------------------

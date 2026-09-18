@@ -44,14 +44,15 @@ USE_COVERAGE  ?= 1
 PLUSARGS      ?=
 
 TEST_LIST ?= bridge_sanity_test bridge_data_integrity_test \
-	     bridge_burst_matrix_test bridge_incr_mapping_test \
-	     bridge_fixed_mapping_test bridge_wrap_mapping_test \
-	     bridge_1kb_boundary_test bridge_unsupported_feature_test \
-	     bridge_size_mapping_test bridge_single_wstrb_test
+	         bridge_burst_matrix_test bridge_incr_mapping_test \
+	         bridge_fixed_mapping_test bridge_wrap_mapping_test \
+	         bridge_1kb_boundary_test bridge_unsupported_feature_test \
+	         bridge_size_mapping_test bridge_single_wstrb_test \
+	         bridge_unaligned_read_test
 
 # Tests that also run on the C_S_AXI_SUPPORTS_NARROW_BURST=1 build
 NARROW_TEST_LIST ?= bridge_data_integrity_test bridge_size_mapping_test \
-		    bridge_single_wstrb_test
+		            bridge_single_wstrb_test bridge_unaligned_read_test
 
 VLOG_FLAGS ?= -sv -mfcu -work work -timescale 1ns/1ps
 VOPT_FLAGS ?= +acc -work work
