@@ -378,7 +378,12 @@ class e2e_cov extends uvm_component;
         cx_dir_resp:      cross cp_dir, cp_resp;
         cx_burst_resp:    cross cp_burst, cp_resp;
         cx_position_resp: cross cp_position, cp_resp;
-        cx_resp_wait:     cross cp_resp, cp_wait;
+        cx_resp_wait:     cross cp_resp, cp_wait {
+            // An AHB ERROR always has one HREADY-low cycle, which the
+            // monitor counts as a wait cycle
+            ignore_bins error_zero_wait = binsof(cp_resp.error) &&
+                                          binsof(cp_wait.zero);
+        }
     endgroup : cg_ahb_response
 
     //-------------------------------------------------------------------------
@@ -412,7 +417,12 @@ class e2e_cov extends uvm_component;
                                       binsof(cp_axi_status.okay);
         }
         cx_dir_status: cross cp_dir, cp_axi_status;
-        cx_wait_status: cross cp_ahb_wait, cp_axi_status;
+        cx_wait_status: cross cp_ahb_wait, cp_axi_status {
+            // SLVERR comes from an AHB ERROR or a timeout; both hold HREADY
+            // low for at least one cycle
+            ignore_bins slverr_zero_wait = binsof(cp_ahb_wait.zero_wait) &&
+                                           binsof(cp_axi_status.slverr);
+        }
     endgroup : cg_response_map
 
     //-------------------------------------------------------------------------
