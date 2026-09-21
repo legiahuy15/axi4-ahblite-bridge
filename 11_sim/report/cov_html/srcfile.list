@@ -19,6 +19,7 @@
 ../10_tb/bridge_tb_top.sv
 ../10_tb/bridge_test_pkg.sv
 ../10_tb/bridge_vip_pkg.sv
+../10_tb/cfg/ahb_response_policy.sv
 ../10_tb/cfg/ahb_slv_agent_cfg.sv
 ../10_tb/cfg/axi4_mst_agent_cfg.sv
 ../10_tb/cfg/axi4_mst_req_ctx.sv
@@ -31,6 +32,7 @@
 ../10_tb/env/vip_env.sv
 ../10_tb/env/virtual_sequencer.sv
 ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv
+../10_tb/seq/ahb_slv_seq/ahb_slv_response_mapping_seq.sv
 ../10_tb/seq/axi4_mst_seq/axi4_mst_1kb_boundary_seq.sv
 ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv
 ../10_tb/seq/axi4_mst_seq/axi4_mst_burst_matrix_seq.sv
@@ -39,6 +41,7 @@
 ../10_tb/seq/axi4_mst_seq/axi4_mst_incr_mapping_seq.sv
 ../10_tb/seq/axi4_mst_seq/axi4_mst_lock_seq.sv
 ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv
+../10_tb/seq/axi4_mst_seq/axi4_mst_response_mapping_seq.sv
 ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv
 ../10_tb/seq/axi4_mst_seq/axi4_mst_single_wstrb_seq.sv
 ../10_tb/seq/axi4_mst_seq/axi4_mst_size_mapping_seq.sv
@@ -51,6 +54,7 @@
 ../10_tb/seq/bridge_vip_seq/bridge_fixed_mapping_seq.sv
 ../10_tb/seq/bridge_vip_seq/bridge_incr_mapping_seq.sv
 ../10_tb/seq/bridge_vip_seq/bridge_protection_mapping_seq.sv
+../10_tb/seq/bridge_vip_seq/bridge_response_mapping_seq.sv
 ../10_tb/seq/bridge_vip_seq/bridge_sanity_seq.sv
 ../10_tb/seq/bridge_vip_seq/bridge_single_wstrb_seq.sv
 ../10_tb/seq/bridge_vip_seq/bridge_size_mapping_seq.sv
@@ -66,6 +70,7 @@
 ../10_tb/test/bridge_fixed_mapping_test.sv
 ../10_tb/test/bridge_incr_mapping_test.sv
 ../10_tb/test/bridge_protection_mapping_test.sv
+../10_tb/test/bridge_response_mapping_test.sv
 ../10_tb/test/bridge_sanity_test.sv
 ../10_tb/test/bridge_single_wstrb_test.sv
 ../10_tb/test/bridge_size_mapping_test.sv

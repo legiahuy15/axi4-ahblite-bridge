@@ -1,0 +1,218 @@
+# vsim -c -coverage -sv_seed 35070269 "+UVM_TESTNAME=bridge_wrap_mapping_test" "+UVM_VERBOSITY=UVM_HGIH" -l report/logs/bridge_wrap_mapping_test_run_3_seed_35070269.log -wlf report/wlf/bridge_wrap_mapping_test_run_3_seed_35070269.wlf -do "coverage save -onexit report/coverage/bridge_wrap_mapping_test_run_3_seed_35070269.ucdb; run -all; quit -f" work.opt_bridge_tb_top 
+# Start time: 12:44:22 on Sep 21,2026
+# //  Questa Sim-64
+# //  Version 10.6b linux_x86_64 May 25 2017
+# //
+# //  Copyright 1991-2017 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.axi4_if(fast)
+# Loading work.ahb_if(fast)
+# Loading mtiUvm.uvm_pkg
+# Loading work.bridge_vip_pkg(fast)
+# Loading work.bridge_seq_pkg(fast)
+# Loading work.bridge_test_pkg(fast)
+# Loading work.bridge_tb_top(fast)
+# Loading work.axi4_if(fast)
+# Loading work.ahb_if(fast)
+# Loading work.axi_ahblite_bridge(fast)
+# Loading work.ahb_skid_buf(fast)
+# Loading work.axi_slv_if(fast)
+# Loading work.ahb_mstr_if(fast)
+# Loading work.time_out(fast)
+# Loading work.axi4_sva(fast)
+# Loading work.ahb_sva(fast)
+# Loading mtiUvm.questa_uvm_pkg(fast)
+# Loading /cadtools/mentor/Questa_10.6b/questasim/uvm-1.1d/linux_x86_64/uvm_dpi.so
+# coverage save -onexit report/coverage/bridge_wrap_mapping_test_run_3_seed_35070269.ucdb
+#  run -all
+# ----------------------------------------------------------------
+# UVM-1.1d
+# (C) 2007-2013 Mentor Graphics Corporation
+# (C) 2007-2013 Cadence Design Systems, Inc.
+# (C) 2006-2013 Synopsys, Inc.
+# (C) 2011-2013 Cypress Semiconductor Corp.
+# ----------------------------------------------------------------
+# 
+#   ***********       IMPORTANT RELEASE NOTES         ************
+# 
+#   You are using a version of the UVM library that has been compiled
+#   with `UVM_NO_DEPRECATED undefined.
+#   See http://www.eda.org/svdb/view.php?id=3313 for more details.
+# 
+#   You are using a version of the UVM library that has been compiled
+#   with `UVM_OBJECT_MUST_HAVE_CONSTRUCTOR undefined.
+#   See http://www.eda.org/svdb/view.php?id=3770 for more details.
+# 
+#       (Specify +UVM_NO_RELNOTES to turn off this notice)
+# 
+# UVM_WARNING @ 0: reporter [ILLVERB] Illegal verbosity value, using default of UVM_MEDIUM.
+# UVM_INFO verilog_src/questa_uvm_pkg-1.2/src/questa_uvm_pkg.sv(215) @ 0: reporter [Questa UVM] QUESTA_UVM-1.2.3
+# UVM_INFO verilog_src/questa_uvm_pkg-1.2/src/questa_uvm_pkg.sv(217) @ 0: reporter [Questa UVM]  questa_uvm::init(+struct)
+# UVM_INFO @ 0: reporter [RNTST] Running test bridge_wrap_mapping_test...
+# UVM_INFO @ 0: reporter [UVMTOP] UVM testbench topology:
+# -------------------------------------------------------------------------
+# Name                       Type                               Size  Value
+# -------------------------------------------------------------------------
+# uvm_test_top               bridge_wrap_mapping_test           -     @490 
+#   env                      vip_env                            -     @508 
+#     ahb_agent              ahb_slv_agent                      -     @529 
+#       ap                   uvm_analysis_port                  -     @667 
+#       cov                  ahb_slv_coverage                   -     @693 
+#         analysis_imp       uvm_analysis_imp                   -     @700 
+#         trans_export       uvm_analysis_imp_ahb_trans         -     @841 
+#       drv                  ahb_slv_driver                     -     @818 
+#         rsp_port           uvm_analysis_port                  -     @833 
+#         seq_item_port      uvm_seq_item_pull_port             -     @825 
+#       mon                  ahb_slv_monitor                    -     @686 
+#         ap                 uvm_analysis_port                  -     @850 
+#         trans_ap           uvm_analysis_port                  -     @858 
+#       sqr                  ahb_slv_sequencer                  -     @709 
+#         rsp_export         uvm_analysis_export                -     @716 
+#         seq_item_export    uvm_seq_item_pull_imp              -     @810 
+#         arbitration_queue  array                              0     -    
+#         lock_queue         array                              0     -    
+#         num_last_reqs      integral                           32    'd1  
+#         num_last_rsps      integral                           32    'd1  
+#       trans_ap             uvm_analysis_port                  -     @675 
+#     axi_agent              axi4_mst_agent                     -     @522 
+#       ap                   uvm_analysis_port                  -     @881 
+#       cov                  axi4_mst_coverage                  -     @899 
+#         analysis_imp       uvm_analysis_imp                   -     @906 
+#       drv                  axi4_mst_driver                    -     @1024
+#         rsp_port           uvm_analysis_port                  -     @1039
+#         seq_item_port      uvm_seq_item_pull_port             -     @1031
+#       mon                  axi4_mst_monitor                   -     @892 
+#         ap                 uvm_analysis_port                  -     @1056
+#         req_ap             uvm_analysis_port                  -     @1048
+#       req_ap               uvm_analysis_port                  -     @873 
+#       sqr                  axi4_mst_sequencer                 -     @915 
+#         rsp_export         uvm_analysis_export                -     @922 
+#         seq_item_export    uvm_seq_item_pull_imp              -     @1016
+#         arbitration_queue  array                              0     -    
+#         lock_queue         array                              0     -    
+#         num_last_reqs      integral                           32    'd1  
+#         num_last_rsps      integral                           32    'd1  
+#     cov                    e2e_cov                            -     @659 
+#       actual_ahb_export    uvm_analysis_imp_e2e_actual_ahb    -     @1086
+#       axi_req_export       uvm_analysis_imp_e2e_axi_req       -     @1070
+#       axi_rsp_export       uvm_analysis_imp_e2e_axi_rsp       -     @1094
+#       expected_ahb_export  uvm_analysis_imp_e2e_expected_ahb  -     @1078
+#     pred                   predictor                          -     @645 
+#       axi_request_export   uvm_analysis_imp_axi_request       -     @1102
+#       expected_ahb_ap      uvm_analysis_port                  -     @1110
+#       expected_axi_ap      uvm_analysis_port                  -     @1118
+#     scb                    scoreboard                         -     @652 
+#       actual_ahb_export    uvm_analysis_imp_actual_ahb        -     @1134
+#       actual_axi_export    uvm_analysis_imp_actual_axi        -     @1150
+#       expected_ahb_export  uvm_analysis_imp_expected_ahb      -     @1126
+#       expected_axi_export  uvm_analysis_imp_expected_axi      -     @1142
+#     vseqr                  virtual_sequencer                  -     @536 
+#       rsp_export           uvm_analysis_export                -     @543 
+#       seq_item_export      uvm_seq_item_pull_imp              -     @637 
+#       arbitration_queue    array                              0     -    
+#       lock_queue           array                              0     -    
+#       num_last_reqs        integral                           32    'd1  
+#       num_last_rsps        integral                           32    'd1  
+# -------------------------------------------------------------------------
+# 
+# UVM_INFO ../10_tb/bridge_tb_top.sv(47) @ 95000: reporter [BRIDGE_TB_TOP] Power-on reset released
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(62) @ 95000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] WRAP mapping: 4 wrap lengths, sweeping all legal offsets
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 95000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [0] WRAP2_off0_WR addr=0x1000 wrap_base=0x1000 beats=2 expected=AHB_BURST_SINGLE
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 275000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [2] WRAP2_off0_RD addr=0x1010 wrap_base=0x1010 beats=2 expected=AHB_BURST_SINGLE
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 365000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [3] WRAP2_off1_WR addr=0x101c wrap_base=0x1018 beats=2 expected=AHB_BURST_SINGLE
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 545000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [5] WRAP2_off1_RD addr=0x102c wrap_base=0x1028 beats=2 expected=AHB_BURST_SINGLE
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 635000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [6] WRAP4_off0_WR addr=0x1060 wrap_base=0x1060 beats=4 expected=AHB_BURST_WRAP4
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 895000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [8] WRAP4_off0_RD addr=0x1080 wrap_base=0x1080 beats=4 expected=AHB_BURST_WRAP4
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 1025000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [9] WRAP4_off1_WR addr=0x1094 wrap_base=0x1090 beats=4 expected=AHB_BURST_WRAP4
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 1285000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [11] WRAP4_off1_RD addr=0x10b4 wrap_base=0x10b0 beats=4 expected=AHB_BURST_WRAP4
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 1415000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [12] WRAP4_off2_WR addr=0x10c8 wrap_base=0x10c0 beats=4 expected=AHB_BURST_WRAP4
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 1675000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [14] WRAP4_off2_RD addr=0x10e8 wrap_base=0x10e0 beats=4 expected=AHB_BURST_WRAP4
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 1805000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [15] WRAP4_off3_WR addr=0x10fc wrap_base=0x10f0 beats=4 expected=AHB_BURST_WRAP4
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 2065000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [17] WRAP4_off3_RD addr=0x111c wrap_base=0x1110 beats=4 expected=AHB_BURST_WRAP4
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 2195000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [18] WRAP8_off0_WR addr=0x1240 wrap_base=0x1240 beats=8 expected=AHB_BURST_WRAP8
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 2615000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [20] WRAP8_off0_RD addr=0x1280 wrap_base=0x1280 beats=8 expected=AHB_BURST_WRAP8
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 2825000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [21] WRAP8_off1_WR addr=0x12a4 wrap_base=0x12a0 beats=8 expected=AHB_BURST_WRAP8
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 3245000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [23] WRAP8_off1_RD addr=0x12e4 wrap_base=0x12e0 beats=8 expected=AHB_BURST_WRAP8
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 3455000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [24] WRAP8_off2_WR addr=0x1308 wrap_base=0x1300 beats=8 expected=AHB_BURST_WRAP8
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 3875000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [26] WRAP8_off2_RD addr=0x1348 wrap_base=0x1340 beats=8 expected=AHB_BURST_WRAP8
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 4085000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [27] WRAP8_off3_WR addr=0x136c wrap_base=0x1360 beats=8 expected=AHB_BURST_WRAP8
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 4505000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [29] WRAP8_off3_RD addr=0x13ac wrap_base=0x13a0 beats=8 expected=AHB_BURST_WRAP8
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 4715000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [30] WRAP8_off4_WR addr=0x13d0 wrap_base=0x13c0 beats=8 expected=AHB_BURST_WRAP8
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 5135000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [32] WRAP8_off4_RD addr=0x1410 wrap_base=0x1400 beats=8 expected=AHB_BURST_WRAP8
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 5345000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [33] WRAP8_off5_WR addr=0x1434 wrap_base=0x1420 beats=8 expected=AHB_BURST_WRAP8
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 5765000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [35] WRAP8_off5_RD addr=0x1474 wrap_base=0x1460 beats=8 expected=AHB_BURST_WRAP8
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 5975000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [36] WRAP8_off6_WR addr=0x1498 wrap_base=0x1480 beats=8 expected=AHB_BURST_WRAP8
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 6395000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [38] WRAP8_off6_RD addr=0x14d8 wrap_base=0x14c0 beats=8 expected=AHB_BURST_WRAP8
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 6605000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [39] WRAP8_off7_WR addr=0x14fc wrap_base=0x14e0 beats=8 expected=AHB_BURST_WRAP8
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 7025000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [41] WRAP8_off7_RD addr=0x153c wrap_base=0x1520 beats=8 expected=AHB_BURST_WRAP8
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 7235000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [42] WRAP16_off0_WR addr=0x1a80 wrap_base=0x1a80 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 7975000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [44] WRAP16_off0_RD addr=0x1b00 wrap_base=0x1b00 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 8345000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [45] WRAP16_off1_WR addr=0x1b44 wrap_base=0x1b40 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 9085000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [47] WRAP16_off1_RD addr=0x1bc4 wrap_base=0x1bc0 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 9455000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [48] WRAP16_off2_WR addr=0x1c08 wrap_base=0x1c00 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 10195000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [50] WRAP16_off2_RD addr=0x1c88 wrap_base=0x1c80 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 10565000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [51] WRAP16_off3_WR addr=0x1ccc wrap_base=0x1cc0 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 11305000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [53] WRAP16_off3_RD addr=0x1d4c wrap_base=0x1d40 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 11675000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [54] WRAP16_off4_WR addr=0x1d90 wrap_base=0x1d80 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 12415000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [56] WRAP16_off4_RD addr=0x1e10 wrap_base=0x1e00 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 12785000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [57] WRAP16_off5_WR addr=0x1e54 wrap_base=0x1e40 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 13525000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [59] WRAP16_off5_RD addr=0x1ed4 wrap_base=0x1ec0 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 13895000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [60] WRAP16_off6_WR addr=0x1f18 wrap_base=0x1f00 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 14635000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [62] WRAP16_off6_RD addr=0x1f98 wrap_base=0x1f80 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 15005000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [63] WRAP16_off7_WR addr=0x1fdc wrap_base=0x1fc0 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 15745000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [65] WRAP16_off7_RD addr=0x205c wrap_base=0x2040 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 16115000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [66] WRAP16_off8_WR addr=0x20a0 wrap_base=0x2080 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 16855000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [68] WRAP16_off8_RD addr=0x2120 wrap_base=0x2100 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 17225000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [69] WRAP16_off9_WR addr=0x2164 wrap_base=0x2140 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 17965000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [71] WRAP16_off9_RD addr=0x21e4 wrap_base=0x21c0 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 18335000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [72] WRAP16_off10_WR addr=0x2228 wrap_base=0x2200 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 19075000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [74] WRAP16_off10_RD addr=0x22a8 wrap_base=0x2280 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 19445000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [75] WRAP16_off11_WR addr=0x22ec wrap_base=0x22c0 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 20185000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [77] WRAP16_off11_RD addr=0x236c wrap_base=0x2340 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 20555000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [78] WRAP16_off12_WR addr=0x23b0 wrap_base=0x2380 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 21295000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [80] WRAP16_off12_RD addr=0x2430 wrap_base=0x2400 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 21665000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [81] WRAP16_off13_WR addr=0x2474 wrap_base=0x2440 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 22405000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [83] WRAP16_off13_RD addr=0x24f4 wrap_base=0x24c0 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 22775000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [84] WRAP16_off14_WR addr=0x2538 wrap_base=0x2500 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 23515000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [86] WRAP16_off14_RD addr=0x25b8 wrap_base=0x2580 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 23885000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [87] WRAP16_off15_WR addr=0x25fc wrap_base=0x25c0 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(121) @ 24625000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] [89] WRAP16_off15_RD addr=0x267c wrap_base=0x2640 beats=16 expected=AHB_BURST_WRAP16
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(79) @ 24995000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_wrap_mapping_seq] WRAP mapping summary: run=90 failed=0
+# UVM_INFO verilog_src/uvm-1.1d/src/base/uvm_objection.svh(1268) @ 25095000: reporter [TEST_DONE] 'run' phase is ready to proceed to the 'extract' phase
+# UVM_INFO ../10_tb/env/e2e_cov.sv(794) @ 25095000: uvm_test_top.env.cov [e2e_cov] E2E coverage: AXI=37.23% strobe=30.56% translation=56.45% AHB=45.08% response=51.19%
+# UVM_INFO ../10_tb/env/scoreboard.sv(411) @ 25095000: uvm_test_top.env.scb [scoreboard] Scoreboard summary: AHB match/mismatch=1020/0, AXI match/mismatch=90/0
+# UVM_INFO ../10_tb/test/bridge_base_test.sv(78) @ 25095000: uvm_test_top [bridge_wrap_mapping_test] === TEST PASSED ===
+# 
+# --- UVM Report Summary ---
+# 
+# ** Report counts by severity
+# UVM_INFO :   71
+# UVM_WARNING :    1
+# UVM_ERROR :    0
+# UVM_FATAL :    0
+# ** Report counts by id
+# [BRIDGE_TB_TOP]     1
+# [ILLVERB]     1
+# [Questa UVM]     2
+# [RNTST]     1
+# [TEST_DONE]     1
+# [UVMTOP]     1
+# [axi4_mst_wrap_mapping_seq]    62
+# [bridge_wrap_mapping_test]     1
+# [e2e_cov]     1
+# [scoreboard]     1
+# ** Note: $finish    : /cadtools/mentor/Questa_10.6b/questasim/linux_x86_64/../verilog_src/uvm-1.1d/src/base/uvm_root.svh(430)
+#    Time: 25095 ns  Iteration: 56  Instance: /bridge_tb_top
+# Saving coverage database on exit...
+# End time: 12:44:23 on Sep 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0

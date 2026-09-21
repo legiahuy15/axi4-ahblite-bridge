@@ -1,0 +1,254 @@
+# vsim -c -coverage -sv_seed 74906068 "+UVM_TESTNAME=bridge_protection_mapping_test" "+UVM_VERBOSITY=UVM_HGIH" -l report/logs/bridge_protection_mapping_test_run_3_seed_74906068.log -wlf report/wlf/bridge_protection_mapping_test_run_3_seed_74906068.wlf -do "coverage save -onexit report/coverage/bridge_protection_mapping_test_run_3_seed_74906068.ucdb; run -all; quit -f" work.opt_bridge_tb_top 
+# Start time: 12:44:33 on Sep 21,2026
+# //  Questa Sim-64
+# //  Version 10.6b linux_x86_64 May 25 2017
+# //
+# //  Copyright 1991-2017 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.axi4_if(fast)
+# Loading work.ahb_if(fast)
+# Loading mtiUvm.uvm_pkg
+# Loading work.bridge_vip_pkg(fast)
+# Loading work.bridge_seq_pkg(fast)
+# Loading work.bridge_test_pkg(fast)
+# Loading work.bridge_tb_top(fast)
+# Loading work.axi4_if(fast)
+# Loading work.ahb_if(fast)
+# Loading work.axi_ahblite_bridge(fast)
+# Loading work.ahb_skid_buf(fast)
+# Loading work.axi_slv_if(fast)
+# Loading work.ahb_mstr_if(fast)
+# Loading work.time_out(fast)
+# Loading work.axi4_sva(fast)
+# Loading work.ahb_sva(fast)
+# Loading mtiUvm.questa_uvm_pkg(fast)
+# Loading /cadtools/mentor/Questa_10.6b/questasim/uvm-1.1d/linux_x86_64/uvm_dpi.so
+# coverage save -onexit report/coverage/bridge_protection_mapping_test_run_3_seed_74906068.ucdb
+#  run -all
+# ----------------------------------------------------------------
+# UVM-1.1d
+# (C) 2007-2013 Mentor Graphics Corporation
+# (C) 2007-2013 Cadence Design Systems, Inc.
+# (C) 2006-2013 Synopsys, Inc.
+# (C) 2011-2013 Cypress Semiconductor Corp.
+# ----------------------------------------------------------------
+# 
+#   ***********       IMPORTANT RELEASE NOTES         ************
+# 
+#   You are using a version of the UVM library that has been compiled
+#   with `UVM_NO_DEPRECATED undefined.
+#   See http://www.eda.org/svdb/view.php?id=3313 for more details.
+# 
+#   You are using a version of the UVM library that has been compiled
+#   with `UVM_OBJECT_MUST_HAVE_CONSTRUCTOR undefined.
+#   See http://www.eda.org/svdb/view.php?id=3770 for more details.
+# 
+#       (Specify +UVM_NO_RELNOTES to turn off this notice)
+# 
+# UVM_WARNING @ 0: reporter [ILLVERB] Illegal verbosity value, using default of UVM_MEDIUM.
+# UVM_INFO verilog_src/questa_uvm_pkg-1.2/src/questa_uvm_pkg.sv(215) @ 0: reporter [Questa UVM] QUESTA_UVM-1.2.3
+# UVM_INFO verilog_src/questa_uvm_pkg-1.2/src/questa_uvm_pkg.sv(217) @ 0: reporter [Questa UVM]  questa_uvm::init(+struct)
+# UVM_INFO @ 0: reporter [RNTST] Running test bridge_protection_mapping_test...
+# UVM_INFO @ 0: reporter [UVMTOP] UVM testbench topology:
+# -------------------------------------------------------------------------
+# Name                       Type                               Size  Value
+# -------------------------------------------------------------------------
+# uvm_test_top               bridge_protection_mapping_test     -     @490 
+#   env                      vip_env                            -     @508 
+#     ahb_agent              ahb_slv_agent                      -     @529 
+#       ap                   uvm_analysis_port                  -     @667 
+#       cov                  ahb_slv_coverage                   -     @693 
+#         analysis_imp       uvm_analysis_imp                   -     @700 
+#         trans_export       uvm_analysis_imp_ahb_trans         -     @841 
+#       drv                  ahb_slv_driver                     -     @818 
+#         rsp_port           uvm_analysis_port                  -     @833 
+#         seq_item_port      uvm_seq_item_pull_port             -     @825 
+#       mon                  ahb_slv_monitor                    -     @686 
+#         ap                 uvm_analysis_port                  -     @850 
+#         trans_ap           uvm_analysis_port                  -     @858 
+#       sqr                  ahb_slv_sequencer                  -     @709 
+#         rsp_export         uvm_analysis_export                -     @716 
+#         seq_item_export    uvm_seq_item_pull_imp              -     @810 
+#         arbitration_queue  array                              0     -    
+#         lock_queue         array                              0     -    
+#         num_last_reqs      integral                           32    'd1  
+#         num_last_rsps      integral                           32    'd1  
+#       trans_ap             uvm_analysis_port                  -     @675 
+#     axi_agent              axi4_mst_agent                     -     @522 
+#       ap                   uvm_analysis_port                  -     @881 
+#       cov                  axi4_mst_coverage                  -     @899 
+#         analysis_imp       uvm_analysis_imp                   -     @906 
+#       drv                  axi4_mst_driver                    -     @1024
+#         rsp_port           uvm_analysis_port                  -     @1039
+#         seq_item_port      uvm_seq_item_pull_port             -     @1031
+#       mon                  axi4_mst_monitor                   -     @892 
+#         ap                 uvm_analysis_port                  -     @1056
+#         req_ap             uvm_analysis_port                  -     @1048
+#       req_ap               uvm_analysis_port                  -     @873 
+#       sqr                  axi4_mst_sequencer                 -     @915 
+#         rsp_export         uvm_analysis_export                -     @922 
+#         seq_item_export    uvm_seq_item_pull_imp              -     @1016
+#         arbitration_queue  array                              0     -    
+#         lock_queue         array                              0     -    
+#         num_last_reqs      integral                           32    'd1  
+#         num_last_rsps      integral                           32    'd1  
+#     cov                    e2e_cov                            -     @659 
+#       actual_ahb_export    uvm_analysis_imp_e2e_actual_ahb    -     @1086
+#       axi_req_export       uvm_analysis_imp_e2e_axi_req       -     @1070
+#       axi_rsp_export       uvm_analysis_imp_e2e_axi_rsp       -     @1094
+#       expected_ahb_export  uvm_analysis_imp_e2e_expected_ahb  -     @1078
+#     pred                   predictor                          -     @645 
+#       axi_request_export   uvm_analysis_imp_axi_request       -     @1102
+#       expected_ahb_ap      uvm_analysis_port                  -     @1110
+#       expected_axi_ap      uvm_analysis_port                  -     @1118
+#     scb                    scoreboard                         -     @652 
+#       actual_ahb_export    uvm_analysis_imp_actual_ahb        -     @1134
+#       actual_axi_export    uvm_analysis_imp_actual_axi        -     @1150
+#       expected_ahb_export  uvm_analysis_imp_expected_ahb      -     @1126
+#       expected_axi_export  uvm_analysis_imp_expected_axi      -     @1142
+#     vseqr                  virtual_sequencer                  -     @536 
+#       rsp_export           uvm_analysis_export                -     @543 
+#       seq_item_export      uvm_seq_item_pull_imp              -     @637 
+#       arbitration_queue    array                              0     -    
+#       lock_queue           array                              0     -    
+#       num_last_reqs        integral                           32    'd1  
+#       num_last_rsps        integral                           32    'd1  
+# -------------------------------------------------------------------------
+# 
+# UVM_INFO ../10_tb/bridge_tb_top.sv(47) @ 95000: reporter [BRIDGE_TB_TOP] Power-on reset released
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(75) @ 95000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] Protection mapping: 96 cases
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 95000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [0] SINGLE_CACHE0000_PROT000 addr=0x1000 beats=1 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 235000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [1] SINGLE_CACHE0000_PROT001 addr=0x1020 beats=1 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 375000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [2] SINGLE_CACHE0000_PROT010 addr=0x1040 beats=1 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 515000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [3] SINGLE_CACHE0000_PROT011 addr=0x1060 beats=1 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 655000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [4] SINGLE_CACHE0000_PROT100 addr=0x1080 beats=1 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 795000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [5] SINGLE_CACHE0000_PROT101 addr=0x10a0 beats=1 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 935000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [6] SINGLE_CACHE0000_PROT110 addr=0x10c0 beats=1 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 1075000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [7] SINGLE_CACHE0000_PROT111 addr=0x10e0 beats=1 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 1215000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [8] SINGLE_CACHE0001_PROT000 addr=0x1100 beats=1 expected HPROT=0101
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 1355000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [9] SINGLE_CACHE0001_PROT001 addr=0x1120 beats=1 expected HPROT=0111
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 1495000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [10] SINGLE_CACHE0001_PROT010 addr=0x1140 beats=1 expected HPROT=0101
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 1635000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [11] SINGLE_CACHE0001_PROT011 addr=0x1160 beats=1 expected HPROT=0111
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 1775000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [12] SINGLE_CACHE0001_PROT100 addr=0x1180 beats=1 expected HPROT=0100
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 1915000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [13] SINGLE_CACHE0001_PROT101 addr=0x11a0 beats=1 expected HPROT=0110
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 2055000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [14] SINGLE_CACHE0001_PROT110 addr=0x11c0 beats=1 expected HPROT=0100
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 2195000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [15] SINGLE_CACHE0001_PROT111 addr=0x11e0 beats=1 expected HPROT=0110
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 2335000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [16] SINGLE_CACHE0010_PROT000 addr=0x1200 beats=1 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 2475000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [17] SINGLE_CACHE0010_PROT001 addr=0x1220 beats=1 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 2615000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [18] SINGLE_CACHE0010_PROT010 addr=0x1240 beats=1 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 2755000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [19] SINGLE_CACHE0010_PROT011 addr=0x1260 beats=1 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 2895000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [20] SINGLE_CACHE0010_PROT100 addr=0x1280 beats=1 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 3035000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [21] SINGLE_CACHE0010_PROT101 addr=0x12a0 beats=1 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 3175000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [22] SINGLE_CACHE0010_PROT110 addr=0x12c0 beats=1 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 3315000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [23] SINGLE_CACHE0010_PROT111 addr=0x12e0 beats=1 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 3455000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [24] SINGLE_CACHE0011_PROT000 addr=0x1300 beats=1 expected HPROT=0101
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 3595000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [25] SINGLE_CACHE0011_PROT001 addr=0x1320 beats=1 expected HPROT=0111
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 3735000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [26] SINGLE_CACHE0011_PROT010 addr=0x1340 beats=1 expected HPROT=0101
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 3875000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [27] SINGLE_CACHE0011_PROT011 addr=0x1360 beats=1 expected HPROT=0111
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 4015000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [28] SINGLE_CACHE0011_PROT100 addr=0x1380 beats=1 expected HPROT=0100
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 4155000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [29] SINGLE_CACHE0011_PROT101 addr=0x13a0 beats=1 expected HPROT=0110
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 4295000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [30] SINGLE_CACHE0011_PROT110 addr=0x13c0 beats=1 expected HPROT=0100
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 4435000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [31] SINGLE_CACHE0011_PROT111 addr=0x13e0 beats=1 expected HPROT=0110
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 4575000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [32] SINGLE_CACHE0110_PROT000 addr=0x1400 beats=1 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 4715000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [33] SINGLE_CACHE0110_PROT001 addr=0x1420 beats=1 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 4855000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [34] SINGLE_CACHE0110_PROT010 addr=0x1440 beats=1 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 4995000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [35] SINGLE_CACHE0110_PROT011 addr=0x1460 beats=1 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 5135000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [36] SINGLE_CACHE0110_PROT100 addr=0x1480 beats=1 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 5275000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [37] SINGLE_CACHE0110_PROT101 addr=0x14a0 beats=1 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 5415000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [38] SINGLE_CACHE0110_PROT110 addr=0x14c0 beats=1 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 5555000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [39] SINGLE_CACHE0110_PROT111 addr=0x14e0 beats=1 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 5695000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [40] SINGLE_CACHE0111_PROT000 addr=0x1500 beats=1 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 5835000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [41] SINGLE_CACHE0111_PROT001 addr=0x1520 beats=1 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 5975000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [42] SINGLE_CACHE0111_PROT010 addr=0x1540 beats=1 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 6115000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [43] SINGLE_CACHE0111_PROT011 addr=0x1560 beats=1 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 6255000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [44] SINGLE_CACHE0111_PROT100 addr=0x1580 beats=1 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 6395000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [45] SINGLE_CACHE0111_PROT101 addr=0x15a0 beats=1 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 6535000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [46] SINGLE_CACHE0111_PROT110 addr=0x15c0 beats=1 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 6675000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [47] SINGLE_CACHE0111_PROT111 addr=0x15e0 beats=1 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 6815000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [48] SINGLE_CACHE1010_PROT000 addr=0x1600 beats=1 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 6955000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [49] SINGLE_CACHE1010_PROT001 addr=0x1620 beats=1 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 7095000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [50] SINGLE_CACHE1010_PROT010 addr=0x1640 beats=1 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 7235000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [51] SINGLE_CACHE1010_PROT011 addr=0x1660 beats=1 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 7375000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [52] SINGLE_CACHE1010_PROT100 addr=0x1680 beats=1 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 7515000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [53] SINGLE_CACHE1010_PROT101 addr=0x16a0 beats=1 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 7655000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [54] SINGLE_CACHE1010_PROT110 addr=0x16c0 beats=1 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 7795000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [55] SINGLE_CACHE1010_PROT111 addr=0x16e0 beats=1 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 7935000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [56] SINGLE_CACHE1011_PROT000 addr=0x1700 beats=1 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 8075000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [57] SINGLE_CACHE1011_PROT001 addr=0x1720 beats=1 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 8215000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [58] SINGLE_CACHE1011_PROT010 addr=0x1740 beats=1 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 8355000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [59] SINGLE_CACHE1011_PROT011 addr=0x1760 beats=1 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 8495000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [60] SINGLE_CACHE1011_PROT100 addr=0x1780 beats=1 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 8635000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [61] SINGLE_CACHE1011_PROT101 addr=0x17a0 beats=1 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 8775000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [62] SINGLE_CACHE1011_PROT110 addr=0x17c0 beats=1 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 8915000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [63] SINGLE_CACHE1011_PROT111 addr=0x17e0 beats=1 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 9055000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [64] SINGLE_CACHE1110_PROT000 addr=0x1800 beats=1 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 9195000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [65] SINGLE_CACHE1110_PROT001 addr=0x1820 beats=1 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 9335000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [66] SINGLE_CACHE1110_PROT010 addr=0x1840 beats=1 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 9475000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [67] SINGLE_CACHE1110_PROT011 addr=0x1860 beats=1 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 9615000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [68] SINGLE_CACHE1110_PROT100 addr=0x1880 beats=1 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 9755000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [69] SINGLE_CACHE1110_PROT101 addr=0x18a0 beats=1 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 9895000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [70] SINGLE_CACHE1110_PROT110 addr=0x18c0 beats=1 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 10035000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [71] SINGLE_CACHE1110_PROT111 addr=0x18e0 beats=1 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 10175000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [72] SINGLE_CACHE1111_PROT000 addr=0x1900 beats=1 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 10315000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [73] SINGLE_CACHE1111_PROT001 addr=0x1920 beats=1 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 10455000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [74] SINGLE_CACHE1111_PROT010 addr=0x1940 beats=1 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 10595000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [75] SINGLE_CACHE1111_PROT011 addr=0x1960 beats=1 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 10735000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [76] SINGLE_CACHE1111_PROT100 addr=0x1980 beats=1 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 10875000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [77] SINGLE_CACHE1111_PROT101 addr=0x19a0 beats=1 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 11015000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [78] SINGLE_CACHE1111_PROT110 addr=0x19c0 beats=1 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 11155000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [79] SINGLE_CACHE1111_PROT111 addr=0x19e0 beats=1 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 11295000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [80] INCR4_CACHE0011_PROT000 addr=0x1a00 beats=4 expected HPROT=0101
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 11555000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [81] INCR4_CACHE0010_PROT000 addr=0x1a20 beats=4 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 11815000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [82] INCR4_CACHE0011_PROT001 addr=0x1a40 beats=4 expected HPROT=0111
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 12075000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [83] INCR4_CACHE0010_PROT001 addr=0x1a60 beats=4 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 12335000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [84] INCR4_CACHE0011_PROT010 addr=0x1a80 beats=4 expected HPROT=0101
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 12595000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [85] INCR4_CACHE0010_PROT010 addr=0x1aa0 beats=4 expected HPROT=0001
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 12855000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [86] INCR4_CACHE0011_PROT011 addr=0x1ac0 beats=4 expected HPROT=0111
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 13115000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [87] INCR4_CACHE0010_PROT011 addr=0x1ae0 beats=4 expected HPROT=0011
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 13375000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [88] INCR4_CACHE0011_PROT100 addr=0x1b00 beats=4 expected HPROT=0100
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 13635000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [89] INCR4_CACHE0010_PROT100 addr=0x1b20 beats=4 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 13895000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [90] INCR4_CACHE0011_PROT101 addr=0x1b40 beats=4 expected HPROT=0110
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 14155000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [91] INCR4_CACHE0010_PROT101 addr=0x1b60 beats=4 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 14415000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [92] INCR4_CACHE0011_PROT110 addr=0x1b80 beats=4 expected HPROT=0100
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 14675000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [93] INCR4_CACHE0010_PROT110 addr=0x1ba0 beats=4 expected HPROT=0000
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 14935000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [94] INCR4_CACHE0011_PROT111 addr=0x1bc0 beats=4 expected HPROT=0110
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(134) @ 15195000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] [95] INCR4_CACHE0010_PROT111 addr=0x1be0 beats=4 expected HPROT=0010
+# UVM_INFO ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(87) @ 15455000: uvm_test_top.env.axi_agent.sqr@@axi_seq [axi4_mst_protection_mapping_seq] Protection mapping summary: run=192 failed=0 hprot_values=8 [ 0000 0001 0010 0011 0100 0101 0110 0111 ]
+# UVM_INFO verilog_src/uvm-1.1d/src/base/uvm_objection.svh(1268) @ 15555000: reporter [TEST_DONE] 'run' phase is ready to proceed to the 'extract' phase
+# UVM_INFO ../10_tb/env/e2e_cov.sv(794) @ 15555000: uvm_test_top.env.cov [e2e_cov] E2E coverage: AXI=48.65% strobe=30.56% translation=68.62% AHB=45.08% response=51.19%
+# UVM_INFO ../10_tb/env/scoreboard.sv(411) @ 15555000: uvm_test_top.env.scb [scoreboard] Scoreboard summary: AHB match/mismatch=288/0, AXI match/mismatch=192/0
+# UVM_INFO ../10_tb/test/bridge_base_test.sv(78) @ 15555000: uvm_test_top [bridge_protection_mapping_test] === TEST PASSED ===
+# 
+# --- UVM Report Summary ---
+# 
+# ** Report counts by severity
+# UVM_INFO :  107
+# UVM_WARNING :    1
+# UVM_ERROR :    0
+# UVM_FATAL :    0
+# ** Report counts by id
+# [BRIDGE_TB_TOP]     1
+# [ILLVERB]     1
+# [Questa UVM]     2
+# [RNTST]     1
+# [TEST_DONE]     1
+# [UVMTOP]     1
+# [axi4_mst_protection_mapping_seq]    98
+# [bridge_protection_mapping_test]     1
+# [e2e_cov]     1
+# [scoreboard]     1
+# ** Note: $finish    : /cadtools/mentor/Questa_10.6b/questasim/linux_x86_64/../verilog_src/uvm-1.1d/src/base/uvm_root.svh(430)
+#    Time: 15555 ns  Iteration: 56  Instance: /bridge_tb_top
+# Saving coverage database on exit...
+# End time: 12:44:34 on Sep 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
