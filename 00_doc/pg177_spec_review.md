@@ -6,7 +6,7 @@ verification checklist, not a replacement for the licensed product guide or the 
 protocol specifications.
 
 **Last re-reviewed: 2026-09-18**, against the PG177 text in `00_doc/`, the translated RTL in
-`01_src/dut/`, the environment in `10_tb/`, and the seventh regression (80/80 runs passing:
+`01_src/dut/`, the environment in `10_tb/`, and the eighth regression (80/80 runs passing:
 60 on the default build, 20 on the `C_S_AXI_SUPPORTS_NARROW_BURST=1` build). Items marked
 **RTL observation** describe the translated RTL, not PG177; they are not requirements
 until confirmed against the reference VHDL (`00_doc/axi_ahblite_bridge_v3_0_vh_rfs.vhd`).
@@ -93,7 +93,9 @@ AHB-Lite has no strobes, so the bridge cannot honour any other pattern.
 
 - Zero or non-legal `WSTRB` (for example `0x0`, `0x5`, `0x7`): `HSIZE` falls back to
   `AWSIZE`, so the whole word is written, including lanes the master did not strobe.
-  **`WSTRB = 0` is ordinary AXI**, yet it overwrites the full word.
+  **`WSTRB = 0` is ordinary AXI**, yet it overwrites the full word. With a narrow `AWSIZE`
+  (narrow build), `WSTRB = 0` writes the `AWSIZE` lanes at `AWADDR` (for example
+  `AWSIZE = 2B` at offset 2 writes lanes 2–3).
 - A legal narrow pattern above lane 0 with full-width `AWSIZE` at a word-aligned `AWADDR`
   (for example `WSTRB = 0x4`): `HADDR` is `AWADDR` aligned to the strobe size, so the bytes
   at lane 0 are written and the strobed lanes are left unchanged.
@@ -226,7 +228,7 @@ the priority audit risks as of 2026-09-18:
 |---|---|---|
 | 1 | **Unsupported lock handling:** the RTL captures `AWLOCK`/`ARLOCK` and drives `HMASTLOCK` from it, while PG177 lists locked and exclusive operations as unsupported. | **Closed (Section 4.1):** matches the reference VHDL; kept. Verified by `bridge_unsupported_feature_test` in the third regression. |
 | 2 | **Parameter legality:** equal AXI/AHB data widths, data width 32/64, address width 32–64, timeout 0/16/32/64/128/256. | **Open in the DUT** (no elaboration guards). The environment checks widths and timeout values in `vip_env_cfg.is_valid()`, the transaction constructors and the SVA; no negative elaboration test exists. |
-| 3 | **Single-write `WSTRB` decoding:** every legal lane and every sparse/zero/illegal pattern. | **Partial.** On 32-bit, `bridge_single_wstrb_test` applies every one of the 16 `WSTRB` values with full-width `AWSIZE`, plus every legal narrow pattern with matching `AWSIZE` on its lane, and checks `HSIZE`/`HADDR` and the whole written word. All seven legal patterns behave correctly; zero, sparse and misdirected patterns behave as described in Section 3.1. 64-bit is not tested. |
+| 3 | **Single-write `WSTRB` decoding:** every legal lane and every sparse/zero/illegal pattern. | **Partial.** On 32-bit, `bridge_single_wstrb_test` applies every one of the 16 `WSTRB` values with full-width `AWSIZE`, plus every legal narrow pattern with matching `AWSIZE` on its lane and `WSTRB = 0` with each narrow `AWSIZE`, and checks `HSIZE`/`HADDR` and the whole written word. All seven legal patterns behave correctly; zero, sparse and misdirected patterns behave as described in Section 3.1. 64-bit is not tested. |
 | 4 | **1-KB split off-by-one behavior** at every transfer size. | **Partial.** At full width, no-cross, exact-edge (last byte at `0x3FF`) and crossings after the first beat, in the middle and on the last beat all pass for INCR4/5/8/16/256, with the NONSEQ restart at the predicted beat. Narrow sizes and the 64-bit multi-boundary case are not tested. |
 | 5 | **AHB error timing:** ERROR on every beat position with and without wait states. | **Open.** No ERROR or wait-state stimulus yet; see Section 3.4 for the unconfirmed oracle. |
 | 6 | **Timeout boundaries:** completion one clock before, on and after each timeout value; AHB IDLE, AXI SLVERR, reset recovery. | **Open.** Only `C_DPHASE_TIMEOUT=0` is built, and the predictor does not model timeout. |
@@ -254,12 +256,12 @@ axi4_mst_agent (active) --> DUT --> ahb_slv_agent (reactive slave + memory model
 | Virtual sequencer | `virtual_sequencer` with AXI and AHB sequencers | AHB response sequences are not used by any test (all tests use automatic OKAY, zero-wait responses). |
 | Predictor | `predictor`: Sections 2 and 3.3, strobe-derived `HSIZE`, 1-KB restart | No timeout model. |
 | Scoreboard | `scoreboard`: AHB beat compare, AXI completion compare (ID, attributes, data, strobes, responses), empty-queue check, failure when nothing was compared. Observed AHB beats are assigned to the pending request whose first predicted beat has the same direction and address; completions are matched by direction and ID, so request order does not matter. | Matching assumes the bridge serves one request at a time on AHB (true for this design). |
-| Coverage | `e2e_cov` plus agent covergroups; response-side correlation uses the same order-independent matching as the scoreboard. EXOKAY/DECERR and reserved `AxCACHE` bins are `illegal_bins`; `HPROT[3] = 1` bins are `ignore_bins`; the address-region coverpoint was removed (no address map). | Every covergroup was reviewed after the seventh regression (Section 7, P2). Most remaining misses are AHB ERROR, wait-state and SLVERR bins, which need the P0 wait/ERROR test; 8 unreachable bins still need `illegal_bins` or `ignore_bins`. |
+| Coverage | `e2e_cov` plus agent covergroups; response-side correlation uses the same order-independent matching as the scoreboard. EXOKAY/DECERR and reserved `AxCACHE` bins are `illegal_bins`; `HPROT[3] = 1` bins are `ignore_bins`; the address-region coverpoint was removed (no address map). | Every covergroup was reviewed bin by bin (Section 7, P2). All remaining misses are AHB ERROR, wait-state and SLVERR bins, which need the P0 wait/ERROR and timeout tests. |
 | Protocol assertions | `axi4_sva`, `ahb_sva` bound in `bridge_tb_top`, including `RESET_HPROT` (default `HPROT` during reset); lock-profile assertions can be turned off at run time through the `bridge_allow_lock` event (Section 4.1) | Assertion failures are reported with `$error`; the regression Makefile fails a run on simulator errors (`FAIL_REGEX`), but this gate has not yet been proven by fault injection. |
 
 ## 7. Minimum compliance regression
 
-Status as of the seventh regression (2026-09-18). All stimulus is currently 32-bit, one
+Status as of the eighth regression (2026-09-18). All stimulus is currently 32-bit, one
 outstanding transaction, zero AHB wait and AHB OKAY only. `AxCACHE = AxPROT = 0` except in
 `bridge_protection_mapping_test`, and `AxLOCK = 0` except in `bridge_unsupported_feature_test`. The random
 seed only changes AXI IDs (and FIXED lengths), so repeated runs of the same test are
@@ -293,7 +295,7 @@ nearly identical.
 |---|---|
 | 32-bit and 64-bit equal-width configurations | 32-bit only. |
 | Narrow disabled and enabled | Both builds run. The enabled build runs `bridge_data_integrity_test`, `bridge_size_mapping_test`, `bridge_single_wstrb_test` and `bridge_unaligned_read_test`. On the disabled build every test keeps to full-width traffic (`incr_mapping`, `size_mapping`, `single_wstrb`, `unaligned_read` and `data_integrity` skip their narrow cases and log it). |
-| Every legal byte lane for each supported narrow size | Partial — 32-bit only: 8/16-bit single transfers on every legal lane, and 8/16-bit INCR4, undefined INCR, FIXED, WRAP2 and WRAP4 bursts (`bridge_size_mapping_test`, with read-back checks that filler bytes in non-strobed lanes never reach memory). No 64-bit. |
+| Every legal byte lane for each supported narrow size | Partial — 32-bit only: 8/16-bit single transfers on every legal lane, and 8/16-bit INCR4, INCR8, INCR16, undefined INCR, FIXED, WRAP2, WRAP4, WRAP8 and WRAP16 bursts (`bridge_size_mapping_test`, narrow build `run=64 failed=0`, 318 AHB beats; with read-back checks that filler bytes in non-strobed lanes never reach memory). No 64-bit. |
 | Directed unsupported sparse and unaligned narrow requests, classified separately | Partial — single writes with zero, sparse and misdirected strobes are negative cases in `bridge_single_wstrb_test` (Section 3.1). Unaligned narrow reads run on the narrow build in `bridge_unaligned_read_test` (Section 3.2). Sparse strobes inside bursts and unaligned writes are not tested. |
 
 ### P1 — unsupported-feature policy
@@ -316,7 +318,7 @@ nearly identical.
 | Item | Status |
 |---|---|
 | Constrained-random mixed read/write traffic with independent AHB delay/error policy | Not started. |
-| Functional, assertion, and code coverage review against a requirement matrix | Partial. Merged report over the seventh regression (80 tests): covergroups 84.5% of bins hit (381/451; 85.9% weighted), assertions 78.0% (39/50), cover directives 53.8% (7/13), total 56.5% (includes testbench class code). `axi4_mst_coverage.cg_control`, `cg_address`, `cg_write_strobe`, `ahb_slv_coverage.cg_bus_trans` and `e2e_cov.cg_axi_request` are at 100%, after the reserved `AxCACHE` bins became `illegal_bins`, `HPROT[3] = 1` became `ignore_bins`, and INCR 10/32/128 were added. The 70 remaining misses, derived from the covergroup definitions and per-covergroup counts: 53 need AHB ERROR, wait-state or SLVERR stimulus (P0); 8 in `cg_translation.cx_mapping_size` need narrow INCR8/INCR16/WRAP8/WRAP16; 1 (`cg_write_strobe`, zero strobe on a narrow write) needs stimulus; 8 are unreachable but still counted as misses: 5 in `cg_ahb_response.cp_size` (sizes wider than the bus), 2 in `cg_write_strobe` (full or sparse strobe on a 32-bit narrow write) and 1 in `cg_response_map.cx_error_map` (AHB ERROR with an OKAY AXI response). |
+| Functional, assertion, and code coverage review against a requirement matrix | Partial. Merged report over the eighth regression (80 tests): covergroups 88.0% of bins hit (390/443; 87.8% weighted), assertions 78.0% (39/50), cover directives 53.8% (7/13), total 56.8% (includes testbench class code). Every bin that the current OKAY/zero-wait stimulus can reach is hit: `axi4_mst_coverage.cg_control`, `cg_address`, `cg_write_strobe`, `ahb_slv_coverage.cg_bus_trans` and `e2e_cov.cg_axi_request`, `cg_write_strobe`, `cg_translation` are at 100%. Unreachable bins are excluded: reserved `AxCACHE`, a full strobe on a narrow write and AHB ERROR with an OKAY AXI response are `illegal_bins`; `HPROT[3] = 1` and a sparse strobe on a narrow write are `ignore_bins`; sizes wider than the bus are `default`. The 53 remaining misses are all AHB ERROR, wait-state or SLVERR bins (`cg_response` 3, `cg_transfer` 12, `cg_ahb_response` 28, `cg_response_map` 10) and need the P0 wait/ERROR and timeout tests. |
 | Mutation tests (address, `HBURST`, `HSIZE`, `HPROT`, data lane, ID, response, beat count, 1-KB restart, timeout threshold) | Not started. |
 | Equivalence or side-by-side simulation against the original VHDL source | Not started; required before treating the translated DUT, or the RTL observations above, as golden. |
 

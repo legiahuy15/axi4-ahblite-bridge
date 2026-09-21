@@ -43,13 +43,13 @@ class ahb_slv_agent_cfg extends uvm_object;
     //-------------------------------------------------------------------------
     `uvm_object_utils_begin(ahb_slv_agent_cfg)
         `uvm_field_enum(uvm_active_passive_enum, is_active,          UVM_DEFAULT)
-        `uvm_field_int(                         has_coverage,        UVM_DEFAULT)
-        `uvm_field_int(                         auto_gen_resp,       UVM_DEFAULT)
-        `uvm_field_int(                         ready_delay_min,     UVM_DEFAULT)
-        `uvm_field_int(                         ready_delay_max,     UVM_DEFAULT)
-        `uvm_field_int(                         default_read_data,   UVM_DEFAULT)
-        `uvm_field_int(                         addr_pattern_read,   UVM_DEFAULT)
-        `uvm_field_int(                         clear_mem_on_reset,  UVM_DEFAULT)
+        `uvm_field_int(                          has_coverage,       UVM_DEFAULT)
+        `uvm_field_int(                          auto_gen_resp,      UVM_DEFAULT)
+        `uvm_field_int(                          ready_delay_min,    UVM_DEFAULT)
+        `uvm_field_int(                          ready_delay_max,    UVM_DEFAULT)
+        `uvm_field_int(                          default_read_data,  UVM_DEFAULT)
+        `uvm_field_int(                          addr_pattern_read,  UVM_DEFAULT)
+        `uvm_field_int(                          clear_mem_on_reset, UVM_DEFAULT)
     `uvm_object_utils_end
 
     //-------------------------------------------------------------------------

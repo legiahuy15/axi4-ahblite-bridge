@@ -33,11 +33,13 @@ package bridge_seq_pkg;
     `include "seq/axi4_mst_seq/axi4_mst_single_wstrb_seq.sv"
     `include "seq/axi4_mst_seq/axi4_mst_unaligned_read_seq.sv"
     `include "seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv"
+    `include "seq/axi4_mst_seq/axi4_mst_response_mapping_seq.sv"
 
     //-------------------------------------------------------------------------
     // AHB-Lite slave sequences
     //-------------------------------------------------------------------------
     `include "seq/ahb_slv_seq/ahb_slv_base_seq.sv"
+    `include "seq/ahb_slv_seq/ahb_slv_response_mapping_seq.sv"
 
     //-------------------------------------------------------------------------
     // Bridge virtual sequences
@@ -55,6 +57,7 @@ package bridge_seq_pkg;
     `include "seq/bridge_vip_seq/bridge_single_wstrb_seq.sv"
     `include "seq/bridge_vip_seq/bridge_unaligned_read_seq.sv"
     `include "seq/bridge_vip_seq/bridge_protection_mapping_seq.sv"
+    `include "seq/bridge_vip_seq/bridge_response_mapping_seq.sv"
 
 endpackage : bridge_seq_pkg
 

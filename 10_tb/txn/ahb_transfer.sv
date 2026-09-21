@@ -10,19 +10,19 @@ class ahb_transfer extends uvm_sequence_item;
 
     // Address phase
     rand bit [AHB_ADDR_WIDTH-1:0] addr;
-    rand ahb_dir_e            write;
-    rand ahb_trans_e          trans;
-    rand ahb_burst_e          burst;
-    rand ahb_size_e           size;
-    rand bit [3:0]            prot;
-    rand bit                  mastlock;
+    rand ahb_dir_e                write;
+    rand ahb_trans_e              trans;
+    rand ahb_burst_e              burst;
+    rand ahb_size_e               size;
+    rand bit [3:0]                prot;
+    rand bit                      mastlock;
 
     // Data phase
     rand bit [AHB_DATA_WIDTH-1:0] wdata;
     rand bit [AHB_DATA_WIDTH-1:0] rdata;
-    rand ahb_resp_e           resp;
+    rand ahb_resp_e               resp;
     // HREADY-low cycles before completion; includes the first ERROR cycle.
-    rand int unsigned         wait_cycles;
+    rand int unsigned             wait_cycles;
 
     //-------------------------------------------------------------------------
     // UVM utility macro
