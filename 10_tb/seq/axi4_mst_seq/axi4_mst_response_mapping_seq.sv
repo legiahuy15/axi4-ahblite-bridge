@@ -6,16 +6,22 @@
 //               PG177: AHB OKAY maps to AXI OKAY, AHB ERROR maps to AXI
 //               SLVERR, and the bridge never generates EXOKAY or DECERR.
 //               PG177 does not state whether a burst continues after an AHB
-//               ERROR; the RTL does, and the predictor models that, so this
-//               sequence checks it directly: the plan holds one entry per
-//               expected AHB beat and a burst that stops early leaves
-//               entries behind.
+//               ERROR; the reference design does, and the predictor models
+//               that, so this sequence checks it directly: the plan holds one
+//               entry per expected AHB beat and a burst that stops early
+//               leaves entries behind.
 //               Cases, each a single AXI request answered from the plan:
 //               - every AHB burst shape (SINGLE, INCR4/8/16, undefined INCR,
 //                 WRAP2/4/8/16, FIXED) with one ERROR beat, read and write
 //               - ERROR at the first, a middle and the last beat of an INCR4,
-//                 plus an all-OKAY INCR4, read and write
-//               - wait states 1, 2, 8 and 16 with OKAY and with ERROR
+//                 plus an all-OKAY INCR4, read and write, without and with
+//                 wait states
+//               - wait states 1, 2, 8 and 16 with OKAY (read and write) and
+//                 with ERROR
+//               - wait states on WRAP8, FIXED3 and INCR16, read and write
+//               - INCR16 split at a 1 KB boundary, with wait states and with
+//                 ERROR on the first beat after the boundary
+//               - different wait states on every beat of one burst
 //               - two ERROR beats in one burst, read and write
 //               Checks BRESP, per-beat RRESP, beat count and the read data of
 //               every OKAY beat.
@@ -56,9 +62,14 @@ class axi4_mst_response_mapping_seq extends axi4_mst_base_seq;
         axi4_dir_e            dir;
         axi4_burst_e          burst;
         int unsigned          len;          // AXI AxLEN value (beats-1)
-        int unsigned          offset;       // start offset inside the region
+        int unsigned          offset;       // start offset inside the region;
+                                            // bytes before the boundary for
+                                            // 1 KB crossing cases
         bit [MAX_BEATS-1:0]   error_beats;  // beats answered with AHB ERROR
         int unsigned          waits;        // OKAY wait cycles on every beat
+        int unsigned          beat_waits[$];// per-beat waits, repeated; used
+                                            // instead of waits when not empty
+        bit                   cross_1kb;    // placed across a 1 KB boundary
         string                label;
     } rsp_case_t;
 
@@ -69,6 +80,12 @@ class axi4_mst_response_mapping_seq extends axi4_mst_base_seq;
         int unsigned error_beat;
         string       label;
     } shape_t;
+
+    //-------------------------------------------------------------------------
+    // Internal state
+    //-------------------------------------------------------------------------
+    protected int unsigned num_cases;
+    protected int unsigned cross_cases_run;
 
     //-------------------------------------------------------------------------
     // Constructor
@@ -90,6 +107,7 @@ class axi4_mst_response_mapping_seq extends axi4_mst_base_seq;
         validate_knobs();
 
         build_cases(cases);
+        num_cases = cases.size();
 
         `uvm_info(get_type_name(),
                   $sformatf("Response mapping: %0d cases", cases.size()),
@@ -117,7 +135,50 @@ class axi4_mst_response_mapping_seq extends axi4_mst_base_seq;
         add_position_cases(cases);
         add_wait_cases(cases);
         add_multi_error_cases(cases);
+        add_position_wait_cases(cases);
+        add_write_wait_cases(cases);
+        add_shape_wait_cases(cases);
+        add_cross_1kb_cases(cases);
+        add_beat_wait_cases(cases);
     endfunction : build_cases
+
+    protected function void add_case(
+        ref rsp_case_t          cases[$],
+        input axi4_dir_e          dir,
+        input axi4_burst_e        burst,
+        input int unsigned        len,
+        input int unsigned        offset,
+        input bit [MAX_BEATS-1:0] error_beats,
+        input int unsigned        waits,
+        input string              label,
+        input bit                 cross_1kb = 1'b0
+    );
+        rsp_case_t c;
+
+        c.dir         = dir;
+        c.burst       = burst;
+        c.len         = len;
+        c.offset      = offset;
+        c.error_beats = error_beats;
+        c.waits       = waits;
+        c.beat_waits.delete();
+        c.cross_1kb   = cross_1kb;
+        c.label       = $sformatf("%s_%s", label,
+                                  (dir == AXI4_READ) ? "RD" : "WR");
+        cases.push_back(c);
+    endfunction : add_case
+
+    protected function bit [MAX_BEATS-1:0] one_hot(int unsigned beat);
+        bit [MAX_BEATS-1:0] mask;
+
+        mask       = '0;
+        mask[beat] = 1'b1;
+        return mask;
+    endfunction : one_hot
+
+    protected function axi4_dir_e dir_of(int unsigned d);
+        return (d == 0) ? AXI4_READ : AXI4_WRITE;
+    endfunction : dir_of
 
     // Every AHB burst shape with one ERROR beat, read and write
     protected function void add_shape_cases(ref rsp_case_t cases[$]);
@@ -134,94 +195,114 @@ class axi4_mst_response_mapping_seq extends axi4_mst_base_seq;
             '{AXI4_BURST_FIXED,  2, 0, 1,  "FIXED3"}
         };
 
-        foreach (shapes[s]) begin
-            bit [MAX_BEATS-1:0] mask;
-
-            mask = '0;
-            mask[shapes[s].error_beat] = 1'b1;
-            for (int unsigned d = 0; d < 2; d++) begin
-                axi4_dir_e dir;
-
-                dir = (d == 0) ? AXI4_READ : AXI4_WRITE;
-                cases.push_back('{dir, shapes[s].burst, shapes[s].len,
-                                  shapes[s].offset_beats * (1 << FULL_SIZE),
-                                  mask, 0,
-                                  $sformatf("%s_ERR%0d_%s", shapes[s].label,
-                                            shapes[s].error_beat,
-                                            (dir == AXI4_READ) ? "RD" : "WR")});
-            end
-        end
+        foreach (shapes[s])
+            for (int unsigned d = 0; d < 2; d++)
+                add_case(cases, dir_of(d), shapes[s].burst, shapes[s].len,
+                         shapes[s].offset_beats * (1 << FULL_SIZE),
+                         one_hot(shapes[s].error_beat), 0,
+                         $sformatf("%s_ERR%0d", shapes[s].label,
+                                   shapes[s].error_beat));
     endfunction : add_shape_cases
 
     // ERROR at the first, a middle and the last beat of an INCR4, and none
     protected function void add_position_cases(ref rsp_case_t cases[$]);
-        int unsigned        positions[] = '{0, 1, 3};
-        bit [MAX_BEATS-1:0] no_error;
+        int unsigned positions[] = '{0, 1, 3};
 
-        no_error = '0;
         for (int unsigned d = 0; d < 2; d++) begin
-            axi4_dir_e dir;
-
-            dir = (d == 0) ? AXI4_READ : AXI4_WRITE;
-            cases.push_back('{dir, AXI4_BURST_INCR, 3, 0, no_error, 0,
-                              $sformatf("INCR4_NOERR_%s",
-                                        (dir == AXI4_READ) ? "RD" : "WR")});
-            foreach (positions[p]) begin
-                bit [MAX_BEATS-1:0] mask;
-
-                mask = '0;
-                mask[positions[p]] = 1'b1;
-                cases.push_back('{dir, AXI4_BURST_INCR, 3, 0, mask, 0,
-                                  $sformatf("INCR4_POS%0d_%s", positions[p],
-                                            (dir == AXI4_READ) ? "RD" : "WR")});
-            end
+            add_case(cases, dir_of(d), AXI4_BURST_INCR, 3, 0, '0, 0,
+                     "INCR4_NOERR");
+            foreach (positions[p])
+                add_case(cases, dir_of(d), AXI4_BURST_INCR, 3, 0,
+                         one_hot(positions[p]), 0,
+                         $sformatf("INCR4_POS%0d", positions[p]));
         end
     endfunction : add_position_cases
 
     // Wait states with OKAY and with ERROR. The AHB ERROR response adds one
     // cycle of its own, so an ERROR beat is never a zero-wait beat.
     protected function void add_wait_cases(ref rsp_case_t cases[$]);
-        int unsigned        waits[] = '{1, 2, 8, 16};
-        bit [MAX_BEATS-1:0] no_error;
+        int unsigned waits[] = '{1, 2, 8, 16};
 
-        no_error = '0;
         foreach (waits[w]) begin
-            bit [MAX_BEATS-1:0] mask;
-
-            cases.push_back('{AXI4_READ, AXI4_BURST_INCR, 3, 0, no_error,
-                              waits[w],
-                              $sformatf("INCR4_WAIT%0d_OKAY_RD", waits[w])});
-            mask    = '0;
-            mask[1] = 1'b1;
-            cases.push_back('{AXI4_READ, AXI4_BURST_INCR, 3, 0, mask, waits[w],
-                              $sformatf("INCR4_WAIT%0d_ERR1_RD", waits[w])});
+            add_case(cases, AXI4_READ, AXI4_BURST_INCR, 3, 0, '0, waits[w],
+                     $sformatf("INCR4_WAIT%0d_OKAY", waits[w]));
+            add_case(cases, AXI4_READ, AXI4_BURST_INCR, 3, 0,
+                     one_hot(1), waits[w],
+                     $sformatf("INCR4_WAIT%0d_ERR1", waits[w]));
         end
-
-        begin
-            bit [MAX_BEATS-1:0] mask;
-
-            mask    = '0;
-            mask[2] = 1'b1;
-            cases.push_back('{AXI4_WRITE, AXI4_BURST_INCR, 3, 0, mask, 2,
-                              "INCR4_WAIT2_ERR2_WR"});
-        end
+        add_case(cases, AXI4_WRITE, AXI4_BURST_INCR, 3, 0, one_hot(2), 2,
+                 "INCR4_WAIT2_ERR2");
     endfunction : add_wait_cases
 
     // Two ERROR beats: BRESP stays SLVERR and both read beats report SLVERR
     protected function void add_multi_error_cases(ref rsp_case_t cases[$]);
-        for (int unsigned d = 0; d < 2; d++) begin
-            axi4_dir_e          dir;
-            bit [MAX_BEATS-1:0] mask;
-
-            dir     = (d == 0) ? AXI4_READ : AXI4_WRITE;
-            mask    = '0;
-            mask[1] = 1'b1;
-            mask[3] = 1'b1;
-            cases.push_back('{dir, AXI4_BURST_INCR, 3, 0, mask, 0,
-                              $sformatf("INCR4_ERR1_ERR3_%s",
-                                        (dir == AXI4_READ) ? "RD" : "WR")});
-        end
+        for (int unsigned d = 0; d < 2; d++)
+            add_case(cases, dir_of(d), AXI4_BURST_INCR, 3, 0,
+                     one_hot(1) | one_hot(3), 0, "INCR4_ERR1_ERR3");
     endfunction : add_multi_error_cases
+
+    // ERROR at the first, a middle and the last beat with wait states
+    protected function void add_position_wait_cases(ref rsp_case_t cases[$]);
+        int unsigned positions[] = '{0, 1, 3};
+
+        for (int unsigned d = 0; d < 2; d++)
+            foreach (positions[p])
+                add_case(cases, dir_of(d), AXI4_BURST_INCR, 3, 0,
+                         one_hot(positions[p]), 3,
+                         $sformatf("INCR4_WAIT3_POS%0d", positions[p]));
+    endfunction : add_position_wait_cases
+
+    // OKAY writes with wait states: HWDATA must hold through every wait cycle
+    protected function void add_write_wait_cases(ref rsp_case_t cases[$]);
+        int unsigned waits[] = '{1, 2, 8, 16};
+
+        foreach (waits[w])
+            add_case(cases, AXI4_WRITE, AXI4_BURST_INCR, 3, 0, '0, waits[w],
+                     $sformatf("INCR4_WAIT%0d_OKAY", waits[w]));
+    endfunction : add_write_wait_cases
+
+    // Wait states on bursts where the bridge inserts BUSY or IDLE between
+    // beats (WRAP, FIXED as SINGLE transfers) and on a 16-beat burst
+    protected function void add_shape_wait_cases(ref rsp_case_t cases[$]);
+        int unsigned bytes;
+
+        bytes = 1 << FULL_SIZE;
+        for (int unsigned d = 0; d < 2; d++) begin
+            add_case(cases, dir_of(d), AXI4_BURST_WRAP,   7, 4 * bytes, '0, 2,
+                     "WRAP8_WAIT2");
+            add_case(cases, dir_of(d), AXI4_BURST_FIXED,  2, 0,         '0, 2,
+                     "FIXED3_WAIT2");
+            add_case(cases, dir_of(d), AXI4_BURST_INCR,  15, 0,         '0, 2,
+                     "INCR16_WAIT2");
+        end
+    endfunction : add_shape_wait_cases
+
+    // INCR16 starting 8 beats before a 1 KB boundary: the bridge restarts
+    // with NONSEQ at beat 8. Wait states across the split, and ERROR on the
+    // first beat after the boundary.
+    protected function void add_cross_1kb_cases(ref rsp_case_t cases[$]);
+        int unsigned bytes;
+
+        bytes = 1 << FULL_SIZE;
+        for (int unsigned d = 0; d < 2; d++) begin
+            add_case(cases, dir_of(d), AXI4_BURST_INCR, 15, 8 * bytes, '0, 2,
+                     "INCR16_1KB_WAIT2", 1'b1);
+            add_case(cases, dir_of(d), AXI4_BURST_INCR, 15, 8 * bytes,
+                     one_hot(8), 0, "INCR16_1KB_ERR8", 1'b1);
+        end
+    endfunction : add_cross_1kb_cases
+
+    // A different wait on every beat, including zero between waited beats
+    protected function void add_beat_wait_cases(ref rsp_case_t cases[$]);
+        int unsigned pattern[] = '{0, 5, 1, 16, 0, 2, 0, 3};
+
+        add_case(cases, AXI4_READ, AXI4_BURST_INCR, 7, 0, '0, 0,
+                 "INCR8_BEAT_WAITS");
+        cases[cases.size() - 1].beat_waits = pattern;
+        add_case(cases, AXI4_WRITE, AXI4_BURST_INCR, 7, 0, one_hot(3), 0,
+                 "INCR8_BEAT_WAITS_ERR3");
+        cases[cases.size() - 1].beat_waits = pattern;
+    endfunction : add_beat_wait_cases
 
     //-------------------------------------------------------------------------
     // Run one case: plan the AHB beats, send the request, check the completion
@@ -237,19 +318,23 @@ class axi4_mst_response_mapping_seq extends axi4_mst_base_seq;
         bit                       failed;
 
         beats = c.len + 1;
-        addr  = base_addr + (index * case_stride) + c.offset;
+        if (c.cross_1kb) begin
+            addr = get_cross_boundary(cross_cases_run) - c.offset;
+            cross_cases_run++;
+        end else
+            addr = base_addr + (index * case_stride) + c.offset;
         get_beat_addresses(addr, c, beats, beat_addr);
 
-        case_errors   = 0;
+        case_errors = 0;
         for (int unsigned i = 0; i < beats; i++)
             if (c.error_beats[i])
                 case_errors++;
         expect_slverr = (case_errors > 0);
 
         `uvm_info(get_type_name(),
-                  $sformatf({"[%0d] %s addr=0x%0h beats=%0d waits=%0d ",
+                  $sformatf({"[%0d] %s addr=0x%0h beats=%0d waits=%s ",
                              "error_beats=0x%0h expected %s"},
-                            index, c.label, addr, beats, c.waits,
+                            index, c.label, addr, beats, get_wait_text(c),
                             c.error_beats[15:0],
                             expect_slverr ? "SLVERR" : "OKAY"),
                   UVM_MEDIUM)
@@ -258,9 +343,9 @@ class axi4_mst_response_mapping_seq extends axi4_mst_base_seq;
         policy.clear_plan();
         for (int unsigned i = 0; i < beats; i++)
             policy.add_beat(c.error_beats[i] ? AHB_RESP_ERROR : AHB_RESP_OKAY,
-                            c.waits);
+                            get_beat_wait(c, i));
 
-        req = create_request(c, addr, beats);
+        req = create_request(c, addr);
         send_axi_request_wait(req, rsp);
         cases_run++;
         error_beats += case_errors;
@@ -283,6 +368,29 @@ class axi4_mst_response_mapping_seq extends axi4_mst_base_seq;
         if (failed)
             cases_failed++;
     endtask : run_case
+
+    protected function int unsigned get_beat_wait(
+        rsp_case_t   c,
+        int unsigned beat
+    );
+        if (c.beat_waits.size() == 0)
+            return c.waits;
+        return c.beat_waits[beat % c.beat_waits.size()];
+    endfunction : get_beat_wait
+
+    protected function string get_wait_text(rsp_case_t c);
+        string text;
+
+        if (c.beat_waits.size() == 0)
+            return $sformatf("%0d", c.waits);
+        text = "";
+        foreach (c.beat_waits[i]) begin
+            if (i > 0)
+                text = {text, "/"};
+            text = {text, $sformatf("%0d", c.beat_waits[i])};
+        end
+        return text;
+    endfunction : get_wait_text
 
     //-------------------------------------------------------------------------
     // Response checks
@@ -357,8 +465,31 @@ class axi4_mst_response_mapping_seq extends axi4_mst_base_seq;
     endfunction : check_read_response
 
     //-------------------------------------------------------------------------
-    // Beat addresses (AXI burst address rules)
+    // Addresses
     //-------------------------------------------------------------------------
+    // The k-th 1 KB boundary above every per-case region, skipping 4 KB
+    // boundaries (an AXI burst must not cross 4 KB). Consecutive crossing
+    // cases use different boundaries, so their bursts never overlap.
+    protected function bit [AXI4_ADDR_WIDTH-1:0] get_cross_boundary(
+        int unsigned k
+    );
+        bit [AXI4_ADDR_WIDTH-1:0] boundary;
+        int unsigned              found;
+
+        boundary = base_addr + (num_cases * case_stride);
+        boundary = ((boundary >> 10) + 1) << 10;
+        found    = 0;
+        forever begin
+            if ((boundary % 'h1000) != 0) begin
+                if (found == k)
+                    return boundary;
+                found++;
+            end
+            boundary += 'h400;
+        end
+    endfunction : get_cross_boundary
+
+    // Beat addresses (AXI burst address rules)
     protected function void get_beat_addresses(
         input  bit [AXI4_ADDR_WIDTH-1:0] start_addr,
         input  rsp_case_t                c,
@@ -392,8 +523,7 @@ class axi4_mst_response_mapping_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     protected function axi4_transaction create_request(
         rsp_case_t                c,
-        bit [AXI4_ADDR_WIDTH-1:0] addr,
-        int unsigned              beats
+        bit [AXI4_ADDR_WIDTH-1:0] addr
     );
         axi4_transaction req;
         int unsigned     req_len;
@@ -435,8 +565,9 @@ class axi4_mst_response_mapping_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Knob validation
     //-------------------------------------------------------------------------
-    // Every case fits in its own region, so no burst crosses a 1 KB boundary
-    // and the AHB beats of one case never overlap another case.
+    // Every non-crossing case fits in its own region, so no burst crosses a
+    // 1 KB boundary unless the case asks for it, and the AHB beats of one
+    // case never overlap another case.
     protected function void validate_knobs();
         int unsigned region_bytes;
 

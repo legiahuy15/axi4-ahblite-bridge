@@ -6,7 +6,7 @@ verification checklist, not a replacement for the licensed product guide or the 
 protocol specifications.
 
 **Last re-reviewed: 2026-09-21**, against the PG177 text in `00_doc/`, the translated RTL in
-`01_src/dut/`, the environment in `10_tb/`, and the ninth regression (85/85 runs passing:
+`01_src/dut/`, the environment in `10_tb/`, and the tenth regression (85/85 runs passing:
 65 on the default build, 20 on the `C_S_AXI_SUPPORTS_NARROW_BURST=1` build). Items marked
 **RTL observation** describe the translated RTL, not PG177; they are not requirements
 until confirmed against the reference VHDL (`00_doc/axi_ahblite_bridge_v3_0_vh_rfs.vhd`).
@@ -275,12 +275,12 @@ axi4_mst_agent (active) --> DUT --> ahb_slv_agent (reactive slave + memory model
 | Virtual sequencer | `virtual_sequencer` with AXI and AHB sequencers | Only `bridge_response_mapping_test` uses an AHB response sequence (`ahb_slv_response_mapping_seq`, planned through `ahb_response_policy`); every other test uses automatic OKAY, zero-wait responses. |
 | Predictor | `predictor`: Sections 2 and 3.3, strobe-derived `HSIZE`, 1-KB restart | No timeout model. |
 | Scoreboard | `scoreboard`: AHB beat compare, AXI completion compare (ID, attributes, data, strobes, responses), empty-queue check, failure when nothing was compared. Observed AHB beats are assigned to the pending request whose first predicted beat has the same direction and address; completions are matched by direction and ID, so request order does not matter. | Matching assumes the bridge serves one request at a time on AHB (true for this design). |
-| Coverage | `e2e_cov` plus agent covergroups; response-side correlation uses the same order-independent matching as the scoreboard. EXOKAY/DECERR and reserved `AxCACHE` bins are `illegal_bins`; `HPROT[3] = 1` bins are `ignore_bins`; the address-region coverpoint was removed (no address map). | Every covergroup was reviewed bin by bin (Section 7, P2). Three bins remain: two are unreachable because an AHB ERROR always takes a wait cycle, and one needs timeout. |
+| Coverage | `e2e_cov` plus agent covergroups; response-side correlation uses the same order-independent matching as the scoreboard. EXOKAY/DECERR and reserved `AxCACHE` bins are `illegal_bins`; `HPROT[3] = 1` bins are `ignore_bins`; the address-region coverpoint was removed (no address map). | Every covergroup was reviewed bin by bin (Section 7, P2). One bin remains (`cx_error_map` <OKAY, SLVERR>), which needs a timeout build. |
 | Protocol assertions | `axi4_sva`, `ahb_sva` bound in `bridge_tb_top`, including `RESET_HPROT` (default `HPROT` during reset); lock-profile assertions can be turned off at run time through the `bridge_allow_lock` event (Section 4.1) | Assertion failures are reported with `$error`; the regression Makefile fails a run on simulator errors (`FAIL_REGEX`), but this gate has not yet been proven by fault injection. |
 
 ## 7. Minimum compliance regression
 
-Status as of the ninth regression (2026-09-21). All stimulus is currently 32-bit with one
+Status as of the tenth regression (2026-09-21). All stimulus is currently 32-bit with one
 outstanding transaction. AHB responses are OKAY with zero wait except in
 `bridge_response_mapping_test`. `AxCACHE = AxPROT = 0` except in
 `bridge_protection_mapping_test`, and `AxLOCK = 0` except in `bridge_unsupported_feature_test`. The random
@@ -338,7 +338,7 @@ nearly identical.
 | Item | Status |
 |---|---|
 | Constrained-random mixed read/write traffic with independent AHB delay/error policy | Not started. |
-| Functional, assertion, and code coverage review against a requirement matrix | Partial. Merged report over the ninth regression (85 tests): covergroups 99.3% of bins hit (440/443; 99.2% weighted), assertions 88.0% (44/50), cover directives 76.9% (10/13), total 63.2% (includes testbench class code). Every covergroup is at 100% except `e2e_cov.cg_ahb_response` (61/62) and `cg_response_map` (17/19). Unreachable bins are excluded: reserved `AxCACHE`, a full strobe on a narrow write and AHB ERROR with an OKAY AXI response are `illegal_bins`; `HPROT[3] = 1` and a sparse strobe on a narrow write are `ignore_bins`; sizes wider than the bus are `default`. The 3 remaining misses, derived from the covergroup definitions: `cx_resp_wait` <ERROR, zero wait> and `cx_wait_status` <zero wait, SLVERR> are unreachable because an AHB ERROR always takes one `HREADY`-low cycle; `cx_error_map` <OKAY, SLVERR> needs a timeout build. The first two still need `ignore_bins`. Assertions and cover directives have not been reviewed individually. |
+| Functional, assertion, and code coverage review against a requirement matrix | Partial. Merged report over the tenth regression (85 tests, 0 warnings): covergroups 99.8% of bins hit (440/441; 99.6% weighted), assertions 88.0% (44/50), cover directives 76.9% (10/13), total 63.2% (includes testbench class code). Every covergroup is at 100% except `e2e_cov.cg_response_map` (17/18); its only miss, `cx_error_map` <OKAY, SLVERR>, needs a timeout build. Unreachable bins are excluded: reserved `AxCACHE`, a full strobe on a narrow write and AHB ERROR with an OKAY AXI response are `illegal_bins`; `HPROT[3] = 1`, a sparse strobe on a narrow write, <ERROR, zero wait> and <zero wait, SLVERR> are `ignore_bins` (an AHB ERROR or timeout always holds `HREADY` low for at least one cycle); sizes wider than the bus are `default`. Assertions and cover directives have not been reviewed individually. |
 | Mutation tests (address, `HBURST`, `HSIZE`, `HPROT`, data lane, ID, response, beat count, 1-KB restart, timeout threshold) | Not started. |
 | Equivalence or side-by-side simulation against the original VHDL source | Not started; required before treating the translated DUT, or the RTL observations above, as golden. |
 

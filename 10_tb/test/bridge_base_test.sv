@@ -31,24 +31,16 @@ class bridge_base_test extends uvm_test;
 
         env_cfg = vip_env_cfg::type_id::create("env_cfg");
 
-        if (!uvm_config_db#(axi4_vif_t)::get(this, "", "axi_vif",
-                                             env_cfg.axi_cfg.vif) &&
-            !uvm_config_db#(axi4_vif_t)::get(this, "", "vif",
-                                             env_cfg.axi_cfg.vif))
-            `uvm_fatal(get_type_name(),
-                       "AXI4 virtual interface 'axi_vif' not found")
+        if (!uvm_config_db#(axi4_vif_t)::get(this, "", "axi_vif", env_cfg.axi_cfg.vif) &&
+            !uvm_config_db#(axi4_vif_t)::get(this, "", "vif", env_cfg.axi_cfg.vif))
+            `uvm_fatal(get_type_name(), "AXI4 virtual interface 'axi_vif' not found")
 
-        if (!uvm_config_db#(ahb_vif_t)::get(this, "", "ahb_vif",
-                                            env_cfg.ahb_cfg.vif) &&
-            !uvm_config_db#(ahb_vif_t)::get(this, "", "vif",
-                                            env_cfg.ahb_cfg.vif))
-            `uvm_fatal(get_type_name(),
-                       "AHB-Lite virtual interface 'ahb_vif' not found")
+        if (!uvm_config_db#(ahb_vif_t)::get(this, "", "ahb_vif", env_cfg.ahb_cfg.vif) &&
+            !uvm_config_db#(ahb_vif_t)::get(this, "", "vif", env_cfg.ahb_cfg.vif))
+            `uvm_fatal(get_type_name(), "AHB-Lite virtual interface 'ahb_vif' not found")
 
-        void'(uvm_config_db#(bit)::get(this, "", "supports_narrow_burst",
-                                       env_cfg.supports_narrow_burst));
-        void'(uvm_config_db#(int unsigned)::get(this, "", "dphase_timeout",
-                                                env_cfg.dphase_timeout));
+        void'(uvm_config_db#(bit)::get(this, "", "supports_narrow_burst", env_cfg.supports_narrow_burst));
+        void'(uvm_config_db#(int unsigned)::get(this, "", "dphase_timeout", env_cfg.dphase_timeout));
 
         uvm_config_db#(vip_env_cfg)::set(this, "env", "cfg", env_cfg);
         env = vip_env::type_id::create("env", this);

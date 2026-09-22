@@ -6,7 +6,9 @@
 //               The AHB slave answers from a plan instead of the automatic
 //               OKAY/zero-wait model, so every burst shape, every ERROR beat
 //               position and wait states of 1, 2, 8 and 16 cycles are
-//               exercised, with and without ERROR.
+//               exercised, with and without ERROR, on reads and writes, on
+//               WRAP/FIXED/INCR16 bursts, across a 1 KB split and with a
+//               different wait on every beat.
 //               Covers BRG_RSP_001 to BRG_RSP_004 and BRG_WAI_001.
 //               Included inside the bridge test package.
 //=============================================================================

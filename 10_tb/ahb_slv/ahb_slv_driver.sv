@@ -98,17 +98,17 @@ class ahb_slv_driver extends uvm_driver #(ahb_slave_response);
     protected function ahb_transfer capture_request(ahb_trans_e htrans);
         ahb_transfer req;
 
-        req          = ahb_transfer::type_id::create("req");
-        req.addr     = vif.slave_cb.HADDR;
-        req.write    = ahb_dir_e'(vif.slave_cb.HWRITE);
-        req.trans    = htrans;
-        req.burst    = ahb_burst_e'(vif.slave_cb.HBURST);
-        req.size     = ahb_size_e'(vif.slave_cb.HSIZE);
-        req.prot     = vif.slave_cb.HPROT;
-        req.mastlock = vif.slave_cb.HMASTLOCK;
-        req.wdata    = '0;
-        req.rdata    = '0;
-        req.resp     = AHB_RESP_OKAY;
+        req             = ahb_transfer::type_id::create("req");
+        req.addr        = vif.slave_cb.HADDR;
+        req.write       = ahb_dir_e'(vif.slave_cb.HWRITE);
+        req.trans       = htrans;
+        req.burst       = ahb_burst_e'(vif.slave_cb.HBURST);
+        req.size        = ahb_size_e'(vif.slave_cb.HSIZE);
+        req.prot        = vif.slave_cb.HPROT;
+        req.mastlock    = vif.slave_cb.HMASTLOCK;
+        req.wdata       = '0;
+        req.rdata       = '0;
+        req.resp        = AHB_RESP_OKAY;
         req.wait_cycles = 0;
         return req;
     endfunction : capture_request
@@ -124,13 +124,13 @@ class ahb_slv_driver extends uvm_driver #(ahb_slave_response);
                        $sformatf("HSIZE exceeds AHB data width at address 0x%0h",
                                  req.addr))
             delay_cycles = 0;
-            resp          = AHB_RESP_ERROR;
-            rdata         = '0;
+            resp         = AHB_RESP_ERROR;
+            rdata        = '0;
         end else if (cfg.auto_gen_resp) begin
             delay_cycles = $urandom_range(cfg.ready_delay_max,
                                           cfg.ready_delay_min);
-            resp          = AHB_RESP_OKAY;
-            rdata         = read_memory_word(req.addr);
+            resp         = AHB_RESP_OKAY;
+            rdata        = read_memory_word(req.addr);
         end else begin
             ahb_slave_response rsp;
 
@@ -142,8 +142,8 @@ class ahb_slv_driver extends uvm_driver #(ahb_slave_response);
             vif.slave_cb.HRESP  <= AHB_RESP_OKAY;
             seq_item_port.get_next_item(rsp);
             delay_cycles = rsp.ready_delay;
-            resp          = rsp.resp;
-            rdata         = rsp.rdata;
+            resp         = rsp.resp;
+            rdata        = rsp.rdata;
             seq_item_port.item_done();
             sqr.req = null;
         end

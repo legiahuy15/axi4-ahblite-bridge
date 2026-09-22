@@ -18,8 +18,8 @@ class vip_env extends uvm_env;
     //-------------------------------------------------------------------------
     // Environment components
     //-------------------------------------------------------------------------
-    axi4_mst_agent   axi_agent;
-    ahb_slv_agent    ahb_agent;
+    axi4_mst_agent    axi_agent;
+    ahb_slv_agent     ahb_agent;
     virtual_sequencer vseqr;
     predictor         pred;
     scoreboard        scb;
