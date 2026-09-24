@@ -284,11 +284,15 @@ class ahb_slv_driver extends uvm_driver #(ahb_slave_response);
     //-------------------------------------------------------------------------
     // Reset handling
     //-------------------------------------------------------------------------
+    // Driven before waiting, not after. A reset that lands while a response is
+    // holding HREADY low resumes this task on that same clock edge, and AHB
+    // requires HREADY high during reset: waiting first would leave it low for
+    // one more cycle, which RESET_DEFAULTS reports from the second reset cycle.
     protected task drive_idle();
-        @(vif.slave_cb);
         vif.slave_cb.HRDATA <= '0;
         vif.slave_cb.HREADY <= 1'b1;
         vif.slave_cb.HRESP  <= AHB_RESP_OKAY;
+        @(vif.slave_cb);
     endtask : drive_idle
 
     protected task wait_reset_release();
