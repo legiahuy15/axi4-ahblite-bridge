@@ -74,6 +74,8 @@ class vip_env extends uvm_env;
         if (pred != null)
             axi_agent.req_ap.connect(pred.axi_request_export);
 
+        vseqr.scb = scb;
+
         if (scb != null) begin
             pred.expected_ahb_ap.connect(scb.expected_ahb_export);
             ahb_agent.ap.connect(scb.actual_ahb_export);

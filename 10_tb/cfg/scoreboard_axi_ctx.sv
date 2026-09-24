@@ -19,6 +19,15 @@ class scoreboard_axi_ctx;
     int unsigned     beat_index;
     bit              write_error;
 
+    // The C_DPHASE_TIMEOUT watchdog abandons a data phase that never
+    // completes: the bridge drops the rest of the burst and forces SLVERR.
+    // The predictor models the AXI-to-AHB translation, not the watchdog, so a
+    // request the test declares through scoreboard::expect_timeout keeps its
+    // predicted beats out of the end-of-test balance and has its completion
+    // dropped instead of compared.
+    bit              timed_out;
+    bit              response_dropped;
+
     //-------------------------------------------------------------------------
     // Constructor
     //-------------------------------------------------------------------------

@@ -17,6 +17,10 @@ class virtual_sequencer extends uvm_sequencer;
     axi4_mst_sequencer axi_sqr;
     ahb_slv_sequencer  ahb_sqr;
 
+    // Null when the environment runs without a scoreboard. A sequence that
+    // declares a watchdog timeout needs it (see scoreboard::expect_timeout).
+    scoreboard         scb;
+
     //-------------------------------------------------------------------------
     // Constructor
     //-------------------------------------------------------------------------

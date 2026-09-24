@@ -55,6 +55,28 @@ class scoreboard extends uvm_scoreboard;
     protected int unsigned mismatched_ahb;
     protected int unsigned matched_axi;
     protected int unsigned mismatched_axi;
+    protected int unsigned timed_out_requests;
+    protected int unsigned timed_out_beats;
+
+    //-------------------------------------------------------------------------
+    // Declared timeouts
+    //-------------------------------------------------------------------------
+    // Direction and ID of requests the test expects the C_DPHASE_TIMEOUT
+    // watchdog to abandon, oldest first. Each key is consumed by the next
+    // predicted request that matches it.
+    typedef struct {
+        axi4_dir_e              dir;
+        bit [AXI4_ID_WIDTH-1:0] id;
+    } timeout_key_t;
+
+    protected timeout_key_t timeout_keys[$];
+
+    // Requests the watchdog abandoned, taken out of the live queues once their
+    // AXI completion was dropped. The AHB slave is still counting out the wait
+    // of the beat the bridge walked away from, so that one beat is reported by
+    // the monitor after the AXI side has already finished; it is matched here
+    // and discarded instead of being attributed to the next request.
+    protected scoreboard_axi_ctx abandoned_ctx_queue[$];
 
     //-------------------------------------------------------------------------
     // Constructor
@@ -75,6 +97,52 @@ class scoreboard extends uvm_scoreboard;
     endfunction : build_phase
 
     //-------------------------------------------------------------------------
+    // Declared timeouts
+    //-------------------------------------------------------------------------
+    // Called by the stimulus before it sends a request whose AHB data phase
+    // the watchdog will abandon. Without it such a request looks like a
+    // bridge fault: the beats after the abandoned one are never issued and
+    // the completion carries the forced SLVERR instead of the AHB response.
+    // The response itself is checked by the sequence, and the AHB side by
+    // bridge_timeout_recovery_test.
+    function void expect_timeout(
+        axi4_dir_e              dir,
+        bit [AXI4_ID_WIDTH-1:0] id
+    );
+        timeout_keys.push_back('{dir, id});
+    endfunction : expect_timeout
+
+    protected function bit take_timeout_key(
+        axi4_dir_e              dir,
+        bit [AXI4_ID_WIDTH-1:0] id
+    );
+        foreach (timeout_keys[i]) begin
+            if ((timeout_keys[i].dir == dir) && (timeout_keys[i].id == id)) begin
+                timeout_keys.delete(i);
+                return 1'b1;
+            end
+        end
+        return 1'b0;
+    endfunction : take_timeout_key
+
+    // Oldest declared-timeout request of this direction and ID whose
+    // completion has not been dropped yet
+    protected function scoreboard_axi_ctx find_timed_out_ctx(
+        axi4_dir_e              dir,
+        bit [AXI4_ID_WIDTH-1:0] id
+    );
+        foreach (pending_ctx_queue[i]) begin
+            scoreboard_axi_ctx ctx;
+
+            ctx = pending_ctx_queue[i];
+            if (ctx.timed_out && !ctx.response_dropped &&
+                (ctx.tr.dir == dir) && (ctx.tr.id == id))
+                return ctx;
+        end
+        return null;
+    endfunction : find_timed_out_ctx
+
+    //-------------------------------------------------------------------------
     // Analysis callbacks
     //-------------------------------------------------------------------------
     function void write_expected_axi(axi4_transaction tr);
@@ -83,6 +151,7 @@ class scoreboard extends uvm_scoreboard;
         if (!$cast(copy_tr, tr.clone()))
             `uvm_fatal(get_type_name(), "Expected AXI template clone failed")
         predict_ctx = new(copy_tr);
+        predict_ctx.timed_out = take_timeout_key(copy_tr.dir, copy_tr.id);
         pending_ctx_queue.push_back(predict_ctx);
     endfunction : write_expected_axi
 
@@ -110,7 +179,35 @@ class scoreboard extends uvm_scoreboard;
     endfunction : write_actual_ahb
 
     function void write_actual_axi(axi4_transaction tr);
-        axi4_transaction copy_tr;
+        axi4_transaction   copy_tr;
+        scoreboard_axi_ctx timed_out_ctx;
+
+        // Dropped as soon as it arrives, so it can never be mistaken later for
+        // the completion of another request with the same direction and ID
+        timed_out_ctx = find_timed_out_ctx(tr.dir, tr.id);
+        if (timed_out_ctx != null) begin
+            timed_out_ctx.response_dropped = 1'b1;
+            timed_out_requests++;
+            // Taken out of the live queues at once: the bridge has finished
+            // with it, so it must not keep receiving the next request's beats
+            foreach (pending_ctx_queue[i]) begin
+                if (pending_ctx_queue[i] == timed_out_ctx) begin
+                    pending_ctx_queue.delete(i);
+                    break;
+                end
+            end
+            if (active_ctx == timed_out_ctx)
+                active_ctx = null;
+            abandoned_ctx_queue.push_back(timed_out_ctx);
+            `uvm_info(get_type_name(),
+                      $sformatf({"[SCB][AXI][TIMEOUT] %s | resp=%s | ",
+                                 "declared timeout, not compared"},
+                                tr.convert2string(),
+                                (tr.dir == AXI4_WRITE) ? tr.bresp.name()
+                                                       : "per beat"),
+                      UVM_MEDIUM)
+            return;
+        end
 
         if (!$cast(copy_tr, tr.clone()))
             `uvm_fatal(get_type_name(), "Actual AXI transaction clone failed")
@@ -121,10 +218,40 @@ class scoreboard extends uvm_scoreboard;
     //-------------------------------------------------------------------------
     // AHB request comparison
     //-------------------------------------------------------------------------
+    // A beat of a request the watchdog already abandoned, reported after its
+    // AXI completion was dropped. Matched on direction and address so it can
+    // never swallow a beat that belongs to a live request.
+    protected function bit take_abandoned_beat(ahb_transfer actual_tr);
+        foreach (abandoned_ctx_queue[i]) begin
+            scoreboard_axi_ctx ctx;
+
+            ctx = abandoned_ctx_queue[i];
+            if ((ctx.expected_beats.size() > 0) &&
+                (ctx.expected_beats[0].write == actual_tr.write) &&
+                (ctx.expected_beats[0].addr  == actual_tr.addr)) begin
+                void'(ctx.expected_beats.pop_front());
+                timed_out_beats++;
+                `uvm_info(get_type_name(),
+                          $sformatf({"[SCB][AHB][TIMEOUT] %s | beat of an ",
+                                     "abandoned request, not compared"},
+                                    actual_tr.convert2string()),
+                          UVM_HIGH)
+                return 1'b1;
+            end
+        end
+        return 1'b0;
+    endfunction : take_abandoned_beat
+
     protected function void compare_ahb_queues();
         while (actual_ahb_queue.size() > 0) begin
             ahb_transfer expected_tr;
             ahb_transfer actual_tr;
+
+            if ((abandoned_ctx_queue.size() > 0) &&
+                take_abandoned_beat(actual_ahb_queue[0])) begin
+                void'(actual_ahb_queue.pop_front());
+                continue;
+            end
 
             if (active_ctx == null) begin
                 active_ctx = find_start_ctx(actual_ahb_queue[0]);
@@ -242,7 +369,10 @@ class scoreboard extends uvm_scoreboard;
             if (active_ctx.tr.dir == AXI4_WRITE)
                 active_ctx.tr.bresp = active_ctx.write_error ? AXI4_RESP_SLVERR
                                                              : AXI4_RESP_OKAY;
-            completed_axi_queue.push_back(active_ctx.tr);
+            // A declared timeout forces SLVERR whatever the AHB side said, so
+            // the rebuilt completion is not an oracle for it
+            if (!active_ctx.timed_out)
+                completed_axi_queue.push_back(active_ctx.tr);
             active_ctx = null;
             compare_axi_queues();
         end
@@ -359,6 +489,8 @@ class scoreboard extends uvm_scoreboard;
         actual_ahb_queue.delete();
         completed_axi_queue.delete();
         actual_axi_queue.delete();
+        timeout_keys.delete();
+        abandoned_ctx_queue.delete();
     endfunction : reset_state
 
     //-------------------------------------------------------------------------
@@ -366,12 +498,20 @@ class scoreboard extends uvm_scoreboard;
     //-------------------------------------------------------------------------
     function void check_phase(uvm_phase phase);
         int unsigned unmatched_expected_ahb;
+        int unsigned pending_requests;
 
         super.check_phase(phase);
 
+        // Beats the watchdog cancelled are expected to be missing, so they are
+        // taken out of the balance rather than reported as lost
         unmatched_expected_ahb = 0;
-        foreach (pending_ctx_queue[i])
+        pending_requests       = 0;
+        foreach (pending_ctx_queue[i]) begin
             unmatched_expected_ahb += pending_ctx_queue[i].expected_beats.size();
+            pending_requests++;
+        end
+        foreach (abandoned_ctx_queue[i])
+            timed_out_beats += abandoned_ctx_queue[i].expected_beats.size();
 
         if ((unmatched_expected_ahb != 0) || (actual_ahb_queue.size() != 0))
             `uvm_error(get_type_name(),
@@ -379,15 +519,33 @@ class scoreboard extends uvm_scoreboard;
                                  unmatched_expected_ahb,
                                  actual_ahb_queue.size()))
 
-        if ((pending_ctx_queue.size() != 0) || (active_ctx != null) ||
+        // An abandoned request is removed from the live queues as soon as its
+        // completion is dropped, so anything still here is unfinished
+        if ((pending_requests != 0) || (active_ctx != null) ||
             (completed_axi_queue.size() != 0) ||
             (actual_axi_queue.size() != 0))
             `uvm_error(get_type_name(),
                        $sformatf({"Unmatched AXI transactions: pending=%0d ",
                                   "expected=%0d actual=%0d"},
-                                 pending_ctx_queue.size(),
+                                 pending_requests,
                                  completed_axi_queue.size(),
                                  actual_axi_queue.size()))
+
+        // A declared timeout that never happened is a hole in the test, not a
+        // pass: the watchdog was expected to abandon a request and did not
+        if (timeout_keys.size() != 0)
+            `uvm_error(get_type_name(),
+                       $sformatf({"%0d declared timeout(s) were never matched ",
+                                  "to a predicted request"},
+                                 timeout_keys.size()))
+        foreach (pending_ctx_queue[i])
+            if (pending_ctx_queue[i].timed_out &&
+                !pending_ctx_queue[i].response_dropped)
+                `uvm_error(get_type_name(),
+                           $sformatf({"Declared timeout on %s id=0x%0h never ",
+                                      "returned an AXI completion"},
+                                     pending_ctx_queue[i].tr.dir.name(),
+                                     pending_ctx_queue[i].tr.id))
 
         // A test that compares nothing must not pass silently
         if (((matched_ahb + mismatched_ahb) == 0) ||
@@ -409,6 +567,12 @@ class scoreboard extends uvm_scoreboard;
                              "AXI match/mismatch=%0d/%0d"},
                             matched_ahb, mismatched_ahb,
                             matched_axi, mismatched_axi), UVM_LOW)
+        if (timed_out_requests != 0)
+            `uvm_info(get_type_name(),
+                      $sformatf({"Scoreboard timeouts: requests=%0d, ",
+                                 "cancelled AHB beats=%0d (declared by the ",
+                                 "test, not compared)"},
+                                timed_out_requests, timed_out_beats), UVM_LOW)
     endfunction : report_phase
 
 endclass : scoreboard

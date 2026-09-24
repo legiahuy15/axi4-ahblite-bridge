@@ -43,7 +43,10 @@ VCOVER      ?= $(QUESTA_BIN)vcover
 TOP           ?= bridge_tb_top
 OPT_TOP       ?= opt_bridge_tb_top
 OPT_TOP_NARROW ?= opt_bridge_tb_top_narrow
+# One image per supported C_DPHASE_TIMEOUT, named <prefix><value>
+OPT_TOP_TMO   ?= opt_bridge_tb_top_tmo
 NARROW        ?= 0
+TIMEOUT       ?= 0
 TESTNAME      ?= bridge_sanity_test
 SEED          ?= random
 UVM_VERBOSITY ?= UVM_LOW
@@ -57,11 +60,17 @@ TEST_LIST ?= bridge_sanity_test bridge_data_integrity_test \
 	         bridge_1kb_boundary_test bridge_unsupported_feature_test \
 	         bridge_size_mapping_test bridge_single_wstrb_test \
 	         bridge_unaligned_read_test bridge_protection_mapping_test \
-	         bridge_response_mapping_test bridge_axi_backpressure_test
+	         bridge_response_mapping_test bridge_axi_backpressure_test \
+	         bridge_timeout_test
 
 # Tests that also run on the C_S_AXI_SUPPORTS_NARROW_BURST=1 build
 NARROW_TEST_LIST ?= bridge_data_integrity_test bridge_size_mapping_test \
 		            bridge_single_wstrb_test bridge_unaligned_read_test
+
+# Supported non-zero C_DPHASE_TIMEOUT values (PG177) and the tests that run on
+# every one of them. The default build covers the C_DPHASE_TIMEOUT=0 case.
+TIMEOUT_VALUES    ?= 16 32 64 128 256
+TIMEOUT_TEST_LIST ?= bridge_timeout_test
 
 VLOG_FLAGS ?= -sv -mfcu -work work -timescale 1ns/1ps
 VOPT_FLAGS ?= +acc -work work
@@ -74,7 +83,12 @@ VLOG_FLAGS += -l $(LOG_DIR)/compile.log
 # non-zero vsim error summary.
 FAIL_REGEX := UVM_(ERROR|FATAL)[[:space:]]*:[[:space:]]*[1-9][0-9]*|^\# \*\* (Error|Fatal)|^\# Errors: [1-9]
 
-RUN_OPT_TOP = $(if $(filter 1,$(NARROW)),$(OPT_TOP_NARROW),$(OPT_TOP))
+RUN_OPT_TMO = $(if $(filter 0,$(TIMEOUT)),$(OPT_TOP),$(OPT_TOP_TMO)$(TIMEOUT))
+RUN_OPT_TOP = $(if $(filter 1,$(NARROW)),$(OPT_TOP_NARROW),$(RUN_OPT_TMO))
+
+# The timeout images are five extra vopt passes, so a plain run only builds
+# them when it actually asks for one
+RUN_OPT_DEPS = optimize $(if $(filter 0,$(TIMEOUT)),,optimize_timeout)
 
 ifeq ($(USE_COVERAGE),1)
     VLOG_FLAGS += -cover sbcet
@@ -100,13 +114,17 @@ REGRESS_TARGETS = $(foreach test,$(TEST_LIST),\
                   $(test)_run_$(idx))) \
                   $(foreach test,$(NARROW_TEST_LIST),\
                   $(foreach idx,$(shell seq 1 $(NUM_RUNS)),\
-                  $(test)_narrow_run_$(idx)))
+                  $(test)_narrow_run_$(idx))) \
+                  $(foreach tmo,$(TIMEOUT_VALUES),\
+                  $(foreach test,$(TIMEOUT_TEST_LIST),\
+                  $(foreach idx,$(shell seq 1 $(NUM_RUNS)),\
+                  $(test)_tmo$(tmo)_run_$(idx))))
 
 #-----------------------------------------------------------------------------
 # Main targets
 #-----------------------------------------------------------------------------
-.PHONY: help check-tools compile optimize run gui regress merge_cov \
-        cov_report assert_report clean
+.PHONY: help check-tools compile optimize optimize_timeout run gui regress \
+        merge_cov cov_report assert_report clean
 
 help:
 	@echo "AXI4 to AHB-Lite Bridge VIP"
@@ -124,9 +142,12 @@ help:
 	@echo "  NUM_RUNS=<n>         Default: $(NUM_RUNS)"
 	@echo "  USE_COVERAGE=<0/1>   Default: $(USE_COVERAGE)"
 	@echo "  NARROW=<0/1>         Run on narrow-burst DUT build: $(NARROW)"
+	@echo "  TIMEOUT=<0/16/../256> Run on a C_DPHASE_TIMEOUT build: $(TIMEOUT)"
 	@echo "  PLUSARGS=\"...\"     Extra simulation plusargs"
 	@echo "  TEST_LIST=\"...\"    Regression test list"
 	@echo "  NARROW_TEST_LIST=\"...\" Regression tests on narrow build"
+	@echo "  TIMEOUT_VALUES=\"...\"  Timeout builds: $(TIMEOUT_VALUES)"
+	@echo "  TIMEOUT_TEST_LIST=\"...\" Regression tests on every timeout build"
 	@echo "  SKIP_MERGE=1         assert_report: use MERGED_UCDB as it is"
 
 check-tools:
@@ -153,7 +174,19 @@ optimize: compile
 		-GC_S_AXI_SUPPORTS_NARROW_BURST=1 \
 		"work.$(TOP)" -o "$(OPT_TOP_NARROW)"
 
-run: optimize
+# One image per supported C_DPHASE_TIMEOUT. Kept out of 'optimize' so an
+# ordinary run does not pay for five extra vopt passes.
+optimize_timeout: compile
+	@cd "$(MAKEFILE_DIR)" && mkdir -p "$(LOG_DIR)"
+	@cd "$(MAKEFILE_DIR)" && for tmo in $(TIMEOUT_VALUES); do \
+		echo "[OPTIMIZE] C_DPHASE_TIMEOUT=$$tmo"; \
+		"$(VOPT)" $(VOPT_FLAGS) \
+			-l "$(LOG_DIR)/optimize_tmo$$tmo.log" \
+			-GC_DPHASE_TIMEOUT=$$tmo \
+			"work.$(TOP)" -o "$(OPT_TOP_TMO)$$tmo" || exit 1; \
+	done
+
+run: $(RUN_OPT_DEPS)
 	@cd "$(MAKEFILE_DIR)" && mkdir -p \
 		"$(LOG_DIR)" "$(WLF_DIR)" "$(COV_DIR)"
 	@echo "[RUN] $(TESTNAME) | seed=$(GEN_SEED)"
@@ -182,7 +215,7 @@ run: optimize
 			exit 1; \
 		fi
 
-gui: optimize
+gui: $(RUN_OPT_DEPS)
 	@cd "$(MAKEFILE_DIR)" && mkdir -p \
 		"$(LOG_DIR)" "$(WLF_DIR)" "$(COV_DIR)"
 	@echo "[GUI] $(TESTNAME) | seed=$(GEN_SEED)"
@@ -203,10 +236,10 @@ gui: optimize
 #-----------------------------------------------------------------------------
 # Regression
 #-----------------------------------------------------------------------------
-regress: optimize
+regress: optimize optimize_timeout
 	@cd "$(MAKEFILE_DIR)" && mkdir -p \
 		"$(LOG_DIR)" "$(WLF_DIR)" "$(COV_DIR)"
-	@echo "[REGRESS] tests=$(TEST_LIST) narrow_tests=$(NARROW_TEST_LIST) runs=$(NUM_RUNS)"
+	@echo "[REGRESS] tests=$(TEST_LIST) narrow_tests=$(NARROW_TEST_LIST) timeout_tests=$(TIMEOUT_TEST_LIST) timeouts=$(TIMEOUT_VALUES) runs=$(NUM_RUNS)"
 	@$(MAKE) -C "$(MAKEFILE_DIR)" $(REGRESS_TARGETS)
 
 $(REGRESS_TARGETS):
@@ -219,6 +252,8 @@ $(REGRESS_TARGETS):
 		case "$$run_name" in \
 			*_narrow) test_name="$${run_name%_narrow}"; \
 			          opt_top="$(OPT_TOP_NARROW)";; \
+			*_tmo*)   test_name="$${run_name%_tmo*}"; \
+			          opt_top="$(OPT_TOP_TMO)$${run_name##*_tmo}";; \
 		esac; \
 		seed=$$(shuf -i 1-99999999 -n 1 2>/dev/null || \
 			echo $$((($$RANDOM * 32768 + $$RANDOM) % 99999999 + 1))); \
