@@ -1,0 +1,41 @@
+QuestaSim-64 vcover 10.6b Coverage Utility 2017.05 May 25 2017
+Start time: 10:43:30 on Sep 24,2026
+vcover report -directive -details report/coverage/merged.ucdb 
+
+DIRECTIVE COVERAGE:
+---------------------------------------------------------------------------------------------
+Name                                     Design Design   Lang File(Line)      Count Status    
+                                         Unit   UnitType                                      
+---------------------------------------------------------------------------------------------
+/bridge_tb_top/axi_checker/C_AW_HANDSHAKE 
+                                         axi4_sva Verilog  SVA  ../10_tb/sva/axi4_sva.sv(423)
+                                                                               2050 Covered   
+/bridge_tb_top/axi_checker/C_W_STALL     axi4_sva Verilog  SVA  ../10_tb/sva/axi4_sva.sv(425)
+                                                                              22295 Covered   
+/bridge_tb_top/axi_checker/C_B_STALL     axi4_sva Verilog  SVA  ../10_tb/sva/axi4_sva.sv(427)
+                                                                                580 Covered   
+/bridge_tb_top/axi_checker/C_AR_HANDSHAKE 
+                                         axi4_sva Verilog  SVA  ../10_tb/sva/axi4_sva.sv(429)
+                                                                               2260 Covered   
+/bridge_tb_top/axi_checker/C_R_STALL     axi4_sva Verilog  SVA  ../10_tb/sva/axi4_sva.sv(431)
+                                                                               3160 Covered   
+/bridge_tb_top/axi_checker/C_B_SLVERR    axi4_sva Verilog  SVA  ../10_tb/sva/axi4_sva.sv(433)
+                                                                                240 Covered   
+/bridge_tb_top/axi_checker/C_R_SLVERR    axi4_sva Verilog  SVA  ../10_tb/sva/axi4_sva.sv(435)
+                                                                                195 Covered   
+/bridge_tb_top/ahb_checker/C_NONSEQ      ahb_sva Verilog  SVA  ../10_tb/sva/ahb_sva.sv(341)
+                                                                               5730 Covered   
+/bridge_tb_top/ahb_checker/C_WAIT_STATE  ahb_sva Verilog  SVA  ../10_tb/sva/ahb_sva.sv(343)
+                                                                                  0 ZERO      
+/bridge_tb_top/ahb_checker/C_ERROR       ahb_sva Verilog  SVA  ../10_tb/sva/ahb_sva.sv(345)
+                                                                                240 Covered   
+/bridge_tb_top/ahb_checker/C_INCR        ahb_sva Verilog  SVA  ../10_tb/sva/ahb_sva.sv(347)
+                                                                                705 Covered   
+/bridge_tb_top/ahb_checker/C_WRAP        ahb_sva Verilog  SVA  ../10_tb/sva/ahb_sva.sv(350)
+                                                                                640 Covered   
+/bridge_tb_top/ahb_checker/C_LOCKED_IDLE ahb_sva Verilog  SVA  ../10_tb/sva/ahb_sva.sv(358)
+                                                                                615 Covered   
+
+TOTAL DIRECTIVE COVERAGE: 92.3%  COVERS: 13
+End time: 10:43:30 on Sep 24,2026, Elapsed time: 0:00:00
+Errors: 0, Warnings: 0
