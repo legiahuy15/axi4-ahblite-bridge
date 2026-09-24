@@ -1,5 +1,0 @@
--html
--htmldir
-report/cov_html
--verbose
-report/coverage/merged.ucdb
