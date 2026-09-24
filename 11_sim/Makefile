@@ -272,21 +272,23 @@ cov_report: merge_cov
 # as B_STABLE and cover directives such as C_B_STALL cannot be reviewed there.
 # These text reports are the evidence for the Assertions sheet of the vplan.
 #
-# An empty report means the merged UCDB carries no assertion data at all, not
-# that no assertion was hit. Assertion and directive counts are collected only
-# when the run enables them, so in that case the regression has to be repeated
-# with collection turned on before the numbers mean anything.
+# Questa collects these counts under plain 'vsim -coverage', so the data is in
+# the UCDB already; only the HTML view of it is missing. An assertion pass
+# count is one per test, so it reads as the number of runs that hit the
+# assertion, not the number of evaluations.
 #
-# MERGED_UCDB=<file> reports on an existing database instead of re-merging:
-#   make assert_report MERGED_UCDB=report/coverage/merged.ucdb SKIP_MERGE=1
+# SKIP_MERGE=1 reuses the merged database instead of building it again, which
+# is worth it after a plain 'make cov_report'. It is only a shortcut: if the
+# database is not there, for instance right after a clean regression, the
+# merge runs anyway.
 SKIP_MERGE ?= 0
 
 assert_report: $(if $(filter 1,$(SKIP_MERGE)),,merge_cov)
 	@cd "$(MAKEFILE_DIR)" && mkdir -p "$(REPORT_DIR)"
 	@cd "$(MAKEFILE_DIR)" && \
 		if [ ! -e "$(MERGED_UCDB)" ]; then \
-			echo "ERROR: $(MERGED_UCDB) not found; run 'make merge_cov'"; \
-			exit 1; \
+			echo "[ASSERT_REPORT] $(MERGED_UCDB) is missing, merging first"; \
+			$(MAKE) -C "$(MAKEFILE_DIR)" merge_cov; \
 		fi
 	@cd "$(MAKEFILE_DIR)" && \
 		"$(VCOVER)" report -assert -details "$(MERGED_UCDB)" \
