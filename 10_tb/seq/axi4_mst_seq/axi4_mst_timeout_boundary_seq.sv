@@ -54,10 +54,18 @@ class axi4_mst_timeout_boundary_seq extends axi4_mst_base_seq;
     int unsigned              case_stride    = 'h100;
     int unsigned              dphase_timeout = 0;
 
-    // Expected threshold, as an offset from C_DPHASE_TIMEOUT. Left unset the
-    // sequence measures and reports it instead of requiring a value.
+    // Expected threshold per direction, as an offset from C_DPHASE_TIMEOUT.
+    // Read and write do not share the same offset: they share the counter but
+    // not the pipeline that carries the beat into it, so the boundary sits one
+    // cycle apart. Left unset the sequence measures and reports them instead
+    // of requiring a value.
     bit                       has_expected_offset;
-    int                       expected_offset;
+    int                       expected_offset_rd;
+    int                       expected_offset_wr;
+
+    // Read and write run off one counter, so their thresholds may differ by
+    // the pipeline depth between them but not by more
+    localparam int unsigned MAX_DIR_SKEW = 2;
 
     //-------------------------------------------------------------------------
     // Shared handles
@@ -125,9 +133,12 @@ class axi4_mst_timeout_boundary_seq extends axi4_mst_base_seq;
         `uvm_info(get_type_name(),
                   $sformatf({"Boundary summary: dphase_timeout=%0d run=%0d ",
                              "failed=%0d timeouts_seen=%0d ",
-                             "threshold_rd=%0d threshold_wr=%0d offset=%0d"},
+                             "threshold_rd=%0d offset_rd=%0d ",
+                             "threshold_wr=%0d offset_wr=%0d"},
                             dphase_timeout, cases_run, cases_failed,
-                            timeouts_seen, measured_threshold[0],
+                            timeouts_seen,
+                            measured_threshold[0],
+                            int'(measured_threshold[0]) - int'(dphase_timeout),
                             measured_threshold[1],
                             int'(measured_threshold[1]) - int'(dphase_timeout)),
                   UVM_LOW)
@@ -316,35 +327,58 @@ class axi4_mst_timeout_boundary_seq extends axi4_mst_base_seq;
             end
         end
 
-        if ((rd != 0) && (wr != 0) && (rd != wr)) begin
-            cases_failed++;
-            `uvm_error(get_type_name(),
-                       $sformatf({"read and write measure different ",
-                                  "thresholds (%0d and %0d) although they ",
-                                  "share one watchdog"}, rd, wr))
-        end
+        // One counter serves both directions, so the two boundaries may sit a
+        // pipeline stage apart but not further
+        if ((rd != 0) && (wr != 0)) begin
+            int skew;
 
-        if (has_expected_offset && (wr != 0)) begin
-            int unsigned expected;
-
-            expected = dphase_timeout + expected_offset;
-            if (wr != expected) begin
+            skew = int'(rd) - int'(wr);
+            if (skew < 0)
+                skew = -skew;
+            if (skew > int'(MAX_DIR_SKEW)) begin
                 cases_failed++;
                 `uvm_error(get_type_name(),
-                           $sformatf({"threshold is %0d (offset %0d), ",
-                                      "expected %0d (offset %0d)"},
-                                     wr, int'(wr) - int'(dphase_timeout),
-                                     expected, expected_offset))
+                           $sformatf({"read threshold %0d and write threshold ",
+                                      "%0d are %0d cycles apart, more than the ",
+                                      "%0d a shared watchdog can explain"},
+                                     rd, wr, skew, MAX_DIR_SKEW))
             end
-        end else if (wr != 0) begin
-            `uvm_info(get_type_name(),
-                      $sformatf({"Measured threshold %0d = C_DPHASE_TIMEOUT ",
-                                 "+ offset %0d. Set EXPECT_OFFSET to ",
-                                 "require it."},
-                                wr, int'(wr) - int'(dphase_timeout)),
-                      UVM_LOW)
         end
+
+        check_offset(AXI4_READ,  rd, expected_offset_rd);
+        check_offset(AXI4_WRITE, wr, expected_offset_wr);
     endfunction : check_thresholds
+
+    protected function void check_offset(
+        axi4_dir_e   dir,
+        int unsigned threshold,
+        int          expected_off
+    );
+        int unsigned expected;
+
+        if (threshold == 0)
+            return;
+        if (!has_expected_offset) begin
+            `uvm_info(get_type_name(),
+                      $sformatf({"%s threshold %0d = C_DPHASE_TIMEOUT + %0d. ",
+                                 "Set EXPECT_OFFSET_RD/WR to require it."},
+                                dir.name(), threshold,
+                                int'(threshold) - int'(dphase_timeout)),
+                      UVM_LOW)
+            return;
+        end
+
+        expected = dphase_timeout + expected_off;
+        if (threshold != expected) begin
+            cases_failed++;
+            `uvm_error(get_type_name(),
+                       $sformatf({"%s threshold is %0d (offset %0d), expected ",
+                                  "%0d (offset %0d)"},
+                                 dir.name(), threshold,
+                                 int'(threshold) - int'(dphase_timeout),
+                                 expected, expected_off))
+        end
+    endfunction : check_offset
 
     //-------------------------------------------------------------------------
     // Request creation

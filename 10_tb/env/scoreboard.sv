@@ -80,6 +80,11 @@ class scoreboard extends uvm_scoreboard;
     // and discarded instead of being attributed to the next request.
     protected scoreboard_axi_ctx abandoned_ctx_queue[$];
 
+    // Declared requests whose AXI completion has not arrived yet, in
+    // declaration order. Kept separate from pending_ctx_queue so a request
+    // stays findable after its beats have all been accounted for.
+    protected scoreboard_axi_ctx declared_ctx_queue[$];
+
     //-------------------------------------------------------------------------
     // Constructor
     //-------------------------------------------------------------------------
@@ -151,22 +156,48 @@ class scoreboard extends uvm_scoreboard;
         return 1'b0;
     endfunction : response_is_timeout
 
-    // Oldest declared-timeout request of this direction and ID whose
-    // completion has not been dropped yet
+    // Oldest declared request of this direction and ID still waiting for its
+    // completion. It is looked up in its own list rather than in
+    // pending_ctx_queue, because the beat the watchdog cancelled can be
+    // reported before the AXI completion arrives, and that removes the
+    // request from pending_ctx_queue on the way.
     protected function scoreboard_axi_ctx find_timed_out_ctx(
         axi4_dir_e              dir,
         bit [AXI4_ID_WIDTH-1:0] id
     );
-        foreach (pending_ctx_queue[i]) begin
+        foreach (declared_ctx_queue[i]) begin
             scoreboard_axi_ctx ctx;
 
-            ctx = pending_ctx_queue[i];
-            if (ctx.timed_out && !ctx.response_dropped &&
-                (ctx.tr.dir == dir) && (ctx.tr.id == id))
+            ctx = declared_ctx_queue[i];
+            if ((ctx.tr.dir == dir) && (ctx.tr.id == id))
                 return ctx;
         end
         return null;
     endfunction : find_timed_out_ctx
+
+    protected function void forget_declared_ctx(scoreboard_axi_ctx ctx);
+        foreach (declared_ctx_queue[i]) begin
+            if (declared_ctx_queue[i] == ctx) begin
+                declared_ctx_queue.delete(i);
+                return;
+            end
+        end
+    endfunction : forget_declared_ctx
+
+    // The completion rebuilt from the AHB beats of a request the watchdog took
+    // is not an oracle for it, so it is withdrawn rather than compared
+    protected function void drop_rebuilt_completion(
+        axi4_dir_e              dir,
+        bit [AXI4_ID_WIDTH-1:0] id
+    );
+        foreach (completed_axi_queue[i]) begin
+            if ((completed_axi_queue[i].dir == dir) &&
+                (completed_axi_queue[i].id  == id)) begin
+                completed_axi_queue.delete(i);
+                return;
+            end
+        end
+    endfunction : drop_rebuilt_completion
 
     //-------------------------------------------------------------------------
     // Analysis callbacks
@@ -180,6 +211,8 @@ class scoreboard extends uvm_scoreboard;
         predict_ctx.timed_out = take_timeout_key(copy_tr.dir, copy_tr.id,
                                                  predict_ctx.timeout_strict);
         pending_ctx_queue.push_back(predict_ctx);
+        if (predict_ctx.timed_out)
+            declared_ctx_queue.push_back(predict_ctx);
     endfunction : write_expected_axi
 
     function void write_expected_ahb(ahb_transfer tr);
@@ -223,10 +256,15 @@ class scoreboard extends uvm_scoreboard;
                                      tr.dir.name(), tr.id))
             end
             timed_out_ctx.timed_out = 1'b0;
-            timed_out_ctx           = null;
+            forget_declared_ctx(timed_out_ctx);
+            timed_out_ctx = null;
         end
         if (timed_out_ctx != null) begin
             timed_out_ctx.response_dropped = 1'b1;
+            forget_declared_ctx(timed_out_ctx);
+            // The beats may all have been accounted for already, in which case
+            // a completion was rebuilt for this request; withdraw it
+            drop_rebuilt_completion(tr.dir, tr.id);
             timed_out_requests++;
             // Taken out of the live queues at once: the bridge has finished
             // with it, so it must not keep receiving the next request's beats
@@ -409,10 +447,10 @@ class scoreboard extends uvm_scoreboard;
             if (active_ctx.tr.dir == AXI4_WRITE)
                 active_ctx.tr.bresp = active_ctx.write_error ? AXI4_RESP_SLVERR
                                                              : AXI4_RESP_OKAY;
-            // A declared timeout forces SLVERR whatever the AHB side said, so
-            // the rebuilt completion is not an oracle for it
-            if (!active_ctx.timed_out)
-                completed_axi_queue.push_back(active_ctx.tr);
+            // Always rebuilt: whether a declared request actually timed out is
+            // only known when its AXI completion arrives, which may be after
+            // its beats. The drop path withdraws this again if it did.
+            completed_axi_queue.push_back(active_ctx.tr);
             active_ctx = null;
             compare_axi_queues();
         end
@@ -531,6 +569,7 @@ class scoreboard extends uvm_scoreboard;
         actual_axi_queue.delete();
         timeout_keys.delete();
         abandoned_ctx_queue.delete();
+        declared_ctx_queue.delete();
     endfunction : reset_state
 
     //-------------------------------------------------------------------------
@@ -578,14 +617,12 @@ class scoreboard extends uvm_scoreboard;
                        $sformatf({"%0d declared timeout(s) were never matched ",
                                   "to a predicted request"},
                                  timeout_keys.size()))
-        foreach (pending_ctx_queue[i])
-            if (pending_ctx_queue[i].timed_out &&
-                !pending_ctx_queue[i].response_dropped)
-                `uvm_error(get_type_name(),
-                           $sformatf({"Declared timeout on %s id=0x%0h never ",
-                                      "returned an AXI completion"},
-                                     pending_ctx_queue[i].tr.dir.name(),
-                                     pending_ctx_queue[i].tr.id))
+        foreach (declared_ctx_queue[i])
+            `uvm_error(get_type_name(),
+                       $sformatf({"Declared timeout on %s id=0x%0h never ",
+                                  "returned an AXI completion"},
+                                 declared_ctx_queue[i].tr.dir.name(),
+                                 declared_ctx_queue[i].tr.id))
         if (missed_timeouts != 0)
             `uvm_error(get_type_name(),
                        $sformatf("%0d declared timeout(s) did not time out",

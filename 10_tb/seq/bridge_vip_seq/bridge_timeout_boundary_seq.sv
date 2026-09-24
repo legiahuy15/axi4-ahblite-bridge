@@ -20,7 +20,8 @@ class bridge_timeout_boundary_seq extends bridge_base_seq;
     bit [AXI4_ADDR_WIDTH-1:0] base_addr   = 'h1000;
     int unsigned              case_stride = 'h100;
     bit                       has_expected_offset;
-    int                       expected_offset;
+    int                       expected_offset_rd;
+    int                       expected_offset_wr;
 
     //-------------------------------------------------------------------------
     // Constructor
@@ -58,7 +59,8 @@ class bridge_timeout_boundary_seq extends bridge_base_seq;
         axi_seq.case_stride         = case_stride;
         axi_seq.dphase_timeout      = cfg.dphase_timeout;
         axi_seq.has_expected_offset = has_expected_offset;
-        axi_seq.expected_offset     = expected_offset;
+        axi_seq.expected_offset_rd  = expected_offset_rd;
+        axi_seq.expected_offset_wr  = expected_offset_wr;
 
         fork
             ahb_seq.start(p_sequencer.ahb_sqr);
