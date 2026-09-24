@@ -20,6 +20,13 @@ LOG_DIR       = $(REPORT_DIR)/logs
 WLF_DIR       = $(REPORT_DIR)/wlf
 COV_DIR       = $(REPORT_DIR)/coverage
 COV_HTML_DIR  = $(REPORT_DIR)/cov_html
+MERGED_UCDB   = $(COV_DIR)/merged.ucdb
+
+# The HTML report carries covergroups and code coverage only, so assertions
+# and cover directives get their own text reports
+ASSERT_TXT    = $(REPORT_DIR)/assertions.txt
+DIRECTIVE_TXT = $(REPORT_DIR)/directives.txt
+SVA_DIR       = ../10_tb/sva
 
 QUESTA_BIN ?=
 VLIB        ?= $(QUESTA_BIN)vlib
@@ -98,7 +105,7 @@ REGRESS_TARGETS = $(foreach test,$(TEST_LIST),\
 # Main targets
 #-----------------------------------------------------------------------------
 .PHONY: help check-tools compile optimize run gui regress merge_cov \
-        cov_report clean
+        cov_report assert_report clean
 
 help:
 	@echo "AXI4 to AHB-Lite Bridge VIP"
@@ -107,6 +114,7 @@ help:
 	@echo "  make gui             Run one test in Questa GUI"
 	@echo "  make regress         Run TEST_LIST in parallel"
 	@echo "  make cov_report      Merge UCDB files and create HTML report"
+	@echo "  make assert_report   Assertion and cover-directive text reports"
 	@echo "  make clean           Remove generated simulation outputs"
 	@echo ""
 	@echo "  TESTNAME=<name>      Default: $(TESTNAME)"
@@ -118,6 +126,7 @@ help:
 	@echo "  PLUSARGS=\"...\"     Extra simulation plusargs"
 	@echo "  TEST_LIST=\"...\"    Regression test list"
 	@echo "  NARROW_TEST_LIST=\"...\" Regression tests on narrow build"
+	@echo "  SKIP_MERGE=1         assert_report: use MERGED_UCDB as it is"
 
 check-tools:
 	@for tool in "$(VLIB)" "$(VMAP)" "$(VLOG)" "$(VOPT)" "$(VSIM)"; do \
@@ -241,18 +250,92 @@ $(REGRESS_TARGETS):
 merge_cov:
 	@cd "$(MAKEFILE_DIR)" && mkdir -p "$(COV_DIR)"
 	@cd "$(MAKEFILE_DIR)" && \
-		rm -f -- "$(COV_DIR)/merged.ucdb"; \
+		rm -f -- "$(MERGED_UCDB)"; \
 		set -- $(COV_DIR)/*.ucdb; \
 		if [ ! -e "$$1" ]; then \
 			echo "ERROR: No UCDB files found in $(COV_DIR)"; \
 			exit 1; \
 		fi; \
-		"$(VCOVER)" merge "$(COV_DIR)/merged.ucdb" "$$@"
+		"$(VCOVER)" merge "$(MERGED_UCDB)" "$$@"
 
 cov_report: merge_cov
 	@cd "$(MAKEFILE_DIR)" && mkdir -p "$(COV_HTML_DIR)"
 	cd "$(MAKEFILE_DIR)" && "$(VCOVER)" report -html \
-		-htmldir "$(COV_HTML_DIR)" -verbose "$(COV_DIR)/merged.ucdb"
+		-htmldir "$(COV_HTML_DIR)" -verbose "$(MERGED_UCDB)"
+
+#-----------------------------------------------------------------------------
+# Assertion and cover-directive report
+#-----------------------------------------------------------------------------
+# The HTML report shows covergroups and code coverage only: after a run its
+# global.json holds g_assertViews = 0 and g_directViews = 0, so assertions such
+# as B_STABLE and cover directives such as C_B_STALL cannot be reviewed there.
+# These text reports are the evidence for the Assertions sheet of the vplan.
+#
+# An empty report means the merged UCDB carries no assertion data at all, not
+# that no assertion was hit. Assertion and directive counts are collected only
+# when the run enables them, so in that case the regression has to be repeated
+# with collection turned on before the numbers mean anything.
+#
+# MERGED_UCDB=<file> reports on an existing database instead of re-merging:
+#   make assert_report MERGED_UCDB=report/coverage/merged.ucdb SKIP_MERGE=1
+SKIP_MERGE ?= 0
+
+assert_report: $(if $(filter 1,$(SKIP_MERGE)),,merge_cov)
+	@cd "$(MAKEFILE_DIR)" && mkdir -p "$(REPORT_DIR)"
+	@cd "$(MAKEFILE_DIR)" && \
+		if [ ! -e "$(MERGED_UCDB)" ]; then \
+			echo "ERROR: $(MERGED_UCDB) not found; run 'make merge_cov'"; \
+			exit 1; \
+		fi
+	@cd "$(MAKEFILE_DIR)" && \
+		"$(VCOVER)" report -assert -details "$(MERGED_UCDB)" \
+			> "$(ASSERT_TXT)" 2>/dev/null || \
+		"$(VCOVER)" report -assert "$(MERGED_UCDB)" \
+			> "$(ASSERT_TXT)" || { \
+			echo "ERROR: this Questa rejects 'vcover report -assert'."; \
+			echo "       Run 'vcover report -help' and use the switch it lists."; \
+			exit 1; \
+		}
+	@cd "$(MAKEFILE_DIR)" && \
+		"$(VCOVER)" report -directive -details "$(MERGED_UCDB)" \
+			> "$(DIRECTIVE_TXT)" 2>/dev/null || \
+		"$(VCOVER)" report -directive "$(MERGED_UCDB)" \
+			> "$(DIRECTIVE_TXT)" || { \
+			echo "ERROR: this Questa rejects 'vcover report -directive'."; \
+			echo "       Run 'vcover report -help' and use the switch it lists."; \
+			exit 1; \
+		}
+	@cd "$(MAKEFILE_DIR)" && \
+		for report_file in "$(ASSERT_TXT)" "$(DIRECTIVE_TXT)"; do \
+			echo ""; \
+			echo "[ASSERT_REPORT] $$report_file ($$(wc -l < "$$report_file") lines)"; \
+			grep -iE 'coverage|total' "$$report_file" | tail -6; \
+			echo "  Never hit (trailing count is zero):"; \
+			awk '$$NF ~ /^[0-9]+$$/ && $$NF+0 == 0 { print "    " $$1 }' \
+				"$$report_file" | sort -u; \
+		done
+	@cd "$(MAKEFILE_DIR)" && \
+		seen=0; total=0; missing=""; \
+		for label in $$(grep -hoE \
+			'[A-Z][A-Z0-9_]{2,}[[:space:]]*:[[:space:]]*(assert|cover)' \
+			$(SVA_DIR)/*.sv | sed -E 's/[[:space:]]*:.*//' | sort -u); do \
+			total=$$((total + 1)); \
+			if grep -qw "$$label" "$(ASSERT_TXT)" "$(DIRECTIVE_TXT)"; then \
+				seen=$$((seen + 1)); \
+			else \
+				missing="$$missing $$label"; \
+			fi; \
+		done; \
+		echo ""; \
+		echo "[ASSERT_REPORT] SVA labels found in the reports: $$seen/$$total"; \
+		if [ "$$seen" -eq 0 ]; then \
+			echo "  The merged UCDB holds no assertion or directive data."; \
+			echo "  These counts are collected during the run, so the"; \
+			echo "  regression has to be repeated with collection enabled"; \
+			echo "  before the numbers mean anything."; \
+		elif [ -n "$$missing" ]; then \
+			echo "  Absent from both reports:$$missing"; \
+		fi
 
 #-----------------------------------------------------------------------------
 # Cleanup
