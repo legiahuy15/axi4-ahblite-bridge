@@ -1,41 +1,1032 @@
 QuestaSim-64 vlog 10.6b Compiler 2017.05 May 25 2017
-Start time: 12:51:48 on Sep 24,2026
+Start time: 14:07:03 on Sep 24,2026
 vlog -sv -mfcu -work work -timescale 1ns/1ps -l report/logs/compile.log -cover sbcet -f bridge_files.f 
 -- Compiling interface axi4_if
 -- Compiling interface ahb_if
 -- Compiling package bridge_vip_pkg
 ** Note: (vlog-2286) ../10_tb/bridge_vip_pkg.sv(16): Using implicit +incdir+/cadtools/mentor/Questa_10.6b/questasim/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
 -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+** Error: ** while parsing file included at ../10_tb/bridge_vip_pkg.sv(64)
+** at ../10_tb/env/virtual_sequencer.sv(22): Invalid type 'scoreboard'. Please check the type of the variable 'scb'.
 -- Compiling package bridge_seq_pkg
--- Importing package bridge_vip_pkg
+** Error: ../10_tb/bridge_seq_pkg.sv(18): (vlog-13006) Could not find the package (bridge_vip_pkg).  Design read will continue, but expect a cascade of errors after this failure.  Furthermore if you experience a vopt-7 error immediately before this error then please check the package names or the library search paths on the command line.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(9): (vlog-2730) Undefined variable: 'axi4_transaction'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
+** while parsing macro expansion: 'uvm_declare_p_sequencer' starting at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(12)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(12): Invalid type 'axi4_mst_sequencer'. Please check the type of the variable 'p_sequencer'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(17): Invalid type 'axi4_mst_agent_cfg'. Please check the type of the variable 'cfg'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(22): (vlog-2730) Undefined variable: 'AXI4_ADDR_WIDTH'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(24): (vlog-2730) Undefined variable: 'AXI4_ID_WIDTH'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(40): (vlog-2730) Undefined variable: 'p_sequencer'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(45): (vlog-2730) Undefined variable: 'cfg'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(53): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(23)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_base_seq.sv(62): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(20): (vlog-2730) Undefined variable: 'AXI4_STRB_WIDTH'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(44): (vlog-2730) Undefined variable: 'AXI4_DATA_WIDTH'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(45): near ";": syntax error, unexpected ';', expecting '('.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(46): near ";": syntax error, unexpected ';', expecting '('.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(47): near ";": syntax error, unexpected ';', expecting '('.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(48): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(54): (vlog-2730) Undefined variable: 'wr_req'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(58): (vlog-2730) Undefined variable: 'rd_req'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(71): near "create_write_request": syntax error, unexpected IDENTIFIER, expecting ';' or '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(78): (vlog-2164) Class or package 'axi4_transaction' not found.
+** Error (suppressible): ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(98): (vlog-13163) End label 'create_write_request' does not match function name on line 71.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(100): 'axi4_transaction' already exists; must not be redefined as a function.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(100): near "create_read_request": syntax error, unexpected IDENTIFIER, expecting ';' or '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(106): (vlog-2164) Class or package 'axi4_transaction' not found.
+** Error (suppressible): ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(124): (vlog-13163) End label 'create_read_request' does not match function name on line 100.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(130): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(143): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(181): (vlog-2730) Undefined variable: 'AXI4_STRB_WIDTH'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(205): (vlog-2730) Undefined variable: 'AXI4_DATA_WIDTH'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(24)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_sanity_seq.sv(211): (vlog-2730) Undefined variable: 'AXI4_STRB_WIDTH'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(48): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(52): (vlog-2730) Undefined variable: 'burst'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(52): (vlog-2730) Undefined variable: 'AXI4_BURST_INCR'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(53): (vlog-2730) Undefined variable: 'burst'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(53): (vlog-2730) Undefined variable: 'AXI4_BURST_INCR'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(54): (vlog-2730) Undefined variable: 'burst'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(54): (vlog-2730) Undefined variable: 'AXI4_BURST_INCR'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(55): (vlog-2730) Undefined variable: 'burst'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(55): (vlog-2730) Undefined variable: 'AXI4_BURST_WRAP'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(56): (vlog-2730) Undefined variable: 'burst'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(56): (vlog-2730) Undefined variable: 'AXI4_BURST_FIXED'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(68): (vlog-2730) Undefined variable: 'AXI4_STRB_WIDTH'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(104): (vlog-2400) Identifier ('axi4_burst_e') found where a type or type identifier is required.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(155): near "create_write_request": syntax error, unexpected IDENTIFIER, expecting ';' or '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(165): (vlog-2164) Class or package 'axi4_transaction' not found.
+** Error (suppressible): ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(187): (vlog-13163) End label 'create_write_request' does not match function name on line 155.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(189): 'axi4_transaction' already exists; must not be redefined as a function.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(189): near "create_read_request": syntax error, unexpected IDENTIFIER, expecting ';' or '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(198): (vlog-2164) Class or package 'axi4_transaction' not found.
+** Error (suppressible): ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(215): (vlog-13163) End label 'create_read_request' does not match function name on line 189.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(223): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(267): (vlog-2730) Undefined variable: 'AXI4_DATA_WIDTH'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(274): (vlog-2730) Undefined variable: 'AXI4_STRB_WIDTH'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(25)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_data_integrity_seq.sv(285): (vlog-2730) Undefined variable: 'AXI4_STRB_WIDTH'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_burst_matrix_seq.sv(21): (vlog-2730) Undefined variable: 'AXI4_STRB_WIDTH'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_burst_matrix_seq.sv(35): near "axi4_burst_e": syntax error, unexpected IDENTIFIER.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_burst_matrix_seq.sv(38): near "}": syntax error, unexpected '}', expecting function or task or "SystemVerilog keyword 'pure'".
 -- Compiling package bridge_test_pkg
--- Importing package bridge_seq_pkg
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** at ../10_tb/bridge_test_pkg.sv(18): (vlog-13006) Could not find the package (bridge_vip_pkg).  Design read will continue, but expect a cascade of errors after this failure.  Furthermore if you experience a vopt-7 error immediately before this error then please check the package names or the library search paths on the command line.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
+** at ../10_tb/test/bridge_base_test.sv(16): Invalid type 'vip_env'. Please check the type of the variable 'env'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
+** at ../10_tb/test/bridge_base_test.sv(17): Invalid type 'vip_env_cfg'. Please check the type of the variable 'env_cfg'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
+** at ../10_tb/test/bridge_base_test.sv(32): (vlog-2730) Undefined variable: 'env_cfg'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
+** at ../10_tb/test/bridge_base_test.sv(32): (vlog-2164) Class or package 'vip_env_cfg' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
+** at ../10_tb/test/bridge_base_test.sv(32): (vlog-2730) Undefined variable: 'vip_env_cfg'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
+** at ../10_tb/test/bridge_base_test.sv(32): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
+** at ../10_tb/test/bridge_base_test.sv(34): (vlog-2730) Undefined variable: 'axi4_vif_t'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
+** at ../10_tb/test/bridge_base_test.sv(38): (vlog-2730) Undefined variable: 'ahb_vif_t'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
+** at ../10_tb/test/bridge_base_test.sv(46): (vlog-2730) Undefined variable: 'env'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
+** at ../10_tb/test/bridge_base_test.sv(46): (vlog-2164) Class or package 'vip_env' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
+** at ../10_tb/test/bridge_base_test.sv(46): (vlog-2730) Undefined variable: 'vip_env'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(24)
+** at ../10_tb/test/bridge_base_test.sv(46): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(25)
+** at ../10_tb/test/bridge_sanity_test.sv(18): (vlog-2730) Undefined variable: 'AXI4_STRB_WIDTH'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(25)
+** at ../10_tb/test/bridge_sanity_test.sv(47): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(25)
+** at ../10_tb/test/bridge_sanity_test.sv(51): (vlog-2730) Undefined variable: 'seq'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(25)
+** at ../10_tb/test/bridge_sanity_test.sv(51): (vlog-2164) Class or package 'bridge_sanity_seq' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(25)
+** at ../10_tb/test/bridge_sanity_test.sv(51): (vlog-2730) Undefined variable: 'bridge_sanity_seq'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(25)
+** at ../10_tb/test/bridge_sanity_test.sv(51): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(26)
+** at ../10_tb/test/bridge_data_integrity_test.sv(56): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(26)
+** at ../10_tb/test/bridge_data_integrity_test.sv(60): (vlog-2730) Undefined variable: 'seq'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(26)
+** at ../10_tb/test/bridge_data_integrity_test.sv(60): (vlog-2164) Class or package 'bridge_data_integrity_seq' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(26)
+** at ../10_tb/test/bridge_data_integrity_test.sv(60): (vlog-2730) Undefined variable: 'bridge_data_integrity_seq'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(26)
+** at ../10_tb/test/bridge_data_integrity_test.sv(60): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(27)
+** at ../10_tb/test/bridge_burst_matrix_test.sv(20): (vlog-2730) Undefined variable: 'AXI4_STRB_WIDTH'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(27)
+** at ../10_tb/test/bridge_burst_matrix_test.sv(54): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(27)
+** at ../10_tb/test/bridge_burst_matrix_test.sv(58): (vlog-2730) Undefined variable: 'seq'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(27)
+** at ../10_tb/test/bridge_burst_matrix_test.sv(58): (vlog-2164) Class or package 'bridge_burst_matrix_seq' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(27)
+** at ../10_tb/test/bridge_burst_matrix_test.sv(58): (vlog-2730) Undefined variable: 'bridge_burst_matrix_seq'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(27)
+** at ../10_tb/test/bridge_burst_matrix_test.sv(58): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(28)
+** at ../10_tb/test/bridge_incr_mapping_test.sv(53): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(28)
+** at ../10_tb/test/bridge_incr_mapping_test.sv(57): (vlog-2730) Undefined variable: 'seq'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(28)
+** at ../10_tb/test/bridge_incr_mapping_test.sv(57): (vlog-2164) Class or package 'bridge_incr_mapping_seq' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(28)
+** at ../10_tb/test/bridge_incr_mapping_test.sv(57): (vlog-2730) Undefined variable: 'bridge_incr_mapping_seq'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(28)
+** at ../10_tb/test/bridge_incr_mapping_test.sv(57): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(29)
+** at ../10_tb/test/bridge_fixed_mapping_test.sv(53): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(29)
+** at ../10_tb/test/bridge_fixed_mapping_test.sv(57): (vlog-2730) Undefined variable: 'seq'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(29)
+** at ../10_tb/test/bridge_fixed_mapping_test.sv(57): (vlog-2164) Class or package 'bridge_fixed_mapping_seq' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(29)
+** at ../10_tb/test/bridge_fixed_mapping_test.sv(57): (vlog-2730) Undefined variable: 'bridge_fixed_mapping_seq'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(29)
+** at ../10_tb/test/bridge_fixed_mapping_test.sv(57): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(30)
+** at ../10_tb/test/bridge_wrap_mapping_test.sv(48): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(30)
+** at ../10_tb/test/bridge_wrap_mapping_test.sv(52): (vlog-2730) Undefined variable: 'seq'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(30)
+** at ../10_tb/test/bridge_wrap_mapping_test.sv(52): (vlog-2164) Class or package 'bridge_wrap_mapping_seq' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(30)
+** at ../10_tb/test/bridge_wrap_mapping_test.sv(52): (vlog-2730) Undefined variable: 'bridge_wrap_mapping_seq'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(30)
+** at ../10_tb/test/bridge_wrap_mapping_test.sv(52): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(31)
+** at ../10_tb/test/bridge_1kb_boundary_test.sv(48): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(31)
+** at ../10_tb/test/bridge_1kb_boundary_test.sv(52): (vlog-2730) Undefined variable: 'seq'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(31)
+** at ../10_tb/test/bridge_1kb_boundary_test.sv(52): (vlog-2164) Class or package 'bridge_1kb_boundary_seq' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(31)
+** at ../10_tb/test/bridge_1kb_boundary_test.sv(52): (vlog-2730) Undefined variable: 'bridge_1kb_boundary_seq'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(31)
+** at ../10_tb/test/bridge_1kb_boundary_test.sv(52): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(32)
+** at ../10_tb/test/bridge_unsupported_feature_test.sv(52): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(32)
+** at ../10_tb/test/bridge_unsupported_feature_test.sv(55): Illegal declaration after the statement near line '52'.  Declarations must precede statements.  Look for stray semicolons.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(32)
+** at ../10_tb/test/bridge_unsupported_feature_test.sv(61): (vlog-2730) Undefined variable: 'seq'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(32)
+** at ../10_tb/test/bridge_unsupported_feature_test.sv(61): (vlog-2164) Class or package 'bridge_unsupported_feature_seq' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(32)
+** at ../10_tb/test/bridge_unsupported_feature_test.sv(61): (vlog-2730) Undefined variable: 'bridge_unsupported_feature_seq'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(32)
+** at ../10_tb/test/bridge_unsupported_feature_test.sv(61): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(33)
+** at ../10_tb/test/bridge_size_mapping_test.sv(54): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(33)
+** at ../10_tb/test/bridge_size_mapping_test.sv(58): (vlog-2730) Undefined variable: 'seq'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(33)
+** at ../10_tb/test/bridge_size_mapping_test.sv(58): (vlog-2164) Class or package 'bridge_size_mapping_seq' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(33)
+** at ../10_tb/test/bridge_size_mapping_test.sv(58): (vlog-2730) Undefined variable: 'bridge_size_mapping_seq'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(33)
+** at ../10_tb/test/bridge_size_mapping_test.sv(58): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(34)
+** at ../10_tb/test/bridge_single_wstrb_test.sv(60): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(34)
+** at ../10_tb/test/bridge_single_wstrb_test.sv(64): (vlog-2730) Undefined variable: 'seq'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(34)
+** at ../10_tb/test/bridge_single_wstrb_test.sv(64): (vlog-2164) Class or package 'bridge_single_wstrb_seq' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(34)
+** at ../10_tb/test/bridge_single_wstrb_test.sv(64): (vlog-2730) Undefined variable: 'bridge_single_wstrb_seq'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(34)
+** at ../10_tb/test/bridge_single_wstrb_test.sv(64): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(35)
+** at ../10_tb/test/bridge_unaligned_read_test.sv(56): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(35)
+** at ../10_tb/test/bridge_unaligned_read_test.sv(60): (vlog-2730) Undefined variable: 'seq'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(35)
+** at ../10_tb/test/bridge_unaligned_read_test.sv(60): (vlog-2164) Class or package 'bridge_unaligned_read_seq' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(35)
+** at ../10_tb/test/bridge_unaligned_read_test.sv(60): (vlog-2730) Undefined variable: 'bridge_unaligned_read_seq'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(35)
+** at ../10_tb/test/bridge_unaligned_read_test.sv(60): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(36)
+** at ../10_tb/test/bridge_protection_mapping_test.sv(51): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(36)
+** at ../10_tb/test/bridge_protection_mapping_test.sv(55): (vlog-2730) Undefined variable: 'seq'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(36)
+** at ../10_tb/test/bridge_protection_mapping_test.sv(55): (vlog-2164) Class or package 'bridge_protection_mapping_seq' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(36)
+** at ../10_tb/test/bridge_protection_mapping_test.sv(55): (vlog-2730) Undefined variable: 'bridge_protection_mapping_seq'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(36)
+** at ../10_tb/test/bridge_protection_mapping_test.sv(55): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(37)
+** at ../10_tb/test/bridge_response_mapping_test.sv(53): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(37)
+** at ../10_tb/test/bridge_response_mapping_test.sv(57): (vlog-2730) Undefined variable: 'seq'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(37)
+** at ../10_tb/test/bridge_response_mapping_test.sv(57): (vlog-2164) Class or package 'bridge_response_mapping_seq' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(37)
+** at ../10_tb/test/bridge_response_mapping_test.sv(57): (vlog-2730) Undefined variable: 'bridge_response_mapping_seq'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(37)
+** at ../10_tb/test/bridge_response_mapping_test.sv(57): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(38)
+** at ../10_tb/test/bridge_axi_backpressure_test.sv(63): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(38)
+** at ../10_tb/test/bridge_axi_backpressure_test.sv(67): (vlog-2730) Undefined variable: 'seq'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(38)
+** at ../10_tb/test/bridge_axi_backpressure_test.sv(67): (vlog-2164) Class or package 'bridge_backpressure_seq' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(38)
+** at ../10_tb/test/bridge_axi_backpressure_test.sv(67): (vlog-2730) Undefined variable: 'bridge_backpressure_seq'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(38)
+** at ../10_tb/test/bridge_axi_backpressure_test.sv(67): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(39)
+** at ../10_tb/test/bridge_timeout_test.sv(71): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(39)
+** at ../10_tb/test/bridge_timeout_test.sv(75): (vlog-2730) Undefined variable: 'seq'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(39)
+** at ../10_tb/test/bridge_timeout_test.sv(75): (vlog-2164) Class or package 'bridge_timeout_seq' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(39)
+** at ../10_tb/test/bridge_timeout_test.sv(75): (vlog-2730) Undefined variable: 'bridge_timeout_seq'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(26)
+** while parsing file included at ../10_tb/bridge_test_pkg.sv(39)
+** at ../10_tb/test/bridge_timeout_test.sv(75): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(27)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_incr_mapping_seq.sv(119): (vlog-2400) Identifier ('axi4_dir_e') found where a type or type identifier is required.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(27)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_incr_mapping_seq.sv(209): near "create_request": syntax error, unexpected IDENTIFIER, expecting ';' or '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(27)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_incr_mapping_seq.sv(218): (vlog-2164) Class or package 'axi4_transaction' not found.
+** Error (suppressible): ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(27)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_incr_mapping_seq.sv(237): (vlog-13163) End label 'create_request' does not match function name on line 209.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(27)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_incr_mapping_seq.sv(243): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(27)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_incr_mapping_seq.sv(277): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(27)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_incr_mapping_seq.sv(330): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(27)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_incr_mapping_seq.sv(361): (vlog-2730) Undefined variable: 'AXI4_STRB_WIDTH'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(28)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_fixed_mapping_seq.sv(77): (vlog-2400) Identifier ('axi4_dir_e') found where a type or type identifier is required.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(28)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_fixed_mapping_seq.sv(151): near "create_request": syntax error, unexpected IDENTIFIER, expecting ';' or '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(28)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_fixed_mapping_seq.sv(159): (vlog-2164) Class or package 'axi4_transaction' not found.
+** Error (suppressible): ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(28)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_fixed_mapping_seq.sv(178): (vlog-13163) End label 'create_request' does not match function name on line 151.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(28)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_fixed_mapping_seq.sv(184): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(28)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_fixed_mapping_seq.sv(193): (vlog-2730) Undefined variable: 'AXI4_DATA_WIDTH'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(28)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_fixed_mapping_seq.sv(200): (vlog-2730) Undefined variable: 'AXI4_STRB_WIDTH'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(28)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_fixed_mapping_seq.sv(212): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(28)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_fixed_mapping_seq.sv(246): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(28)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_fixed_mapping_seq.sv(277): (vlog-2730) Undefined variable: 'AXI4_STRB_WIDTH'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(18): (vlog-2730) Undefined variable: 'AXI4_STRB_WIDTH'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(100): (vlog-2400) Identifier ('axi4_dir_e') found where a type or type identifier is required.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(172): near "create_request": syntax error, unexpected IDENTIFIER, expecting ';' or '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(180): (vlog-2164) Class or package 'axi4_transaction' not found.
+** Error (suppressible): ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(199): (vlog-13163) End label 'create_request' does not match function name on line 172.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(205): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(214): (vlog-2730) Undefined variable: 'AXI4_DATA_WIDTH'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(233): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(29)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv(272): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(30)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_1kb_boundary_seq.sv(17): (vlog-2730) Undefined variable: 'AXI4_STRB_WIDTH'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(30)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_1kb_boundary_seq.sv(138): (vlog-2400) Identifier ('axi4_dir_e') found where a type or type identifier is required.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(30)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_1kb_boundary_seq.sv(244): near "create_request": syntax error, unexpected IDENTIFIER, expecting ';' or '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(30)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_1kb_boundary_seq.sv(252): (vlog-2164) Class or package 'axi4_transaction' not found.
+** Error (suppressible): ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(30)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_1kb_boundary_seq.sv(277): (vlog-13163) End label 'create_request' does not match function name on line 244.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(30)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_1kb_boundary_seq.sv(283): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(30)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_1kb_boundary_seq.sv(303): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_lock_seq.sv(20): (vlog-2730) Undefined variable: 'AXI4_STRB_WIDTH'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_lock_seq.sv(38): near "axi4_burst_e": syntax error, unexpected IDENTIFIER.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_lock_seq.sv(41): near "}": syntax error, unexpected '}', expecting function or task or "SystemVerilog keyword 'pure'".
 -- Compiling module axi4_sva
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(16): Illegal use of 'automatic' for variable declaration (clk).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(17): Illegal use of 'automatic' for variable declaration (rst_n).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(19): Illegal use of 'automatic' for variable declaration (AWID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(20): Illegal use of 'automatic' for variable declaration (AWADDR).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(21): Illegal use of 'automatic' for variable declaration (AWLEN).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(22): Illegal use of 'automatic' for variable declaration (AWSIZE).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(23): Illegal use of 'automatic' for variable declaration (AWBURST).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(24): Illegal use of 'automatic' for variable declaration (AWLOCK).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(25): Illegal use of 'automatic' for variable declaration (AWCACHE).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(26): Illegal use of 'automatic' for variable declaration (AWPROT).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(27): Illegal use of 'automatic' for variable declaration (AWVALID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(28): Illegal use of 'automatic' for variable declaration (AWREADY).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(30): Illegal use of 'automatic' for variable declaration (WDATA).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(31): Illegal use of 'automatic' for variable declaration (WSTRB).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(32): Illegal use of 'automatic' for variable declaration (WLAST).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(33): Illegal use of 'automatic' for variable declaration (WVALID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(34): Illegal use of 'automatic' for variable declaration (WREADY).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(36): Illegal use of 'automatic' for variable declaration (BID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(37): Illegal use of 'automatic' for variable declaration (BRESP).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(38): Illegal use of 'automatic' for variable declaration (BVALID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(39): Illegal use of 'automatic' for variable declaration (BREADY).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(41): Illegal use of 'automatic' for variable declaration (ARID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(42): Illegal use of 'automatic' for variable declaration (ARADDR).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(43): Illegal use of 'automatic' for variable declaration (ARLEN).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(44): Illegal use of 'automatic' for variable declaration (ARSIZE).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(45): Illegal use of 'automatic' for variable declaration (ARBURST).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(46): Illegal use of 'automatic' for variable declaration (ARLOCK).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(47): Illegal use of 'automatic' for variable declaration (ARCACHE).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(48): Illegal use of 'automatic' for variable declaration (ARPROT).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(49): Illegal use of 'automatic' for variable declaration (ARVALID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(50): Illegal use of 'automatic' for variable declaration (ARREADY).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(52): Illegal use of 'automatic' for variable declaration (RID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(53): Illegal use of 'automatic' for variable declaration (RDATA).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(54): Illegal use of 'automatic' for variable declaration (RRESP).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(55): Illegal use of 'automatic' for variable declaration (RLAST).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(56): Illegal use of 'automatic' for variable declaration (RVALID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(58): Illegal use of 'automatic' for variable declaration (RREADY).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(31)
+** at ../10_tb/sva/axi4_sva.sv(69): Illegal use of 'automatic' for variable declaration (reset_active_q).
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_size_mapping_seq.sv(42): near "axi4_burst_e": syntax error, unexpected IDENTIFIER.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_size_mapping_seq.sv(48): near "}": syntax error, unexpected '}', expecting function or task or "SystemVerilog keyword 'pure'".
 -- Compiling module ahb_sva
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/sva/ahb_sva.sv(15): Illegal use of 'automatic' for variable declaration (clk).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/sva/ahb_sva.sv(16): Illegal use of 'automatic' for variable declaration (rst_n).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/sva/ahb_sva.sv(18): Illegal use of 'automatic' for variable declaration (HADDR).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/sva/ahb_sva.sv(19): Illegal use of 'automatic' for variable declaration (HBURST).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/sva/ahb_sva.sv(20): Illegal use of 'automatic' for variable declaration (HMASTLOCK).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/sva/ahb_sva.sv(21): Illegal use of 'automatic' for variable declaration (HPROT).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/sva/ahb_sva.sv(22): Illegal use of 'automatic' for variable declaration (HSIZE).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/sva/ahb_sva.sv(23): Illegal use of 'automatic' for variable declaration (HTRANS).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/sva/ahb_sva.sv(24): Illegal use of 'automatic' for variable declaration (HWDATA).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/sva/ahb_sva.sv(25): Illegal use of 'automatic' for variable declaration (HWRITE).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/sva/ahb_sva.sv(27): Illegal use of 'automatic' for variable declaration (HRDATA).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/sva/ahb_sva.sv(28): Illegal use of 'automatic' for variable declaration (HREADY).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/sva/ahb_sva.sv(30): Illegal use of 'automatic' for variable declaration (HRESP).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/sva/ahb_sva.sv(49): Illegal use of 'automatic' for variable declaration (bytes_per_beat).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/sva/ahb_sva.sv(50): Illegal use of 'automatic' for variable declaration (active_transfer).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(32)
+** at ../10_tb/sva/ahb_sva.sv(53): Illegal use of 'automatic' for variable declaration (reset_active_q).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(33)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_single_wstrb_seq.sv(173): (vlog-2730) Undefined variable: 'AXI4_DATA_WIDTH'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(33)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_single_wstrb_seq.sv(183): near ";": syntax error, unexpected ';', expecting '('.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(33)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_single_wstrb_seq.sv(184): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(33)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_single_wstrb_seq.sv(246): (vlog-2730) Undefined variable: 'AXI4_RESP_OKAY'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(33)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_single_wstrb_seq.sv(316): (vlog-2730) Undefined variable: 'AXI4_DATA_WIDTH'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(33)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_single_wstrb_seq.sv(346): near "create_request": syntax error, unexpected IDENTIFIER, expecting ';' or '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(33)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_single_wstrb_seq.sv(353): (vlog-2164) Class or package 'axi4_transaction' not found.
+** Error (suppressible): ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(33)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_single_wstrb_seq.sv(372): (vlog-13163) End label 'create_request' does not match function name on line 346.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(33)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_single_wstrb_seq.sv(378): (vlog-2400) Identifier ('axi4_transaction') found where a type or type identifier is required.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(34)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_unaligned_read_seq.sv(46): near "axi4_burst_e": syntax error, unexpected IDENTIFIER.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(34)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_unaligned_read_seq.sv(51): near "}": syntax error, unexpected '}', expecting function or task or "SystemVerilog keyword 'pure'".
 -- Compiling module counter_f
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(34)
+** at ../01_src/dut/counter_f.sv(15): Illegal use of 'automatic' for variable declaration (Clk).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(34)
+** at ../01_src/dut/counter_f.sv(16): Illegal use of 'automatic' for variable declaration (Rst).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(34)
+** at ../01_src/dut/counter_f.sv(17): Illegal use of 'automatic' for variable declaration (Load_In).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(34)
+** at ../01_src/dut/counter_f.sv(18): Illegal use of 'automatic' for variable declaration (Count_Enable).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(34)
+** at ../01_src/dut/counter_f.sv(19): Illegal use of 'automatic' for variable declaration (Count_Load).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(34)
+** at ../01_src/dut/counter_f.sv(20): Illegal use of 'automatic' for variable declaration (Count_Down).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(34)
+** at ../01_src/dut/counter_f.sv(21): Illegal use of 'automatic' for variable declaration (Count_Out).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(34)
+** at ../01_src/dut/counter_f.sv(23): Illegal use of 'automatic' for variable declaration (Carry_Out).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(34)
+** at ../01_src/dut/counter_f.sv(25): Illegal use of 'automatic' for variable declaration (icount_out).
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(35)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(121): near ";": syntax error, unexpected ';', expecting '('.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(35)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(122): near ";": syntax error, unexpected ';', expecting '('.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(35)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(123): near ";": syntax error, unexpected ';', expecting '('.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(35)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(124): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(35)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(127): Illegal declaration after the statement near line '124'.  Declarations must precede statements.  Look for stray semicolons.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(35)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(136): (vlog-2730) Undefined variable: 'wr_req'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(35)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(145): (vlog-2730) Undefined variable: 'AXI4_RESP_OKAY'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(35)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(152): (vlog-2730) Undefined variable: 'rd_req'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(35)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(202): near "create_request": syntax error, unexpected IDENTIFIER, expecting ';' or '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(35)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(215): (vlog-2164) Class or package 'axi4_transaction' not found.
+** Error (suppressible): ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(35)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv(234): (vlog-13163) End label 'create_request' does not match function name on line 202.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(36)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_response_mapping_seq.sv(48): Invalid type 'ahb_response_policy'. Please check the type of the variable 'policy'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(36)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_response_mapping_seq.sv(62): near "axi4_dir_e": syntax error, unexpected IDENTIFIER.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(36)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_response_mapping_seq.sv(63): Invalid type 'axi4_burst_e'. Please check the type of the variable 'burst'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(36)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_response_mapping_seq.sv(74): near "}": syntax error, unexpected '}', expecting function or task or "SystemVerilog keyword 'pure'".
 -- Compiling module time_out
-** Warning: ../01_src/dut/time_out.sv(54): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(36)
+** at ../01_src/dut/time_out.sv(15): Illegal use of 'automatic' for variable declaration (S_AXI_ACLK).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(36)
+** at ../01_src/dut/time_out.sv(16): Illegal use of 'automatic' for variable declaration (S_AXI_ARESETN).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(36)
+** at ../01_src/dut/time_out.sv(17): Illegal use of 'automatic' for variable declaration (M_AHB_HREADY).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(36)
+** at ../01_src/dut/time_out.sv(18): Illegal use of 'automatic' for variable declaration (load_cntr).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(36)
+** at ../01_src/dut/time_out.sv(19): Illegal use of 'automatic' for variable declaration (cntr_enable).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(36)
+** at ../01_src/dut/time_out.sv(21): Illegal use of 'automatic' for variable declaration (timeout_o).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(36)
+** at ../01_src/dut/time_out.sv(28): Illegal use of 'automatic' for variable declaration (timeout_i).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_backpressure_seq.sv(53): Invalid type 'ahb_response_policy'. Please check the type of the variable 'policy'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_backpressure_seq.sv(70): near "axi4_dir_e": syntax error, unexpected IDENTIFIER.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_backpressure_seq.sv(71): Invalid type 'axi4_burst_e'. Please check the type of the variable 'burst'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_backpressure_seq.sv(82): near "}": syntax error, unexpected '}', expecting function or task or "SystemVerilog keyword 'pure'".
 -- Compiling module ahb_skid_buf
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(16): Illegal use of 'automatic' for variable declaration (ACLK).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(17): Illegal use of 'automatic' for variable declaration (ARST).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(18): Illegal use of 'automatic' for variable declaration (skid_stop).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(20): Illegal use of 'automatic' for variable declaration (S_VALID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(21): Illegal use of 'automatic' for variable declaration (S_READY).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(22): Illegal use of 'automatic' for variable declaration (S_Data).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(23): Illegal use of 'automatic' for variable declaration (S_STRB).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(24): Illegal use of 'automatic' for variable declaration (S_Last).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(25): Illegal use of 'automatic' for variable declaration (S_User).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(26): Illegal use of 'automatic' for variable declaration (S_RID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(27): Illegal use of 'automatic' for variable declaration (S_RESP).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(29): Illegal use of 'automatic' for variable declaration (M_RESP).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(30): Illegal use of 'automatic' for variable declaration (M_VALID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(31): Illegal use of 'automatic' for variable declaration (M_READY).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(32): Illegal use of 'automatic' for variable declaration (M_RID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(33): Illegal use of 'automatic' for variable declaration (M_Data).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(34): Illegal use of 'automatic' for variable declaration (M_STRB).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(35): Illegal use of 'automatic' for variable declaration (M_Last).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(37): Illegal use of 'automatic' for variable declaration (M_User).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(37)
+** at ../01_src/dut/ahb_skid_buf.sv(39): Illegal use of 'automatic' for variable declaration (sig_reset_reg).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_timeout_seq.sv(54): Invalid type 'ahb_response_policy'. Please check the type of the variable 'policy'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_timeout_seq.sv(55): Invalid type 'scoreboard'. Please check the type of the variable 'scb'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_timeout_seq.sv(70): near "axi4_dir_e": syntax error, unexpected IDENTIFIER.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../10_tb/seq/axi4_mst_seq/axi4_mst_timeout_seq.sv(76): near "}": syntax error, unexpected '}', expecting function or task or "SystemVerilog keyword 'pure'".
 -- Compiling module axi_slv_if
-** Warning: ../01_src/dut/axi_slv_if.sv(145): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
-** Warning: ../01_src/dut/axi_slv_if.sv(149): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
-** Warning: ../01_src/dut/axi_slv_if.sv(151): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
-** Warning: ../01_src/dut/axi_slv_if.sv(152): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
-** Warning: ../01_src/dut/axi_slv_if.sv(156): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
-** Warning: ../01_src/dut/axi_slv_if.sv(164): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
-** Warning: ../01_src/dut/axi_slv_if.sv(168): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
-** Warning: ../01_src/dut/axi_slv_if.sv(170): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
-** Warning: ../01_src/dut/axi_slv_if.sv(174): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
-** Warning: ../01_src/dut/axi_slv_if.sv(175): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
-** Warning: ../01_src/dut/axi_slv_if.sv(176): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
-** Warning: ../01_src/dut/axi_slv_if.sv(177): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
-** Warning: ../01_src/dut/axi_slv_if.sv(419): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(18): Illegal use of 'automatic' for variable declaration (S_AXI_ACLK).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(19): Illegal use of 'automatic' for variable declaration (S_AXI_ARESETN).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(21): Illegal use of 'automatic' for variable declaration (S_AXI_AWID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(22): Illegal use of 'automatic' for variable declaration (S_AXI_AWADDR).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(23): Illegal use of 'automatic' for variable declaration (S_AXI_AWPROT).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(24): Illegal use of 'automatic' for variable declaration (S_AXI_AWCACHE).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(25): Illegal use of 'automatic' for variable declaration (S_AXI_AWLEN).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(26): Illegal use of 'automatic' for variable declaration (S_AXI_AWSIZE).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(27): Illegal use of 'automatic' for variable declaration (S_AXI_AWBURST).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(28): Illegal use of 'automatic' for variable declaration (S_AXI_AWLOCK).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(29): Illegal use of 'automatic' for variable declaration (S_AXI_AWVALID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(30): Illegal use of 'automatic' for variable declaration (S_AXI_AWREADY).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(31): Illegal use of 'automatic' for variable declaration (S_AXI_WDATA).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(32): Illegal use of 'automatic' for variable declaration (S_AXI_WSTRB).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(33): Illegal use of 'automatic' for variable declaration (S_AXI_WVALID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(34): Illegal use of 'automatic' for variable declaration (S_AXI_WLAST).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(35): Illegal use of 'automatic' for variable declaration (S_AXI_WREADY).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(37): Illegal use of 'automatic' for variable declaration (S_AXI_BID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(38): Illegal use of 'automatic' for variable declaration (S_AXI_BRESP).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(39): Illegal use of 'automatic' for variable declaration (S_AXI_BVALID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(40): Illegal use of 'automatic' for variable declaration (S_AXI_BREADY).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(42): Illegal use of 'automatic' for variable declaration (S_AXI_ARID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(43): Illegal use of 'automatic' for variable declaration (S_AXI_ARADDR).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(44): Illegal use of 'automatic' for variable declaration (S_AXI_ARVALID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(45): Illegal use of 'automatic' for variable declaration (S_AXI_ARPROT).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(46): Illegal use of 'automatic' for variable declaration (S_AXI_ARCACHE).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(47): Illegal use of 'automatic' for variable declaration (S_AXI_ARLEN).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(48): Illegal use of 'automatic' for variable declaration (S_AXI_ARSIZE).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(49): Illegal use of 'automatic' for variable declaration (S_AXI_ARBURST).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(50): Illegal use of 'automatic' for variable declaration (S_AXI_ARLOCK).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(51): Illegal use of 'automatic' for variable declaration (S_AXI_ARREADY).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(53): Illegal use of 'automatic' for variable declaration (S_AXI_RID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(54): Illegal use of 'automatic' for variable declaration (S_AXI_RDATA).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(55): Illegal use of 'automatic' for variable declaration (S_AXI_RRESP).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(56): Illegal use of 'automatic' for variable declaration (S_AXI_RVALID).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(57): Illegal use of 'automatic' for variable declaration (S_AXI_RLAST).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(58): Illegal use of 'automatic' for variable declaration (S_AXI_RREADY).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(60): Illegal use of 'automatic' for variable declaration (axi_prot).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(61): Illegal use of 'automatic' for variable declaration (axi_cache).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(62): Illegal use of 'automatic' for variable declaration (axi_size).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(63): Illegal use of 'automatic' for variable declaration (axi_lock).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(64): Illegal use of 'automatic' for variable declaration (axi_wdata).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(65): Illegal use of 'automatic' for variable declaration (ahb_rd_request).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(66): Illegal use of 'automatic' for variable declaration (ahb_wr_request).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(67): Illegal use of 'automatic' for variable declaration (slv_err_resp).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(68): Illegal use of 'automatic' for variable declaration (rd_data).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(69): Illegal use of 'automatic' for variable declaration (axi_address).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(70): Illegal use of 'automatic' for variable declaration (axi_burst).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(71): Illegal use of 'automatic' for variable declaration (axi_length).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(72): Illegal use of 'automatic' for variable declaration (send_wvalid).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(73): Illegal use of 'automatic' for variable declaration (send_ahb_wr).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(74): Illegal use of 'automatic' for variable declaration (axi_wvalid).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(75): Illegal use of 'automatic' for variable declaration (single_ahb_wr_xfer).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(76): Illegal use of 'automatic' for variable declaration (single_ahb_rd_xfer).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(77): Illegal use of 'automatic' for variable declaration (send_bresp).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(78): Illegal use of 'automatic' for variable declaration (send_rvalid).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(79): Illegal use of 'automatic' for variable declaration (send_rlast).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(80): Illegal use of 'automatic' for variable declaration (axi_rready).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(81): Illegal use of 'automatic' for variable declaration (timeout_i).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(83): Illegal use of 'automatic' for variable declaration (timeout_inprogress).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(103): Illegal use of 'automatic' for variable declaration (axi_write_ns).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(38)
+** at ../01_src/dut/axi_slv_if.sv(103): Illegal use of 'automatic' for variable declaration (axi_write_cs).
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(43)
+** at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(9): (vlog-2730) Undefined variable: 'ahb_slave_response'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(43)
+** while parsing macro expansion: 'uvm_declare_p_sequencer' starting at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(12)
+** at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(12): Invalid type 'ahb_slv_sequencer'. Please check the type of the variable 'p_sequencer'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(43)
+** at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(17): Invalid type 'ahb_slv_agent_cfg'. Please check the type of the variable 'cfg'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(43)
+** at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(32): (vlog-2730) Undefined variable: 'p_sequencer'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(43)
+** at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(37): (vlog-2730) Undefined variable: 'cfg'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(43)
+** at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(48): near "req": syntax error, unexpected IDENTIFIER, expecting ')'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(43)
+** at ../10_tb/seq/ahb_slv_seq/ahb_slv_base_seq.sv(53): (vlog-2400) Identifier ('ahb_slave_response') found where a type or type identifier is required.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(44)
+** at ../10_tb/seq/ahb_slv_seq/ahb_slv_response_mapping_seq.sv(20): Invalid type 'ahb_response_policy'. Please check the type of the variable 'policy'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(44)
+** at ../10_tb/seq/ahb_slv_seq/ahb_slv_response_mapping_seq.sv(33): (vlog-2730) Undefined variable: 'policy'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(44)
+** at ../10_tb/seq/ahb_slv_seq/ahb_slv_response_mapping_seq.sv(37): near ";": syntax error, unexpected ';', expecting '('.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(44)
+** at ../10_tb/seq/ahb_slv_seq/ahb_slv_response_mapping_seq.sv(38): near ";": syntax error, unexpected ';', expecting '('.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(44)
+** at ../10_tb/seq/ahb_slv_seq/ahb_slv_response_mapping_seq.sv(39): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(44)
+** at ../10_tb/seq/ahb_slv_seq/ahb_slv_response_mapping_seq.sv(42): (vlog-2730) Undefined variable: 'plan'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(44)
+** at ../10_tb/seq/ahb_slv_seq/ahb_slv_response_mapping_seq.sv(44): (vlog-2164) Class or package 'ahb_slave_response' not found.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(44)
+** at ../10_tb/seq/ahb_slv_seq/ahb_slv_response_mapping_seq.sv(44): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(44)
+** at ../10_tb/seq/ahb_slv_seq/ahb_slv_response_mapping_seq.sv(47): (vlog-2730) Undefined variable: 'AHB_READ'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(49)
+** while parsing macro expansion: 'uvm_declare_p_sequencer' starting at ../10_tb/seq/bridge_vip_seq/bridge_base_seq.sv(12)
+** at ../10_tb/seq/bridge_vip_seq/bridge_base_seq.sv(12): Invalid type 'virtual_sequencer'. Please check the type of the variable 'p_sequencer'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(49)
+** at ../10_tb/seq/bridge_vip_seq/bridge_base_seq.sv(17): Invalid type 'vip_env_cfg'. Please check the type of the variable 'cfg'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(49)
+** at ../10_tb/seq/bridge_vip_seq/bridge_base_seq.sv(32): (vlog-2730) Undefined variable: 'p_sequencer'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(49)
+** at ../10_tb/seq/bridge_vip_seq/bridge_base_seq.sv(37): (vlog-2730) Undefined variable: 'cfg'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(62)
+** at ../10_tb/seq/bridge_vip_seq/bridge_response_mapping_seq.sv(33): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(62)
+** at ../10_tb/seq/bridge_vip_seq/bridge_response_mapping_seq.sv(37): Illegal declaration after the statement near line '33'.  Declarations must precede statements.  Look for stray semicolons.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(62)
+** at ../10_tb/seq/bridge_vip_seq/bridge_response_mapping_seq.sv(43): (vlog-2730) Undefined variable: 'policy'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(62)
+** at ../10_tb/seq/bridge_vip_seq/bridge_response_mapping_seq.sv(43): (vlog-2164) Class or package 'ahb_response_policy' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(62)
+** at ../10_tb/seq/bridge_vip_seq/bridge_response_mapping_seq.sv(43): (vlog-2730) Undefined variable: 'ahb_response_policy'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(62)
+** at ../10_tb/seq/bridge_vip_seq/bridge_response_mapping_seq.sv(43): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(63)
+** at ../10_tb/seq/bridge_vip_seq/bridge_backpressure_seq.sv(33): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(63)
+** at ../10_tb/seq/bridge_vip_seq/bridge_backpressure_seq.sv(37): Illegal declaration after the statement near line '33'.  Declarations must precede statements.  Look for stray semicolons.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(63)
+** at ../10_tb/seq/bridge_vip_seq/bridge_backpressure_seq.sv(43): (vlog-2730) Undefined variable: 'policy'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(63)
+** at ../10_tb/seq/bridge_vip_seq/bridge_backpressure_seq.sv(43): (vlog-2164) Class or package 'ahb_response_policy' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(63)
+** at ../10_tb/seq/bridge_vip_seq/bridge_backpressure_seq.sv(43): (vlog-2730) Undefined variable: 'ahb_response_policy'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(63)
+** at ../10_tb/seq/bridge_vip_seq/bridge_backpressure_seq.sv(43): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(64)
+** at ../10_tb/seq/bridge_vip_seq/bridge_timeout_seq.sv(34): near ";": syntax error, unexpected ';', expecting '('.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(64)
+** at ../10_tb/seq/bridge_vip_seq/bridge_timeout_seq.sv(38): Illegal declaration after the statement near line '34'.  Declarations must precede statements.  Look for stray semicolons.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(64)
+** at ../10_tb/seq/bridge_vip_seq/bridge_timeout_seq.sv(47): (vlog-2730) Undefined variable: 'policy'.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(64)
+** at ../10_tb/seq/bridge_vip_seq/bridge_timeout_seq.sv(47): (vlog-2164) Class or package 'ahb_response_policy' not found.
+** Error: ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(64)
+** at ../10_tb/seq/bridge_vip_seq/bridge_timeout_seq.sv(47): (vlog-2730) Undefined variable: 'ahb_response_policy'.
+** Error: (vlog-13069) ** while parsing file included at ../10_tb/bridge_seq_pkg.sv(64)
+** at ../10_tb/seq/bridge_vip_seq/bridge_timeout_seq.sv(47): near "::": syntax error, unexpected ::, expecting ';'.
+** Error: (vlog-13069) ../10_tb/bridge_seq_pkg.sv(66): near "endpackage": syntax error, unexpected "SystemVerilog keyword 'endpackage'", expecting class.
 -- Compiling module ahb_mstr_if
+** Error: ../01_src/dut/ahb_mstr_if.sv(18): Illegal use of 'automatic' for variable declaration (AHB_HCLK).
+** Error: ../01_src/dut/ahb_mstr_if.sv(19): Illegal use of 'automatic' for variable declaration (AHB_HRESETN).
+** Error: ../01_src/dut/ahb_mstr_if.sv(21): Illegal use of 'automatic' for variable declaration (M_AHB_HADDR).
+** Error: ../01_src/dut/ahb_mstr_if.sv(22): Illegal use of 'automatic' for variable declaration (M_AHB_HWRITE).
+** Error: ../01_src/dut/ahb_mstr_if.sv(23): Illegal use of 'automatic' for variable declaration (M_AHB_HSIZE).
+** Error: ../01_src/dut/ahb_mstr_if.sv(24): Illegal use of 'automatic' for variable declaration (M_AHB_HBURST).
+** Error: ../01_src/dut/ahb_mstr_if.sv(25): Illegal use of 'automatic' for variable declaration (M_AHB_HPROT).
+** Error: ../01_src/dut/ahb_mstr_if.sv(26): Illegal use of 'automatic' for variable declaration (M_AHB_HTRANS).
+** Error: ../01_src/dut/ahb_mstr_if.sv(27): Illegal use of 'automatic' for variable declaration (M_AHB_HMASTLOCK).
+** Error: ../01_src/dut/ahb_mstr_if.sv(28): Illegal use of 'automatic' for variable declaration (M_AHB_HWDATA).
+** Error: ../01_src/dut/ahb_mstr_if.sv(30): Illegal use of 'automatic' for variable declaration (M_AHB_HREADY).
+** Error: ../01_src/dut/ahb_mstr_if.sv(31): Illegal use of 'automatic' for variable declaration (M_AHB_HRDATA).
+** Error: ../01_src/dut/ahb_mstr_if.sv(32): Illegal use of 'automatic' for variable declaration (M_AHB_HRESP).
+** Error: ../01_src/dut/ahb_mstr_if.sv(34): Illegal use of 'automatic' for variable declaration (ahb_rd_request).
+** Error: ../01_src/dut/ahb_mstr_if.sv(35): Illegal use of 'automatic' for variable declaration (ahb_wr_request).
+** Error: ../01_src/dut/ahb_mstr_if.sv(36): Illegal use of 'automatic' for variable declaration (axi_lock).
+** Error: ../01_src/dut/ahb_mstr_if.sv(37): Illegal use of 'automatic' for variable declaration (rd_data).
+** Error: ../01_src/dut/ahb_mstr_if.sv(38): Illegal use of 'automatic' for variable declaration (slv_err_resp).
+** Error: ../01_src/dut/ahb_mstr_if.sv(39): Illegal use of 'automatic' for variable declaration (axi_prot).
+** Error: ../01_src/dut/ahb_mstr_if.sv(40): Illegal use of 'automatic' for variable declaration (axi_cache).
+** Error: ../01_src/dut/ahb_mstr_if.sv(41): Illegal use of 'automatic' for variable declaration (axi_wdata).
+** Error: ../01_src/dut/ahb_mstr_if.sv(42): Illegal use of 'automatic' for variable declaration (axi_size).
+** Error: ../01_src/dut/ahb_mstr_if.sv(43): Illegal use of 'automatic' for variable declaration (axi_length).
+** Error: ../01_src/dut/ahb_mstr_if.sv(44): Illegal use of 'automatic' for variable declaration (axi_address).
+** Error: ../01_src/dut/ahb_mstr_if.sv(45): Illegal use of 'automatic' for variable declaration (axi_burst).
+** Error: ../01_src/dut/ahb_mstr_if.sv(46): Illegal use of 'automatic' for variable declaration (single_ahb_wr_xfer).
+** Error: ../01_src/dut/ahb_mstr_if.sv(47): Illegal use of 'automatic' for variable declaration (single_ahb_rd_xfer).
+** Error: ../01_src/dut/ahb_mstr_if.sv(48): Illegal use of 'automatic' for variable declaration (send_wvalid).
+** Error: ../01_src/dut/ahb_mstr_if.sv(49): Illegal use of 'automatic' for variable declaration (send_ahb_wr).
+** Error: ../01_src/dut/ahb_mstr_if.sv(50): Illegal use of 'automatic' for variable declaration (axi_wvalid).
+** Error: ../01_src/dut/ahb_mstr_if.sv(51): Illegal use of 'automatic' for variable declaration (send_bresp).
+** Error: ../01_src/dut/ahb_mstr_if.sv(52): Illegal use of 'automatic' for variable declaration (send_rvalid).
+** Error: ../01_src/dut/ahb_mstr_if.sv(53): Illegal use of 'automatic' for variable declaration (send_rlast).
+** Error: ../01_src/dut/ahb_mstr_if.sv(54): Illegal use of 'automatic' for variable declaration (axi_rready).
+** Error: ../01_src/dut/ahb_mstr_if.sv(55): Illegal use of 'automatic' for variable declaration (timeout_inprogress).
+** Error: ../01_src/dut/ahb_mstr_if.sv(56): Illegal use of 'automatic' for variable declaration (load_cntr).
+** Error: ../01_src/dut/ahb_mstr_if.sv(58): Illegal use of 'automatic' for variable declaration (cntr_enable).
+** Error: ../01_src/dut/ahb_mstr_if.sv(91): Illegal use of 'automatic' for variable declaration (ahb_wr_rd_ns).
+** Error: ../01_src/dut/ahb_mstr_if.sv(91): Illegal use of 'automatic' for variable declaration (ahb_wr_rd_cs).
 -- Compiling module axi_ahblite_bridge
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(22): Illegal use of 'automatic' for variable declaration (s_axi_aclk).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(23): Illegal use of 'automatic' for variable declaration (s_axi_aresetn).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(25): Illegal use of 'automatic' for variable declaration (s_axi_awid).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(26): Illegal use of 'automatic' for variable declaration (s_axi_awlen).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(27): Illegal use of 'automatic' for variable declaration (s_axi_awsize).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(28): Illegal use of 'automatic' for variable declaration (s_axi_awburst).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(29): Illegal use of 'automatic' for variable declaration (s_axi_awcache).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(30): Illegal use of 'automatic' for variable declaration (s_axi_awaddr).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(31): Illegal use of 'automatic' for variable declaration (s_axi_awprot).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(32): Illegal use of 'automatic' for variable declaration (s_axi_awvalid).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(33): Illegal use of 'automatic' for variable declaration (s_axi_awready).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(34): Illegal use of 'automatic' for variable declaration (s_axi_awlock).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(36): Illegal use of 'automatic' for variable declaration (s_axi_wdata).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(37): Illegal use of 'automatic' for variable declaration (s_axi_wstrb).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(38): Illegal use of 'automatic' for variable declaration (s_axi_wlast).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(39): Illegal use of 'automatic' for variable declaration (s_axi_wvalid).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(40): Illegal use of 'automatic' for variable declaration (s_axi_wready).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(42): Illegal use of 'automatic' for variable declaration (s_axi_bid).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(43): Illegal use of 'automatic' for variable declaration (s_axi_bresp).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(44): Illegal use of 'automatic' for variable declaration (s_axi_bvalid).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(45): Illegal use of 'automatic' for variable declaration (s_axi_bready).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(47): Illegal use of 'automatic' for variable declaration (s_axi_arid).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(48): Illegal use of 'automatic' for variable declaration (s_axi_araddr).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(49): Illegal use of 'automatic' for variable declaration (s_axi_arprot).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(50): Illegal use of 'automatic' for variable declaration (s_axi_arcache).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(51): Illegal use of 'automatic' for variable declaration (s_axi_arvalid).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(52): Illegal use of 'automatic' for variable declaration (s_axi_arlen).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(53): Illegal use of 'automatic' for variable declaration (s_axi_arsize).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(54): Illegal use of 'automatic' for variable declaration (s_axi_arburst).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(55): Illegal use of 'automatic' for variable declaration (s_axi_arlock).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(56): Illegal use of 'automatic' for variable declaration (s_axi_arready).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(58): Illegal use of 'automatic' for variable declaration (s_axi_rid).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(59): Illegal use of 'automatic' for variable declaration (s_axi_rdata).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(60): Illegal use of 'automatic' for variable declaration (s_axi_rresp).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(61): Illegal use of 'automatic' for variable declaration (s_axi_rvalid).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(62): Illegal use of 'automatic' for variable declaration (s_axi_rlast).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(63): Illegal use of 'automatic' for variable declaration (s_axi_rready).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(65): Illegal use of 'automatic' for variable declaration (m_ahb_haddr).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(66): Illegal use of 'automatic' for variable declaration (m_ahb_hwrite).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(67): Illegal use of 'automatic' for variable declaration (m_ahb_hsize).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(68): Illegal use of 'automatic' for variable declaration (m_ahb_hburst).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(69): Illegal use of 'automatic' for variable declaration (m_ahb_hprot).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(70): Illegal use of 'automatic' for variable declaration (m_ahb_htrans).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(71): Illegal use of 'automatic' for variable declaration (m_ahb_hmastlock).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(72): Illegal use of 'automatic' for variable declaration (m_ahb_hwdata).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(74): Illegal use of 'automatic' for variable declaration (m_ahb_hready).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(75): Illegal use of 'automatic' for variable declaration (m_ahb_hrdata).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(77): Illegal use of 'automatic' for variable declaration (m_ahb_hresp).
+** Error: ../01_src/dut/axi_ahblite_bridge.sv(79): Illegal use of 'automatic' for variable declaration (axi_address).
 -- Compiling module bridge_tb_top
--- Importing package bridge_test_pkg
-
-Top level modules:
-	bridge_tb_top
-End time: 12:51:49 on Sep 24,2026, Elapsed time: 0:00:01
-Errors: 0, Warnings: 14
+** Error: ../10_tb/bridge_tb_top.sv(22): (vlog-13006) Could not find the package (bridge_vip_pkg).  Design read will continue, but expect a cascade of errors after this failure.  Furthermore if you experience a vopt-7 error immediately before this error then please check the package names or the library search paths on the command line.
+** Error: ../10_tb/bridge_tb_top.sv(24): (vlog-13006) Could not find the package (bridge_test_pkg).  Design read will continue, but expect a cascade of errors after this failure.  Furthermore if you experience a vopt-7 error immediately before this error then please check the package names or the library search paths on the command line.
+** Error: ../10_tb/bridge_tb_top.sv(30): Illegal use of 'automatic' for variable declaration (clk).
+** Error: ../10_tb/bridge_tb_top.sv(278): (vlog-2730) Undefined variable: 'axi4_vif_t'.
+** Error: ../10_tb/bridge_tb_top.sv(280): (vlog-2730) Undefined variable: 'ahb_vif_t'.
+** Error: End of source encountered before `endif directive closing region starting at file '../10_tb/bridge_seq_pkg.sv' line 8.
+End time: 14:07:04 on Sep 24,2026, Elapsed time: 0:00:01
+Errors: 507, Warnings: 0
