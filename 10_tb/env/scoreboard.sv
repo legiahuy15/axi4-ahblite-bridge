@@ -57,6 +57,7 @@ class scoreboard extends uvm_scoreboard;
     protected int unsigned mismatched_axi;
     protected int unsigned timed_out_requests;
     protected int unsigned timed_out_beats;
+    protected int unsigned missed_timeouts;
 
     //-------------------------------------------------------------------------
     // Declared timeouts
@@ -67,6 +68,7 @@ class scoreboard extends uvm_scoreboard;
     typedef struct {
         axi4_dir_e              dir;
         bit [AXI4_ID_WIDTH-1:0] id;
+        bit                     strict;
     } timeout_key_t;
 
     protected timeout_key_t timeout_keys[$];
@@ -109,21 +111,45 @@ class scoreboard extends uvm_scoreboard;
         axi4_dir_e              dir,
         bit [AXI4_ID_WIDTH-1:0] id
     );
-        timeout_keys.push_back('{dir, id});
+        timeout_keys.push_back('{dir, id, 1'b1});
     endfunction : expect_timeout
 
-    protected function bit take_timeout_key(
+    // For stimulus that sweeps the threshold and so cannot say in advance
+    // which side of it a wait falls on. A request that times out is dropped
+    // like a declared one; a request that completes is compared as usual.
+    // It relies on SLVERR meaning "watchdog", so the AHB slave must answer
+    // OKAY throughout such a test.
+    function void allow_timeout(
         axi4_dir_e              dir,
         bit [AXI4_ID_WIDTH-1:0] id
     );
+        timeout_keys.push_back('{dir, id, 1'b0});
+    endfunction : allow_timeout
+
+    protected function bit take_timeout_key(
+        axi4_dir_e              dir,
+        bit [AXI4_ID_WIDTH-1:0] id,
+        output bit              strict
+    );
         foreach (timeout_keys[i]) begin
             if ((timeout_keys[i].dir == dir) && (timeout_keys[i].id == id)) begin
+                strict = timeout_keys[i].strict;
                 timeout_keys.delete(i);
                 return 1'b1;
             end
         end
+        strict = 1'b0;
         return 1'b0;
     endfunction : take_timeout_key
+
+    protected function bit response_is_timeout(axi4_transaction tr);
+        if (tr.dir == AXI4_WRITE)
+            return (tr.bresp == AXI4_RESP_SLVERR);
+        foreach (tr.rresp[i])
+            if (tr.rresp[i] == AXI4_RESP_SLVERR)
+                return 1'b1;
+        return 1'b0;
+    endfunction : response_is_timeout
 
     // Oldest declared-timeout request of this direction and ID whose
     // completion has not been dropped yet
@@ -151,7 +177,8 @@ class scoreboard extends uvm_scoreboard;
         if (!$cast(copy_tr, tr.clone()))
             `uvm_fatal(get_type_name(), "Expected AXI template clone failed")
         predict_ctx = new(copy_tr);
-        predict_ctx.timed_out = take_timeout_key(copy_tr.dir, copy_tr.id);
+        predict_ctx.timed_out = take_timeout_key(copy_tr.dir, copy_tr.id,
+                                                 predict_ctx.timeout_strict);
         pending_ctx_queue.push_back(predict_ctx);
     endfunction : write_expected_axi
 
@@ -185,6 +212,19 @@ class scoreboard extends uvm_scoreboard;
         // Dropped as soon as it arrives, so it can never be mistaken later for
         // the completion of another request with the same direction and ID
         timed_out_ctx = find_timed_out_ctx(tr.dir, tr.id);
+        if ((timed_out_ctx != null) && !response_is_timeout(tr)) begin
+            // A declared request that completed instead. Permissive on a
+            // threshold sweep, a fault when the test said it must time out.
+            if (timed_out_ctx.timeout_strict) begin
+                missed_timeouts++;
+                `uvm_error(get_type_name(),
+                           $sformatf({"Declared timeout on %s id=0x%0h ",
+                                      "completed without SLVERR"},
+                                     tr.dir.name(), tr.id))
+            end
+            timed_out_ctx.timed_out = 1'b0;
+            timed_out_ctx           = null;
+        end
         if (timed_out_ctx != null) begin
             timed_out_ctx.response_dropped = 1'b1;
             timed_out_requests++;
@@ -546,6 +586,10 @@ class scoreboard extends uvm_scoreboard;
                                       "returned an AXI completion"},
                                      pending_ctx_queue[i].tr.dir.name(),
                                      pending_ctx_queue[i].tr.id))
+        if (missed_timeouts != 0)
+            `uvm_error(get_type_name(),
+                       $sformatf("%0d declared timeout(s) did not time out",
+                                 missed_timeouts))
 
         // A test that compares nothing must not pass silently
         if (((matched_ahb + mismatched_ahb) == 0) ||

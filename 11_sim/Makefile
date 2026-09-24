@@ -70,7 +70,7 @@ NARROW_TEST_LIST ?= bridge_data_integrity_test bridge_size_mapping_test \
 # Supported non-zero C_DPHASE_TIMEOUT values (PG177) and the tests that run on
 # every one of them. The default build covers the C_DPHASE_TIMEOUT=0 case.
 TIMEOUT_VALUES    ?= 16 32 64 128 256
-TIMEOUT_TEST_LIST ?= bridge_timeout_test
+TIMEOUT_TEST_LIST ?= bridge_timeout_test bridge_timeout_boundary_test
 
 VLOG_FLAGS ?= -sv -mfcu -work work -timescale 1ns/1ps
 VOPT_FLAGS ?= +acc -work work

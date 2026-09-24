@@ -28,6 +28,12 @@ class scoreboard_axi_ctx;
     bit              timed_out;
     bit              response_dropped;
 
+    // Strict declarations (scoreboard::expect_timeout) must time out; a
+    // permissive one (scoreboard::allow_timeout) is used by the boundary
+    // sweep, which does not know in advance which side of the threshold a
+    // wait falls on, and is compared normally when it completes.
+    bit              timeout_strict;
+
     //-------------------------------------------------------------------------
     // Constructor
     //-------------------------------------------------------------------------
