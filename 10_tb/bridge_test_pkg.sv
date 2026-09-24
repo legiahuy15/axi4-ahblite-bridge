@@ -39,6 +39,7 @@ package bridge_test_pkg;
     `include "test/bridge_timeout_test.sv"
     `include "test/bridge_timeout_boundary_test.sv"
     `include "test/bridge_timeout_recovery_test.sv"
+    `include "test/bridge_read_priority_test.sv"
 
 endpackage : bridge_test_pkg
 
