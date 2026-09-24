@@ -12,13 +12,14 @@
 //               to TIMEOUT_TEST_LIST and not to TEST_LIST; on the default
 //               build the sequence stops with a message saying which TIMEOUT
 //               to use.
-//               EXPECT_OFFSET_RD=<n> with EXPECT_OFFSET_WR=<m> turns the
-//               measurement into a requirement: each threshold must be
-//               C_DPHASE_TIMEOUT plus its offset. Read and write have their
-//               own offset because they share the counter but not the
-//               pipeline that feeds it. Both offsets come from that pipeline
-//               rather than from the value, so they must be the same on every
-//               build.
+//               The thresholds are required, not just reported: read must be
+//               C_DPHASE_TIMEOUT+2 and write C_DPHASE_TIMEOUT+1. Read and
+//               write have their own offset because they share the counter
+//               but not the pipeline that feeds it, and both offsets come
+//               from that pipeline rather than from the value, so they hold
+//               on every build. EXPECT_OFFSET_RD/WR change what is required
+//               and +MEASURE_ONLY reports the measurement instead, for
+//               re-characterising a changed design.
 //               Covers BRG_TMO_003.
 //               Included inside the bridge test package.
 //=============================================================================
@@ -32,9 +33,13 @@ class bridge_timeout_boundary_test extends bridge_base_test;
     //-------------------------------------------------------------------------
     bit [AXI4_ADDR_WIDTH-1:0] base_addr   = 'h1000;
     int unsigned              case_stride = 'h100;
-    bit                       has_expected_offset;
-    int                       expected_offset_rd;
-    int                       expected_offset_wr;
+    // Measured on every supported build in regression 14 and identical on all
+    // of them, as a pipeline offset must be. Read costs one cycle more than
+    // write because the beat travels back through the read path before the
+    // watchdog sees it complete.
+    bit                       has_expected_offset = 1'b1;
+    int                       expected_offset_rd  = 2;
+    int                       expected_offset_wr  = 1;
 
     //-------------------------------------------------------------------------
     // Constructor
@@ -60,19 +65,12 @@ class bridge_timeout_boundary_test extends bridge_base_test;
         void'($value$plusargs("CASE_STRIDE=%d", case_stride));
         // Both must be given together, since read and write have their own
         // boundary; either one alone is a mistake rather than a partial check
-        begin
-            bit got_rd;
-            bit got_wr;
-
-            got_rd = ($value$plusargs("EXPECT_OFFSET_RD=%d",
-                                      expected_offset_rd) != 0);
-            got_wr = ($value$plusargs("EXPECT_OFFSET_WR=%d",
-                                      expected_offset_wr) != 0);
-            if (got_rd != got_wr)
-                `uvm_fatal(get_type_name(),
-                           "Give both EXPECT_OFFSET_RD and EXPECT_OFFSET_WR")
-            has_expected_offset = got_rd;
-        end
+        void'($value$plusargs("EXPECT_OFFSET_RD=%d", expected_offset_rd));
+        void'($value$plusargs("EXPECT_OFFSET_WR=%d", expected_offset_wr));
+        // For re-characterising the watchdog on a changed design: report the
+        // thresholds instead of requiring them
+        if ($test$plusargs("MEASURE_ONLY"))
+            has_expected_offset = 1'b0;
     endfunction : build_phase
 
     //-------------------------------------------------------------------------
