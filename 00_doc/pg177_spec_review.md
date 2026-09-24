@@ -5,8 +5,8 @@ for the AXI4 to AHB-Lite Bridge v3.0 described by **PG177, November 18, 2015**. 
 verification checklist, not a replacement for the licensed product guide or the ARM
 protocol specifications.
 
-**Last re-reviewed: 2026-09-21**, against the PG177 text in `00_doc/`, the translated RTL in
-`01_src/dut/`, the environment in `10_tb/`, and the tenth regression (85/85 runs passing:
+**Last re-reviewed: 2026-09-22**, against the PG177 text in `00_doc/`, the translated RTL in
+`01_src/dut/`, the environment in `10_tb/`, and the eleventh regression (85/85 runs passing:
 65 on the default build, 20 on the `C_S_AXI_SUPPORTS_NARROW_BURST=1` build). Items marked
 **RTL observation** describe the translated RTL, not PG177; they are not requirements
 until confirmed against the reference VHDL (`00_doc/axi_ahblite_bridge_v3_0_vh_rfs.vhd`).
@@ -160,19 +160,26 @@ and scoreboard model the same continue-and-report behavior.
 Verification: `bridge_response_mapping_test` runs the AHB slave in reactive mode
 (`auto_gen_resp = 0`). The AXI sequence plans one response per expected AHB beat
 (`ahb_response_policy`), and `ahb_slv_response_mapping_seq` answers each beat from that plan
-with address-derived read data. There are 39 cases:
+with address-derived read data. There are 61 cases:
 - every AHB burst shape (SINGLE, INCR4/8/16, undefined INCR, WRAP2/4/8/16, FIXED) with one
   ERROR beat, read and write;
 - ERROR at the first, a middle and the last beat of an INCR4, plus an all-OKAY INCR4, read and
-  write;
-- wait states of 1, 2, 8 and 16 cycles with OKAY and with ERROR;
+  write, with 0 and with 3 wait cycles on every beat;
+- wait states of 1, 2, 8 and 16 cycles with OKAY (read and write) and with ERROR;
+- wait states on WRAP8, FIXED3 (SINGLE transfers) and INCR16, read and write;
+- an INCR16 split at a 1 KB boundary, read and write, once with 2 wait cycles on every beat
+  and once with ERROR on beat 8 (the NONSEQ restart after the boundary);
+- a different wait on every beat of an INCR8 (0/5/1/16/0/2/0/3), read, and write with ERROR
+  on beat 3;
 - two ERROR beats in one burst, read and write.
 
 A planned beat that the bridge never issues is reported as a burst that stopped early.
-**Result (ninth regression, 5 seeds):** `run=39 failed=0`, 210 AHB beats (35 ERROR, 36
-waited), 34 SLVERR responses (19 read beats and 15 write responses), no planned beat left over
+**Result (eleventh regression, 5 seeds):** `run=61 failed=0`, 384 AHB beats (44 ERROR, 172
+waited), 43 SLVERR responses (23 read beats and 20 write responses), no planned beat left over
 and no unplanned beat, 0 scoreboard mismatches. SLVERR appears on exactly the errored read
-beats, and every burst completes all of its beats. Timeout is not tested (Section 7).
+beats, and every burst completes all of its beats. In the 1 KB split case the restart beat at
+the boundary takes the ERROR, only AXI beat 9 reports SLVERR, and the remaining 7 beats
+complete normally. Timeout is not tested (Section 7).
 
 ## 4. Explicitly unsupported features
 
@@ -280,7 +287,7 @@ axi4_mst_agent (active) --> DUT --> ahb_slv_agent (reactive slave + memory model
 
 ## 7. Minimum compliance regression
 
-Status as of the tenth regression (2026-09-21). All stimulus is currently 32-bit with one
+Status as of the eleventh regression (2026-09-22). All stimulus is currently 32-bit with one
 outstanding transaction. AHB responses are OKAY with zero wait except in
 `bridge_response_mapping_test`. `AxCACHE = AxPROT = 0` except in
 `bridge_protection_mapping_test`, and `AxLOCK = 0` except in `bridge_unsupported_feature_test`. The random
@@ -329,7 +336,7 @@ nearly identical.
 
 | Item | Status |
 |---|---|
-| AHB OKAY and ERROR at first/middle/last beat under 0, 1, and randomized wait states | Done for directed waits — `bridge_response_mapping_test`: OKAY and ERROR with 0, 1, 2, 8 and 16 wait cycles; ERROR on the first, a middle and the last beat and on two beats of one burst; BRESP sticky, RRESP per beat, all beats completed (ninth regression, `run=39 failed=0`). Randomized waits are part of the P2 random test. |
+| AHB OKAY and ERROR at first/middle/last beat under 0, 1, and randomized wait states | Done for directed waits — `bridge_response_mapping_test`: OKAY and ERROR with 0, 1, 2, 3, 8 and 16 wait cycles, read and write; ERROR on the first, a middle and the last beat with and without waits, on two beats of one burst and on the restart beat of a 1 KB split; waits on WRAP, FIXED, INCR16 and across a 1 KB split; a different wait on every beat; BRESP sticky, RRESP per beat, all beats completed (eleventh regression, `run=61 failed=0`). Randomized waits are part of the P2 random test. |
 | Timeout disabled plus 16/32/64/128/256 | Not started (disabled build exists, but no long-wait stimulus). |
 | For every non-zero timeout: ready before/at/after the boundary, AXI SLVERR, AHB IDLE, reset recovery | Not started. |
 
@@ -338,7 +345,7 @@ nearly identical.
 | Item | Status |
 |---|---|
 | Constrained-random mixed read/write traffic with independent AHB delay/error policy | Not started. |
-| Functional, assertion, and code coverage review against a requirement matrix | Partial. Merged report over the tenth regression (85 tests, 0 warnings): covergroups 99.8% of bins hit (440/441; 99.6% weighted), assertions 88.0% (44/50), cover directives 76.9% (10/13), total 63.2% (includes testbench class code). Every covergroup is at 100% except `e2e_cov.cg_response_map` (17/18); its only miss, `cx_error_map` <OKAY, SLVERR>, needs a timeout build. Unreachable bins are excluded: reserved `AxCACHE`, a full strobe on a narrow write and AHB ERROR with an OKAY AXI response are `illegal_bins`; `HPROT[3] = 1`, a sparse strobe on a narrow write, <ERROR, zero wait> and <zero wait, SLVERR> are `ignore_bins` (an AHB ERROR or timeout always holds `HREADY` low for at least one cycle); sizes wider than the bus are `default`. Assertions and cover directives have not been reviewed individually. |
+| Functional, assertion, and code coverage review against a requirement matrix | Partial. Merged report over the eleventh regression (85 tests, 0 warnings): covergroups 99.8% of bins hit (440/441; 99.6% weighted), assertions 88.0% (44/50), cover directives 76.9% (10/13), total 63.2% (includes testbench class code). Every covergroup is at 100% except `e2e_cov.cg_response_map` (17/18); its only miss, `cx_error_map` <OKAY, SLVERR>, needs a timeout build. Unreachable bins are excluded: reserved `AxCACHE`, a full strobe on a narrow write and AHB ERROR with an OKAY AXI response are `illegal_bins`; `HPROT[3] = 1`, a sparse strobe on a narrow write, <ERROR, zero wait> and <zero wait, SLVERR> are `ignore_bins` (an AHB ERROR or timeout always holds `HREADY` low for at least one cycle); sizes wider than the bus are `default`. Assertions and cover directives have not been reviewed individually. |
 | Mutation tests (address, `HBURST`, `HSIZE`, `HPROT`, data lane, ID, response, beat count, 1-KB restart, timeout threshold) | Not started. |
 | Equivalence or side-by-side simulation against the original VHDL source | Not started; required before treating the translated DUT, or the RTL observations above, as golden. |
 

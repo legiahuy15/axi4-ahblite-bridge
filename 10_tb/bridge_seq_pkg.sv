@@ -34,6 +34,7 @@ package bridge_seq_pkg;
     `include "seq/axi4_mst_seq/axi4_mst_unaligned_read_seq.sv"
     `include "seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv"
     `include "seq/axi4_mst_seq/axi4_mst_response_mapping_seq.sv"
+    `include "seq/axi4_mst_seq/axi4_mst_backpressure_seq.sv"
 
     //-------------------------------------------------------------------------
     // AHB-Lite slave sequences
@@ -58,6 +59,7 @@ package bridge_seq_pkg;
     `include "seq/bridge_vip_seq/bridge_unaligned_read_seq.sv"
     `include "seq/bridge_vip_seq/bridge_protection_mapping_seq.sv"
     `include "seq/bridge_vip_seq/bridge_response_mapping_seq.sv"
+    `include "seq/bridge_vip_seq/bridge_backpressure_seq.sv"
 
 endpackage : bridge_seq_pkg
 
