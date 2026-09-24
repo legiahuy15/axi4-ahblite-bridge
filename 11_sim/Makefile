@@ -27,6 +27,7 @@ MERGED_UCDB   = $(COV_DIR)/merged.ucdb
 ASSERT_TXT    = $(REPORT_DIR)/assertions.txt
 DIRECTIVE_TXT = $(REPORT_DIR)/directives.txt
 SVA_DIR       = ../10_tb/sva
+COV_SUMMARY_AWK = cov_summary.awk
 
 QUESTA_BIN ?=
 VLIB        ?= $(QUESTA_BIN)vlib
@@ -309,10 +310,8 @@ assert_report: $(if $(filter 1,$(SKIP_MERGE)),,merge_cov)
 		for report_file in "$(ASSERT_TXT)" "$(DIRECTIVE_TXT)"; do \
 			echo ""; \
 			echo "[ASSERT_REPORT] $$report_file ($$(wc -l < "$$report_file") lines)"; \
-			grep -iE 'coverage|total' "$$report_file" | tail -6; \
-			echo "  Never hit (trailing count is zero):"; \
-			awk '$$NF ~ /^[0-9]+$$/ && $$NF+0 == 0 { print "    " $$1 }' \
-				"$$report_file" | sort -u; \
+			grep -iE 'TOTAL .* COVERAGE' "$$report_file" || true; \
+			awk -f "$(COV_SUMMARY_AWK)" "$$report_file"; \
 		done
 	@cd "$(MAKEFILE_DIR)" && \
 		seen=0; total=0; missing=""; \

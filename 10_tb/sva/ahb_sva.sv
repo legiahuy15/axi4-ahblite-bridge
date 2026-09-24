@@ -54,6 +54,15 @@ module ahb_sva #(
     bit data_phase_active;
     bit data_phase_write;
 
+    // Address and size of the last issued NONSEQ/SEQ beat. The bridge drives
+    // BUSY between the beats of a burst and holds it through wait states, so
+    // the previous beat of a burst is not $past(HADDR): BUSY cycles and wait
+    // cycles sit in between. The address rules below compare against this
+    // instead, which is what "the previous transfer" means in AHB-Lite.
+    bit [AHB_ADDR_WIDTH-1:0] last_beat_addr;
+    bit [2:0]                last_beat_size;
+    bit                      last_beat_valid;
+
     //-------------------------------------------------------------------------
     // Address helper
     //-------------------------------------------------------------------------
@@ -99,6 +108,31 @@ module ahb_sva #(
             data_phase_write  <= HWRITE;
         end
     end
+
+    //-------------------------------------------------------------------------
+    // Previous-beat tracking
+    //-------------------------------------------------------------------------
+    // A beat is issued on a rising edge with HREADY high and HTRANS NONSEQ or
+    // SEQ. BUSY leaves the reference beat alone, because BUSY only stretches
+    // the burst. IDLE ends the burst, so the next NONSEQ starts fresh and no
+    // address relation is checked across it.
+    always @(posedge clk) begin
+        if (!rst_n) begin
+            last_beat_addr  <= '0;
+            last_beat_size  <= '0;
+            last_beat_valid <= 1'b0;
+        end else if (HREADY) begin
+            if (active_transfer) begin
+                last_beat_addr  <= HADDR;
+                last_beat_size  <= HSIZE;
+                last_beat_valid <= 1'b1;
+            end else if (HTRANS == TRANS_IDLE) begin
+                last_beat_valid <= 1'b0;
+            end
+        end
+    end
+
+    wire [31:0] last_beat_bytes = 32'd1 << last_beat_size;
 
     //-------------------------------------------------------------------------
     // Reset
@@ -219,10 +253,9 @@ module ahb_sva #(
 
     property p_incr_address;
         @(posedge clk) disable iff (!rst_n)
-        $past(HREADY) && HTRANS == TRANS_SEQ &&
-        $past(HTRANS) != TRANS_BUSY &&
+        HREADY && HTRANS == TRANS_SEQ && last_beat_valid &&
         (HBURST inside {BURST_INCR, BURST_INCR4, BURST_INCR8, BURST_INCR16})
-        |-> HADDR == $past(HADDR) + $past(bytes_per_beat);
+        |-> HADDR == last_beat_addr + last_beat_bytes;
     endproperty
 
     property p_addr_stable_after_busy;
@@ -233,23 +266,23 @@ module ahb_sva #(
 
     property p_wrap4_address;
         @(posedge clk) disable iff (!rst_n)
-        $past(HREADY) && HTRANS == TRANS_SEQ &&
-        $past(HTRANS) != TRANS_BUSY && HBURST == BURST_WRAP4
-        |-> HADDR == wrap_next_addr($past(HADDR), $past(HSIZE), 4);
+        HREADY && HTRANS == TRANS_SEQ && last_beat_valid &&
+        HBURST == BURST_WRAP4
+        |-> HADDR == wrap_next_addr(last_beat_addr, last_beat_size, 4);
     endproperty
 
     property p_wrap8_address;
         @(posedge clk) disable iff (!rst_n)
-        $past(HREADY) && HTRANS == TRANS_SEQ &&
-        $past(HTRANS) != TRANS_BUSY && HBURST == BURST_WRAP8
-        |-> HADDR == wrap_next_addr($past(HADDR), $past(HSIZE), 8);
+        HREADY && HTRANS == TRANS_SEQ && last_beat_valid &&
+        HBURST == BURST_WRAP8
+        |-> HADDR == wrap_next_addr(last_beat_addr, last_beat_size, 8);
     endproperty
 
     property p_wrap16_address;
         @(posedge clk) disable iff (!rst_n)
-        $past(HREADY) && HTRANS == TRANS_SEQ &&
-        $past(HTRANS) != TRANS_BUSY && HBURST == BURST_WRAP16
-        |-> HADDR == wrap_next_addr($past(HADDR), $past(HSIZE), 16);
+        HREADY && HTRANS == TRANS_SEQ && last_beat_valid &&
+        HBURST == BURST_WRAP16
+        |-> HADDR == wrap_next_addr(last_beat_addr, last_beat_size, 16);
     endproperty
 
     ADDR_ALIGNED: assert property (p_addr_aligned)
@@ -339,8 +372,10 @@ module ahb_sva #(
     //-------------------------------------------------------------------------
     C_NONSEQ: cover property (@(posedge clk) disable iff (!rst_n)
         HREADY && HTRANS == TRANS_NONSEQ);
+    // A wait state is an extended data phase, and the bridge drives BUSY on
+    // HTRANS while it waits, so the address phase is not what to look at here
     C_WAIT_STATE: cover property (@(posedge clk) disable iff (!rst_n)
-        active_transfer && !HREADY);
+        data_phase_active && !HREADY);
     C_ERROR: cover property (@(posedge clk) disable iff (!rst_n)
         HRESP && HREADY);
     C_INCR: cover property (@(posedge clk) disable iff (!rst_n)
