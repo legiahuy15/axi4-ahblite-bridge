@@ -6,6 +6,10 @@
 //               Included inside the bridge package.
 //=============================================================================
 
+// The package includes this file before scoreboard.sv, so the handle below
+// needs the class name to exist first
+typedef class scoreboard;
+
 class virtual_sequencer extends uvm_sequencer;
 
     `uvm_component_utils(virtual_sequencer)

@@ -325,7 +325,7 @@ class axi4_mst_timeout_seq extends axi4_mst_base_seq;
                                       "expected=0x%0h actual=0x%0h"},
                                      c.label, addr, i,
                                      policy.read_data(addr + (i << FULL_SIZE)),
-                                     rsp.data[i]));
+                                     rsp.data[i]))
             end
         end
 
