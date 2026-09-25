@@ -39,6 +39,7 @@ package bridge_seq_pkg;
     `include "seq/axi4_mst_seq/axi4_mst_timeout_boundary_seq.sv"
     `include "seq/axi4_mst_seq/axi4_mst_timeout_recovery_seq.sv"
     `include "seq/axi4_mst_seq/axi4_mst_read_priority_seq.sv"
+    `include "seq/axi4_mst_seq/axi4_mst_reset_seq.sv"
 
     //-------------------------------------------------------------------------
     // AHB-Lite slave sequences
@@ -68,6 +69,7 @@ package bridge_seq_pkg;
     `include "seq/bridge_vip_seq/bridge_timeout_boundary_seq.sv"
     `include "seq/bridge_vip_seq/bridge_timeout_recovery_seq.sv"
     `include "seq/bridge_vip_seq/bridge_read_priority_seq.sv"
+    `include "seq/bridge_vip_seq/bridge_reset_seq.sv"
 
 endpackage : bridge_seq_pkg
 

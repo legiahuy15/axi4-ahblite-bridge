@@ -143,8 +143,22 @@ module ahb_sva #(
             (HTRANS == TRANS_IDLE && HREADY && !HRESP);
     endproperty
 
+    // Address and control outputs during reset. Kept apart from
+    // RESET_DEFAULTS, which is about the bus handshake, so a failure names
+    // which of the two rules broke. Values are the reset assignments of
+    // ahb_mstr_if: HADDR, HBURST, HSIZE, HWRITE and HMASTLOCK clear, while
+    // HPROT resets to 4'b0011 and is checked by RESET_HPROT.
+    property p_reset_ahb_control;
+        @(posedge clk)
+        (!rst_n && reset_active_q) |->
+            ((HADDR == '0) && (HBURST == BURST_SINGLE) && (HSIZE == '0) &&
+             !HWRITE && !HMASTLOCK);
+    endproperty
+
     RESET_DEFAULTS: assert property (p_reset_defaults)
         else $error("[AHB_SVA] Illegal bus state during reset");
+    RESET_AHB_CONTROL: assert property (p_reset_ahb_control)
+        else $error("[AHB_SVA] AHB address/control not at reset defaults");
 
     //-------------------------------------------------------------------------
     // Signal integrity
