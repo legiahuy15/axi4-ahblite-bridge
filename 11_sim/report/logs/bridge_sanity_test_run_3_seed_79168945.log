@@ -1,0 +1,7 @@
+# vsim -c -coverage -sv_seed 79168945 "+UVM_TESTNAME=bridge_sanity_test" "+UVM_VERBOSITY=UVM_HIGH" -l report/logs/bridge_sanity_test_run_3_seed_79168945.log -wlf report/wlf/bridge_sanity_test_run_3_seed_79168945.wlf -do "coverage save -onexit report/coverage/bridge_sanity_test_run_3_seed_79168945.ucdb; run -all; quit -f" work.work.opt_bridge_tb_top 
+# Start time: 09:00:29 on Sep 28,2026
+# ** Error (suppressible): (vsim-19) Failed to access library 'work.work' at "work.work".
+# No such file or directory. (errno = ENOENT)
+# Error loading design
+# End time: 09:00:29 on Sep 28,2026, Elapsed time: 0:00:00
+# Errors: 1, Warnings: 0
