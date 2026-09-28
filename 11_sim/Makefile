@@ -88,7 +88,8 @@ TIMEOUT_TEST_LIST ?= bridge_timeout_test bridge_timeout_boundary_test \
 # stay on the 32-bit build.
 PARAM_TEST_LIST ?= bridge_parameter_test bridge_sanity_test \
                    bridge_data_integrity_test bridge_burst_matrix_test \
-                   bridge_size_mapping_test bridge_response_mapping_test
+                   bridge_size_mapping_test bridge_response_mapping_test \
+                   bridge_1kb_boundary_test bridge_single_wstrb_test
 
 VLOG_BASE  ?= -sv -mfcu -timescale 1ns/1ps
 VOPT_BASE  ?= +acc
