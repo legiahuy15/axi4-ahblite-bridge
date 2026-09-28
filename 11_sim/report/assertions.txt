@@ -1,0 +1,113 @@
+QuestaSim-64 vcover 10.6b Coverage Utility 2017.05 May 25 2017
+Start time: 09:27:03 on Sep 28,2026
+vcover report -assert -details report/coverage/merged.ucdb 
+
+ASSERTION RESULTS:
+-------------------------------------------------------
+Name                 File(Line)           Failure Pass 
+                                          Count   Count 
+-------------------------------------------------------
+/bridge_tb_top/axi_checker/VALID_LOW_IN_RESET
+                     ../10_tb/sva/axi4_sva.sv(125)       0   255
+/bridge_tb_top/axi_checker/AW_STABLE
+                     ../10_tb/sva/axi4_sva.sv(163)       0   255
+/bridge_tb_top/axi_checker/W_STABLE
+                     ../10_tb/sva/axi4_sva.sv(165)       0   255
+/bridge_tb_top/axi_checker/B_STABLE
+                     ../10_tb/sva/axi4_sva.sv(167)       0    10
+/bridge_tb_top/axi_checker/AR_STABLE
+                     ../10_tb/sva/axi4_sva.sv(169)       0   255
+/bridge_tb_top/axi_checker/R_STABLE
+                     ../10_tb/sva/axi4_sva.sv(171)       0    10
+/bridge_tb_top/axi_checker/HANDSHAKE_KNOWN
+                     ../10_tb/sva/axi4_sva.sv(210)       0   255
+/bridge_tb_top/axi_checker/AW_PAYLOAD_KNOWN
+                     ../10_tb/sva/axi4_sva.sv(212)       0   255
+/bridge_tb_top/axi_checker/W_PAYLOAD_KNOWN
+                     ../10_tb/sva/axi4_sva.sv(214)       0   255
+/bridge_tb_top/axi_checker/B_PAYLOAD_KNOWN
+                     ../10_tb/sva/axi4_sva.sv(216)       0   255
+/bridge_tb_top/axi_checker/AR_PAYLOAD_KNOWN
+                     ../10_tb/sva/axi4_sva.sv(218)       0   255
+/bridge_tb_top/axi_checker/R_PAYLOAD_KNOWN
+                     ../10_tb/sva/axi4_sva.sv(220)       0   255
+/bridge_tb_top/axi_checker/AW_BURST_LEGAL
+                     ../10_tb/sva/axi4_sva.sv(262)       0   255
+/bridge_tb_top/axi_checker/AR_BURST_LEGAL
+                     ../10_tb/sva/axi4_sva.sv(264)       0   255
+/bridge_tb_top/axi_checker/AW_4KB_BOUNDARY
+                     ../10_tb/sva/axi4_sva.sv(266)       0   245
+/bridge_tb_top/axi_checker/AR_4KB_BOUNDARY
+                     ../10_tb/sva/axi4_sva.sv(268)       0   245
+/bridge_tb_top/axi_checker/B_WITH_REQUEST
+                     ../10_tb/sva/axi4_sva.sv(288)       0   255
+/bridge_tb_top/axi_checker/WLAST_POSITION
+                     ../10_tb/sva/axi4_sva.sv(319)       0   255
+/bridge_tb_top/axi_checker/R_WITH_REQUEST
+                     ../10_tb/sva/axi4_sva.sv(342)       0   255
+/bridge_tb_top/axi_checker/RLAST_POSITION
+                     ../10_tb/sva/axi4_sva.sv(355)       0   255
+/bridge_tb_top/axi_checker/RID_STABLE
+                     ../10_tb/sva/axi4_sva.sv(370)       0   200
+/bridge_tb_top/axi_checker/g_bridge_profile/LOCK_UNSUPPORTED
+                     ../10_tb/sva/axi4_sva.sv(408)       0   250
+/bridge_tb_top/axi_checker/g_bridge_profile/ARLOCK_UNSUPPORTED
+                     ../10_tb/sva/axi4_sva.sv(410)       0   250
+/bridge_tb_top/axi_checker/g_bridge_profile/BRESP_SUPPORTED
+                     ../10_tb/sva/axi4_sva.sv(412)       0   255
+/bridge_tb_top/axi_checker/g_bridge_profile/RRESP_SUPPORTED
+                     ../10_tb/sva/axi4_sva.sv(414)       0   255
+/bridge_tb_top/ahb_checker/RESET_DEFAULTS
+                     ../10_tb/sva/ahb_sva.sv(158)       0   255
+/bridge_tb_top/ahb_checker/RESET_AHB_CONTROL
+                     ../10_tb/sva/ahb_sva.sv(160)       0   255
+/bridge_tb_top/ahb_checker/CONTROL_KNOWN
+                     ../10_tb/sva/ahb_sva.sv(188)       0   255
+/bridge_tb_top/ahb_checker/ACTIVE_PAYLOAD_KNOWN
+                     ../10_tb/sva/ahb_sva.sv(190)       0   255
+/bridge_tb_top/ahb_checker/WDATA_KNOWN
+                     ../10_tb/sva/ahb_sva.sv(192)       0   255
+/bridge_tb_top/ahb_checker/RDATA_KNOWN
+                     ../10_tb/sva/ahb_sva.sv(194)       0   255
+/bridge_tb_top/ahb_checker/ADDR_CTRL_STABLE_DURING_WAIT
+                     ../10_tb/sva/ahb_sva.sv(218)       0    80
+/bridge_tb_top/ahb_checker/WDATA_STABLE_DURING_WAIT
+                     ../10_tb/sva/ahb_sva.sv(221)       0   105
+/bridge_tb_top/ahb_checker/ADDR_ALIGNED
+                     ../10_tb/sva/ahb_sva.sv(302)       0   255
+/bridge_tb_top/ahb_checker/SIZE_LEGAL
+                     ../10_tb/sva/ahb_sva.sv(304)       0   255
+/bridge_tb_top/ahb_checker/NO_SEQ_AFTER_IDLE
+                     ../10_tb/sva/ahb_sva.sv(306)       0   255
+/bridge_tb_top/ahb_checker/SINGLE_TERMINATES
+                     ../10_tb/sva/ahb_sva.sv(308)       0   250
+/bridge_tb_top/ahb_checker/NO_BUSY_SINGLE
+                     ../10_tb/sva/ahb_sva.sv(310)       0   195
+/bridge_tb_top/ahb_checker/BURST_CONTROL_STABLE
+                     ../10_tb/sva/ahb_sva.sv(312)       0   195
+/bridge_tb_top/ahb_checker/INCR_1KB_BOUNDARY
+                     ../10_tb/sva/ahb_sva.sv(314)       0   190
+/bridge_tb_top/ahb_checker/INCR_ADDRESS
+                     ../10_tb/sva/ahb_sva.sv(316)       0   190
+/bridge_tb_top/ahb_checker/ADDR_STABLE_AFTER_BUSY
+                     ../10_tb/sva/ahb_sva.sv(318)       0   195
+/bridge_tb_top/ahb_checker/WRAP4_ADDRESS
+                     ../10_tb/sva/ahb_sva.sv(320)       0   105
+/bridge_tb_top/ahb_checker/WRAP8_ADDRESS
+                     ../10_tb/sva/ahb_sva.sv(322)       0    50
+/bridge_tb_top/ahb_checker/WRAP16_ADDRESS
+                     ../10_tb/sva/ahb_sva.sv(324)       0    45
+/bridge_tb_top/ahb_checker/ERROR_FIRST_CYCLE
+                     ../10_tb/sva/ahb_sva.sv(345)       0    20
+/bridge_tb_top/ahb_checker/ERROR_SECOND_CYCLE
+                     ../10_tb/sva/ahb_sva.sv(347)       0    20
+/bridge_tb_top/ahb_checker/ERROR_HAS_FIRST_CYCLE
+                     ../10_tb/sva/ahb_sva.sv(349)       0    20
+/bridge_tb_top/ahb_checker/g_bridge_profile/NO_LOCK
+                     ../10_tb/sva/ahb_sva.sv(375)       0   250
+/bridge_tb_top/ahb_checker/g_bridge_profile/NONCACHEABLE
+                     ../10_tb/sva/ahb_sva.sv(377)       0   255
+/bridge_tb_top/ahb_checker/g_bridge_profile/RESET_HPROT
+                     ../10_tb/sva/ahb_sva.sv(379)       0   255
+End time: 09:27:03 on Sep 28,2026, Elapsed time: 0:00:00
+Errors: 0, Warnings: 0
