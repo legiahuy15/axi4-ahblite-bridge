@@ -42,6 +42,7 @@
 ../10_tb/seq/axi4_mst_seq/axi4_mst_fixed_mapping_seq.sv
 ../10_tb/seq/axi4_mst_seq/axi4_mst_incr_mapping_seq.sv
 ../10_tb/seq/axi4_mst_seq/axi4_mst_lock_seq.sv
+../10_tb/seq/axi4_mst_seq/axi4_mst_ordering_seq.sv
 ../10_tb/seq/axi4_mst_seq/axi4_mst_parameter_seq.sv
 ../10_tb/seq/axi4_mst_seq/axi4_mst_protection_mapping_seq.sv
 ../10_tb/seq/axi4_mst_seq/axi4_mst_read_priority_seq.sv
@@ -63,6 +64,7 @@
 ../10_tb/seq/bridge_vip_seq/bridge_data_integrity_seq.sv
 ../10_tb/seq/bridge_vip_seq/bridge_fixed_mapping_seq.sv
 ../10_tb/seq/bridge_vip_seq/bridge_incr_mapping_seq.sv
+../10_tb/seq/bridge_vip_seq/bridge_ordering_seq.sv
 ../10_tb/seq/bridge_vip_seq/bridge_parameter_seq.sv
 ../10_tb/seq/bridge_vip_seq/bridge_protection_mapping_seq.sv
 ../10_tb/seq/bridge_vip_seq/bridge_read_priority_seq.sv
@@ -87,6 +89,7 @@
 ../10_tb/test/bridge_data_integrity_test.sv
 ../10_tb/test/bridge_fixed_mapping_test.sv
 ../10_tb/test/bridge_incr_mapping_test.sv
+../10_tb/test/bridge_ordering_test.sv
 ../10_tb/test/bridge_parameter_test.sv
 ../10_tb/test/bridge_protection_mapping_test.sv
 ../10_tb/test/bridge_read_priority_test.sv
