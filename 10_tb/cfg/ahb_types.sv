@@ -9,8 +9,17 @@
     //-------------------------------------------------------------------------
     // Bus parameters
     //-------------------------------------------------------------------------
-    parameter int unsigned AHB_ADDR_WIDTH = 32;
-    parameter int unsigned AHB_DATA_WIDTH = 32;
+    // Same knobs as axi4_types.sv, repeated so this file does not depend on
+    // the include order. The bridge requires equal widths on both sides.
+`ifndef BRIDGE_DATA_WIDTH
+    `define BRIDGE_DATA_WIDTH 32
+`endif
+`ifndef BRIDGE_ADDR_WIDTH
+    `define BRIDGE_ADDR_WIDTH 32
+`endif
+
+    parameter int unsigned AHB_ADDR_WIDTH = `BRIDGE_ADDR_WIDTH;
+    parameter int unsigned AHB_DATA_WIDTH = `BRIDGE_DATA_WIDTH;
 
     //-------------------------------------------------------------------------
     // Protocol enumerations

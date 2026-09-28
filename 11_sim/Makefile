@@ -45,8 +45,15 @@ OPT_TOP       ?= opt_bridge_tb_top
 OPT_TOP_NARROW ?= opt_bridge_tb_top_narrow
 # One image per supported C_DPHASE_TIMEOUT, named <prefix><value>
 OPT_TOP_TMO   ?= opt_bridge_tb_top_tmo
+# The 64-bit configuration, in its own library because the widths are package
+# parameters and have to be set at compile time
+WORK64             ?= work64
+WIDE_DATA_WIDTH    ?= 64
+OPT_TOP_W64        ?= opt_bridge_tb_top_w64
+OPT_TOP_W64_NARROW ?= opt_bridge_tb_top_w64_narrow
 NARROW        ?= 0
 TIMEOUT       ?= 0
+WIDE          ?= 0
 TESTNAME      ?= bridge_sanity_test
 SEED          ?= random
 UVM_VERBOSITY ?= UVM_LOW
@@ -62,7 +69,8 @@ TEST_LIST ?= bridge_sanity_test bridge_data_integrity_test \
 	         bridge_unaligned_read_test bridge_protection_mapping_test \
 	         bridge_response_mapping_test bridge_axi_backpressure_test \
 	         bridge_timeout_test bridge_read_priority_test \
-	         bridge_reset_test bridge_reset_mid_transfer_test
+	         bridge_reset_test bridge_reset_mid_transfer_test \
+	         bridge_parameter_test
 
 # Tests that also run on the C_S_AXI_SUPPORTS_NARROW_BURST=1 build
 NARROW_TEST_LIST ?= bridge_data_integrity_test bridge_size_mapping_test \
@@ -74,11 +82,27 @@ TIMEOUT_VALUES    ?= 16 32 64 128 256
 TIMEOUT_TEST_LIST ?= bridge_timeout_test bridge_timeout_boundary_test \
                      bridge_timeout_recovery_test
 
-VLOG_FLAGS ?= -sv -mfcu -work work -timescale 1ns/1ps
-VOPT_FLAGS ?= +acc -work work
+# The compliance subset that also runs on the 64-bit build, narrow off and on.
+# Timeout and reset behaviour does not depend on the bus width, so those tests
+# stay on the 32-bit build.
+PARAM_TEST_LIST ?= bridge_parameter_test bridge_sanity_test \
+                   bridge_data_integrity_test bridge_burst_matrix_test \
+                   bridge_size_mapping_test bridge_response_mapping_test
+
+VLOG_BASE  ?= -sv -mfcu -timescale 1ns/1ps
+VOPT_BASE  ?= +acc
+VLOG_FLAGS ?= $(VLOG_BASE) -work work
+VOPT_FLAGS ?= $(VOPT_BASE) -work work
 VSIM_FLAGS ?= -c
 
-VLOG_FLAGS += -l $(LOG_DIR)/compile.log
+# The bus widths are package parameters, so vopt -G cannot reach them and the
+# 64-bit configuration needs its own compilation into its own library
+VLOG64_FLAGS = $(VLOG_BASE) -work $(WORK64) \
+               +define+BRIDGE_DATA_WIDTH=$(WIDE_DATA_WIDTH)
+VOPT64_FLAGS = $(VOPT_BASE) -work $(WORK64)
+
+VLOG_FLAGS   += -l $(LOG_DIR)/compile.log
+VLOG64_FLAGS += -l $(LOG_DIR)/compile_w64.log
 
 # A run fails on non-zero UVM error/fatal counts, on simulator error/fatal
 # messages (SVA $error/$fatal bypass the UVM report server), or on a
@@ -86,15 +110,22 @@ VLOG_FLAGS += -l $(LOG_DIR)/compile.log
 FAIL_REGEX := UVM_(ERROR|FATAL)[[:space:]]*:[[:space:]]*[1-9][0-9]*|^\# \*\* (Error|Fatal)|^\# Errors: [1-9]
 
 RUN_OPT_TMO = $(if $(filter 0,$(TIMEOUT)),$(OPT_TOP),$(OPT_TOP_TMO)$(TIMEOUT))
-RUN_OPT_TOP = $(if $(filter 1,$(NARROW)),$(OPT_TOP_NARROW),$(RUN_OPT_TMO))
+RUN_OPT_32  = work.$(if $(filter 1,$(NARROW)),$(OPT_TOP_NARROW),$(RUN_OPT_TMO))
+RUN_OPT_W64 = $(if $(filter 1,$(NARROW)),$(OPT_TOP_W64_NARROW),$(OPT_TOP_W64))
+RUN_OPT_64  = $(WORK64).$(RUN_OPT_W64)
+# Fully qualified library.top, because the 64-bit build lives elsewhere
+RUN_OPT_TOP = $(if $(filter 1,$(WIDE)),$(RUN_OPT_64),$(RUN_OPT_32))
 
-# The timeout images are five extra vopt passes, so a plain run only builds
-# them when it actually asks for one
-RUN_OPT_DEPS = optimize $(if $(filter 0,$(TIMEOUT)),,optimize_timeout)
+# The timeout and 64-bit images cost extra passes, so a plain run only builds
+# the ones it actually asks for
+RUN_OPT_DEPS = $(if $(filter 1,$(WIDE)),optimize_wide,optimize) \
+               $(if $(filter 0,$(TIMEOUT)),,optimize_timeout)
 
 ifeq ($(USE_COVERAGE),1)
-    VLOG_FLAGS += -cover sbcet
-    VOPT_FLAGS += -cover sbcet
+    VLOG_FLAGS   += -cover sbcet
+    VOPT_FLAGS   += -cover sbcet
+    VLOG64_FLAGS += -cover sbcet
+    VOPT64_FLAGS += -cover sbcet
     VSIM_COV_FLAG = -coverage
 else
     VSIM_COV_FLAG =
@@ -120,13 +151,19 @@ REGRESS_TARGETS = $(foreach test,$(TEST_LIST),\
                   $(foreach tmo,$(TIMEOUT_VALUES),\
                   $(foreach test,$(TIMEOUT_TEST_LIST),\
                   $(foreach idx,$(shell seq 1 $(NUM_RUNS)),\
-                  $(test)_tmo$(tmo)_run_$(idx))))
+                  $(test)_tmo$(tmo)_run_$(idx)))) \
+                  $(foreach test,$(PARAM_TEST_LIST),\
+                  $(foreach idx,$(shell seq 1 $(NUM_RUNS)),\
+                  $(test)_w64_run_$(idx))) \
+                  $(foreach test,$(PARAM_TEST_LIST),\
+                  $(foreach idx,$(shell seq 1 $(NUM_RUNS)),\
+                  $(test)_w64n_run_$(idx)))
 
 #-----------------------------------------------------------------------------
 # Main targets
 #-----------------------------------------------------------------------------
-.PHONY: help check-tools compile optimize optimize_timeout run gui regress \
-        merge_cov cov_report assert_report clean
+.PHONY: help check-tools compile optimize optimize_timeout compile_wide \
+        optimize_wide run gui regress merge_cov cov_report assert_report clean
 
 help:
 	@echo "AXI4 to AHB-Lite Bridge VIP"
@@ -145,11 +182,13 @@ help:
 	@echo "  USE_COVERAGE=<0/1>   Default: $(USE_COVERAGE)"
 	@echo "  NARROW=<0/1>         Run on narrow-burst DUT build: $(NARROW)"
 	@echo "  TIMEOUT=<0/16/../256> Run on a C_DPHASE_TIMEOUT build: $(TIMEOUT)"
+	@echo "  WIDE=<0/1>           Run on the 64-bit build: $(WIDE)"
 	@echo "  PLUSARGS=\"...\"     Extra simulation plusargs"
 	@echo "  TEST_LIST=\"...\"    Regression test list"
 	@echo "  NARROW_TEST_LIST=\"...\" Regression tests on narrow build"
 	@echo "  TIMEOUT_VALUES=\"...\"  Timeout builds: $(TIMEOUT_VALUES)"
 	@echo "  TIMEOUT_TEST_LIST=\"...\" Regression tests on every timeout build"
+	@echo "  PARAM_TEST_LIST=\"...\"   Compliance subset on the 64-bit build"
 	@echo "  SKIP_MERGE=1         assert_report: use MERGED_UCDB as it is"
 
 check-tools:
@@ -188,6 +227,24 @@ optimize_timeout: compile
 			"work.$(TOP)" -o "$(OPT_TOP_TMO)$$tmo" || exit 1; \
 	done
 
+# The 64-bit configuration. A separate compilation, not just a separate vopt,
+# because the widths come from package parameters set by BRIDGE_DATA_WIDTH.
+compile_wide: check-tools
+	@cd "$(MAKEFILE_DIR)" && mkdir -p "$(LOG_DIR)"
+	@cd "$(MAKEFILE_DIR)" && { test -d "$(WORK64)" || "$(VLIB)" "$(WORK64)"; }
+	@cd "$(MAKEFILE_DIR)" && "$(VMAP)" "$(WORK64)" "$(WORK64)"
+	cd "$(MAKEFILE_DIR)" && "$(VLOG)" $(VLOG64_FLAGS) -f "$(FILELIST)"
+
+optimize_wide: compile_wide
+	@cd "$(MAKEFILE_DIR)" && mkdir -p "$(LOG_DIR)"
+	cd "$(MAKEFILE_DIR)" && "$(VOPT)" $(VOPT64_FLAGS) \
+		-l "$(LOG_DIR)/optimize_w64.log" \
+		"$(WORK64).$(TOP)" -o "$(OPT_TOP_W64)"
+	cd "$(MAKEFILE_DIR)" && "$(VOPT)" $(VOPT64_FLAGS) \
+		-l "$(LOG_DIR)/optimize_w64_narrow.log" \
+		-GC_S_AXI_SUPPORTS_NARROW_BURST=1 \
+		"$(WORK64).$(TOP)" -o "$(OPT_TOP_W64_NARROW)"
+
 run: $(RUN_OPT_DEPS)
 	@cd "$(MAKEFILE_DIR)" && mkdir -p \
 		"$(LOG_DIR)" "$(WLF_DIR)" "$(COV_DIR)"
@@ -204,7 +261,7 @@ run: $(RUN_OPT_DEPS)
 			$(PLUSARGS) \
 			-l "$(RUN_LOG)" -wlf "$(RUN_WLF)" \
 			-do "$$cov_cmd run -all; quit -f" \
-			"work.$(RUN_OPT_TOP)"
+			"$(RUN_OPT_TOP)"
 	@cd "$(MAKEFILE_DIR)" && \
 		if grep -Eq '$(FAIL_REGEX)' "$(RUN_LOG)" || \
 			grep -q '=== TEST FAILED ===' "$(RUN_LOG)"; then \
@@ -233,12 +290,12 @@ gui: $(RUN_OPT_DEPS)
 			$(PLUSARGS) \
 			-l "$(RUN_LOG)" -wlf "$(RUN_WLF)" \
 			-do "do wave.do; $$cov_cmd run -all" \
-			"work.$(RUN_OPT_TOP)"
+			"$(RUN_OPT_TOP)"
 
 #-----------------------------------------------------------------------------
 # Regression
 #-----------------------------------------------------------------------------
-regress: optimize optimize_timeout
+regress: optimize optimize_timeout optimize_wide
 	@cd "$(MAKEFILE_DIR)" && mkdir -p \
 		"$(LOG_DIR)" "$(WLF_DIR)" "$(COV_DIR)"
 	@echo "[REGRESS] tests=$(TEST_LIST) narrow_tests=$(NARROW_TEST_LIST) timeout_tests=$(TIMEOUT_TEST_LIST) timeouts=$(TIMEOUT_VALUES) runs=$(NUM_RUNS)"
@@ -250,12 +307,16 @@ $(REGRESS_TARGETS):
 		run_name="$${target%_run_*}"; \
 		run_idx="$${target##*_run_}"; \
 		test_name="$$run_name"; \
-		opt_top="$(OPT_TOP)"; \
+		opt_top="work.$(OPT_TOP)"; \
 		case "$$run_name" in \
 			*_narrow) test_name="$${run_name%_narrow}"; \
-			          opt_top="$(OPT_TOP_NARROW)";; \
+			          opt_top="work.$(OPT_TOP_NARROW)";; \
 			*_tmo*)   test_name="$${run_name%_tmo*}"; \
-			          opt_top="$(OPT_TOP_TMO)$${run_name##*_tmo}";; \
+			          opt_top="work.$(OPT_TOP_TMO)$${run_name##*_tmo}";; \
+			*_w64n)   test_name="$${run_name%_w64n}"; \
+			          opt_top="$(WORK64).$(OPT_TOP_W64_NARROW)";; \
+			*_w64)    test_name="$${run_name%_w64}"; \
+			          opt_top="$(WORK64).$(OPT_TOP_W64)";; \
 		esac; \
 		seed=$$(shuf -i 1-99999999 -n 1 2>/dev/null || \
 			echo $$((($$RANDOM * 32768 + $$RANDOM) % 99999999 + 1))); \
@@ -381,6 +442,6 @@ assert_report: $(if $(filter 1,$(SKIP_MERGE)),,merge_cov)
 # modelsim.ini is part of the source tree (library mappings); keep it
 clean:
 	@echo "[CLEAN] Removing generated files under $(MAKEFILE_DIR)"
-	@cd "$(MAKEFILE_DIR)" && rm -rf -- work report
+	@cd "$(MAKEFILE_DIR)" && rm -rf -- work "$(WORK64)" report
 	@cd "$(MAKEFILE_DIR)" && rm -f -- \
 		transcript vsim.wlf vsim_stacktrace.vstf *.vcd *.ucdb

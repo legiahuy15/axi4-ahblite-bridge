@@ -9,8 +9,20 @@
     //-------------------------------------------------------------------------
     // Bus parameters
     //-------------------------------------------------------------------------
-    parameter int unsigned AXI4_ADDR_WIDTH = 32;
-    parameter int unsigned AXI4_DATA_WIDTH = 32;
+    // These live in a package, so a vopt -G override cannot reach them: a
+    // different width needs its own compilation. BRIDGE_DATA_WIDTH and
+    // BRIDGE_ADDR_WIDTH are the one pair of knobs for it, shared with
+    // ahb_types.sv so the two sides of the bridge cannot be built unequal by
+    // accident. The Makefile compiles the 64-bit variant into its own library.
+`ifndef BRIDGE_DATA_WIDTH
+    `define BRIDGE_DATA_WIDTH 32
+`endif
+`ifndef BRIDGE_ADDR_WIDTH
+    `define BRIDGE_ADDR_WIDTH 32
+`endif
+
+    parameter int unsigned AXI4_ADDR_WIDTH = `BRIDGE_ADDR_WIDTH;
+    parameter int unsigned AXI4_DATA_WIDTH = `BRIDGE_DATA_WIDTH;
     parameter int unsigned AXI4_STRB_WIDTH = AXI4_DATA_WIDTH / 8;
     parameter int unsigned AXI4_ID_WIDTH   = 4;
     parameter int unsigned AXI4_LEN_WIDTH  = 8;
