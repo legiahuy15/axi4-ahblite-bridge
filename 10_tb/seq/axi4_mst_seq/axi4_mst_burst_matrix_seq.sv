@@ -183,14 +183,22 @@ class axi4_mst_burst_matrix_seq extends axi4_mst_base_seq;
         addr = base_addr + (index * case_stride);
         addr = (addr / byte_per_beat) * byte_per_beat;
 
-        // For WRAP, alignment must be on size boundary (already done above)
-        // For INCR, move the start to the next 1 KB boundary if the burst
-        // would cross the current one
+        // For WRAP, alignment must be on size boundary (already done above).
+        // For INCR the rule to respect here is the AXI one: a burst must not
+        // cross a 4 KB boundary. Aligning the start down to a power of two at
+        // least as large as the burst guarantees that for any bus width.
+        // The 1 KB boundary is an AHB concern and bridge_1kb_boundary_test
+        // covers it deliberately, so nothing is done about it here: the old
+        // nudge to the next 1 KB boundary assumed a burst fits in 1 KB, which
+        // stops being true at 8 bytes a beat, and it pushed a 256-beat 64-bit
+        // burst across a 4 KB boundary instead of away from one.
         if (burst == AXI4_BURST_INCR) begin
-            bit [AXI4_ADDR_WIDTH-1:0] kb_start;
-            kb_start = (addr >> 10) << 10;
-            if ((addr - kb_start + total_bytes) > 'h400)
-                addr = kb_start + 'h400;
+            int unsigned span;
+
+            span = byte_per_beat;
+            while (span < total_bytes)
+                span = span << 1;
+            addr = (addr / span) * span;
         end
 
         return addr;
