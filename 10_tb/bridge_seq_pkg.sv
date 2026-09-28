@@ -42,6 +42,7 @@ package bridge_seq_pkg;
     `include "seq/axi4_mst_seq/axi4_mst_reset_seq.sv"
     `include "seq/axi4_mst_seq/axi4_mst_reset_mid_transfer_seq.sv"
     `include "seq/axi4_mst_seq/axi4_mst_parameter_seq.sv"
+    `include "seq/axi4_mst_seq/axi4_mst_ordering_seq.sv"
 
     //-------------------------------------------------------------------------
     // AHB-Lite slave sequences
@@ -74,6 +75,7 @@ package bridge_seq_pkg;
     `include "seq/bridge_vip_seq/bridge_reset_seq.sv"
     `include "seq/bridge_vip_seq/bridge_reset_mid_transfer_seq.sv"
     `include "seq/bridge_vip_seq/bridge_parameter_seq.sv"
+    `include "seq/bridge_vip_seq/bridge_ordering_seq.sv"
 
 endpackage : bridge_seq_pkg
 

@@ -43,6 +43,7 @@ package bridge_test_pkg;
     `include "test/bridge_reset_test.sv"
     `include "test/bridge_reset_mid_transfer_test.sv"
     `include "test/bridge_parameter_test.sv"
+    `include "test/bridge_ordering_test.sv"
 
 endpackage : bridge_test_pkg
 
