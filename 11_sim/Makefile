@@ -74,7 +74,8 @@ TEST_LIST ?= bridge_sanity_test bridge_data_integrity_test \
 
 # Tests that also run on the C_S_AXI_SUPPORTS_NARROW_BURST=1 build
 NARROW_TEST_LIST ?= bridge_data_integrity_test bridge_size_mapping_test \
-		            bridge_single_wstrb_test bridge_unaligned_read_test
+		            bridge_single_wstrb_test bridge_unaligned_read_test \
+		            bridge_parameter_test
 
 # Supported non-zero C_DPHASE_TIMEOUT values (PG177) and the tests that run on
 # every one of them. The default build covers the C_DPHASE_TIMEOUT=0 case.
