@@ -335,7 +335,7 @@ $(REGRESS_TARGETS):
 			$(PLUSARGS) \
 			-l "$$log_file" -wlf "$$wlf_file" \
 			-do "$$cov_cmd run -all; quit -f" \
-			"work.$$opt_top"; \
+			"$$opt_top"; \
 		if grep -Eq '$(FAIL_REGEX)' "$$log_file" || \
 			! grep -q '=== TEST PASSED ===' "$$log_file"; then \
 			echo "[FAILED] $$run_name | run=$$run_idx log=$$log_file"; \
