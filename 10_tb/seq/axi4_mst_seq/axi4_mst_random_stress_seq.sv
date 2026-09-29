@@ -41,16 +41,20 @@
 //               requires the watchdog to fire rather than merely allowing
 //               it. A run on a build with a watchdog that never tripped it
 //               fails.
-//               How far past the threshold that beat is held is not a free
-//               choice. Once the watchdog fires the bridge drives HTRANS
-//               IDLE and drains the rest of a write burst, moving HWDATA as
+//               It is the last beat of the burst that is held, never a
+//               middle one. Once the watchdog fires the bridge drives HTRANS
+//               IDLE and accepts the rest of a write burst, moving HWDATA as
 //               it goes, which WDATA_STABLE_DURING_WAIT allows while HTRANS
-//               is IDLE. The beat the slave eventually reports therefore
-//               carries later data than the address phase it belongs to, and
-//               the scoreboard only stops comparing such a beat once the AXI
-//               completion has told it the request was abandoned. The hold
-//               must outlast that completion, so timeout_overshoot is sized
-//               from the longest burst rather than from the threshold.
+//               is IDLE, so the beat the slave eventually reports would
+//               carry later data than the address phase it belongs to. No
+//               choice of hold clears that, because the bridge answers on B
+//               in the same cycle the slave releases HREADY: the corrupted
+//               beat and the completion that marks the request abandoned
+//               reach the scoreboard in one time step. Hanging the last beat
+//               leaves no W beat to move HWDATA and cancels no beat at all.
+//               Abandoning a burst part way through belongs to
+//               bridge_timeout_test, which is directed and can control the
+//               traffic around it.
 //               The oracle is independent of the scoreboard. The plan for a
 //               request is drawn before it is sent, so the sequence knows
 //               which beat will be answered with ERROR and what the whole
@@ -94,20 +98,10 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
     // waits capped so they cannot trip it.
     int unsigned              dphase_timeout;
     int unsigned              timeout_every   = 8;
-    // How far past C_DPHASE_TIMEOUT the hung beat is held. This is not just
-    // a margin on the threshold, which is only one or two cycles: it decides
-    // whether the AHB slave releases HREADY before or after the AXI
-    // completion, and the scoreboard stops comparing an abandoned request's
-    // beats only once that completion has told it the request was dropped.
-    // Once the watchdog fires the bridge drives HTRANS IDLE and drains the
-    // rest of the write burst, moving HWDATA as it goes, which the AHB
-    // assertion WDATA_STABLE_DURING_WAIT explicitly permits while HTRANS is
-    // IDLE. The beat the slave finally reports therefore carries whatever
-    // HWDATA has reached by then, and it has to arrive late enough to be
-    // recognised as abandoned rather than compared. The drain cannot take
-    // longer than the burst, so the hold has to outlast the watchdog plus
-    // the longest burst plus the BREADY delay.
-    int unsigned              timeout_overshoot = 32;
+    // How far past C_DPHASE_TIMEOUT the last beat is held. Only has to clear
+    // the measured threshold of C_DPHASE_TIMEOUT plus one or two cycles, so
+    // that the watchdog is certain to fire rather than marginal.
+    int unsigned              timeout_overshoot = 16;
 
     //-------------------------------------------------------------------------
     // Shared handles
@@ -277,12 +271,27 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
 
         // A deliberate timeout: every beat is answered OKAY so SLVERR can
         // only mean the watchdog, which is the contract the scoreboard's
-        // declared-timeout path relies on, and one beat is held well past
-        // the threshold. The threshold measured by bridge_timeout_boundary_
-        // test is C_DPHASE_TIMEOUT plus one or two cycles, so the overshoot
-        // makes it certain rather than marginal.
+        // declared-timeout path relies on, and the last beat is held well
+        // past the threshold. The threshold measured by
+        // bridge_timeout_boundary_test is C_DPHASE_TIMEOUT plus one or two
+        // cycles, so the overshoot makes it certain rather than marginal.
+        //
+        // It has to be the last beat, not a random one. When the watchdog
+        // fires the bridge drives HTRANS IDLE and accepts the rest of the
+        // write burst, moving HWDATA on while the slave is still in the
+        // data phase, which WDATA_STABLE_DURING_WAIT permits once HTRANS is
+        // IDLE. The beat the slave finally reports then carries later data
+        // than the address phase it belongs to. That cannot be worked around
+        // with timing, because the bridge answers on B in the same cycle the
+        // slave releases HREADY, so the corrupted beat and the completion
+        // that would mark the request abandoned reach the scoreboard in one
+        // time step and their order is a delta race. Hanging the last beat
+        // removes the problem at the source: no W beat is left to move
+        // HWDATA, and no beat is cancelled either. Abandoning a burst part
+        // way through is bridge_timeout_test's job, where the traffic around
+        // it is directed and the ordering is under control.
         if (timeout_case) begin
-            hang_beat = $urandom_range(beats - 1, 0);
+            hang_beat = beats - 1;
             for (int unsigned i = 0; i < beats; i++) begin
                 beat_resp.push_back(AHB_RESP_OKAY);
                 beat_wait.push_back((i == hang_beat) ?
@@ -723,18 +732,12 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
                        $sformatf({"C_DPHASE_TIMEOUT=%0d is too small to keep ",
                                   "ordinary traffic clear of the watchdog"},
                                  dphase_timeout))
-        // Must outlast the watchdog, the drain of the longest burst and the
-        // BREADY delay, or the abandoned beat reaches the scoreboard before
-        // the completion that tells it the request was dropped
-        if ((dphase_timeout != 0) &&
-            (timeout_overshoot < (MAX_LEN + 1 + 8)))
+        if ((dphase_timeout != 0) && (timeout_overshoot < 8))
             `uvm_fatal(get_type_name(),
-                       $sformatf({"timeout_overshoot=%0d is too small; the ",
-                                  "hung beat must still be held when the AXI ",
-                                  "completion arrives, which is at worst the ",
-                                  "watchdog plus %0d beats of drain plus the ",
-                                  "BREADY delay"},
-                                 timeout_overshoot, MAX_LEN))
+                       $sformatf({"timeout_overshoot=%0d does not clear the ",
+                                  "threshold of C_DPHASE_TIMEOUT plus one or ",
+                                  "two cycles with any margin"},
+                                 timeout_overshoot))
     endfunction : validate_knobs
 
 endclass : axi4_mst_random_stress_seq
