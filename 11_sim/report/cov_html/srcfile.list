@@ -58,6 +58,7 @@
 ../10_tb/seq/axi4_mst_seq/axi4_mst_timeout_seq.sv
 ../10_tb/seq/axi4_mst_seq/axi4_mst_unaligned_read_seq.sv
 ../10_tb/seq/axi4_mst_seq/axi4_mst_wrap_mapping_seq.sv
+../10_tb/seq/axi4_mst_seq/axi4_mst_write_starvation_seq.sv
 ../10_tb/seq/bridge_vip_seq/bridge_1kb_boundary_seq.sv
 ../10_tb/seq/bridge_vip_seq/bridge_backpressure_seq.sv
 ../10_tb/seq/bridge_vip_seq/bridge_base_seq.sv
@@ -82,6 +83,7 @@
 ../10_tb/seq/bridge_vip_seq/bridge_unaligned_read_seq.sv
 ../10_tb/seq/bridge_vip_seq/bridge_unsupported_feature_seq.sv
 ../10_tb/seq/bridge_vip_seq/bridge_wrap_mapping_seq.sv
+../10_tb/seq/bridge_vip_seq/bridge_write_starvation_seq.sv
 ../10_tb/sva/ahb_sva.sv
 ../10_tb/sva/axi4_sva.sv
 ../10_tb/test/bridge_1kb_boundary_test.sv
@@ -108,6 +110,7 @@
 ../10_tb/test/bridge_unaligned_read_test.sv
 ../10_tb/test/bridge_unsupported_feature_test.sv
 ../10_tb/test/bridge_wrap_mapping_test.sv
+../10_tb/test/bridge_write_starvation_test.sv
 ../10_tb/txn/ahb_slave_response.sv
 ../10_tb/txn/ahb_transfer.sv
 ../10_tb/txn/axi4_transaction.sv
