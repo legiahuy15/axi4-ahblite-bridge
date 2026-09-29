@@ -26,6 +26,15 @@ MERGED_UCDB   = $(COV_DIR)/merged.ucdb
 # and cover directives get their own text reports
 ASSERT_TXT    = $(REPORT_DIR)/assertions.txt
 DIRECTIVE_TXT = $(REPORT_DIR)/directives.txt
+
+# The HTML report stops at a percentage per design unit, which is enough to
+# see where code coverage is weak but not to say what is missing. The review
+# BRG_ENV_005 asks for needs the uncovered statements, branches and
+# conditions by line, and only a text report has those.
+CODE_TXT      = $(REPORT_DIR)/code.txt
+CODE_DU_LIST ?= axi_ahblite_bridge axi_slv_if ahb_mstr_if ahb_skid_buf \
+                counter_f time_out
+CODE_DU_ARGS  = $(foreach du,$(CODE_DU_LIST),-du $(du))
 SVA_DIR       = ../10_tb/sva
 COV_SUMMARY_AWK = cov_summary.awk
 
@@ -167,7 +176,8 @@ REGRESS_TARGETS = $(foreach test,$(TEST_LIST),\
 # Main targets
 #-----------------------------------------------------------------------------
 .PHONY: help check-tools compile optimize optimize_timeout compile_wide \
-        optimize_wide run gui regress merge_cov cov_report assert_report clean
+        optimize_wide run gui regress merge_cov cov_report assert_report \
+        code_report clean
 
 help:
 	@echo "AXI4 to AHB-Lite Bridge VIP"
@@ -177,6 +187,7 @@ help:
 	@echo "  make regress         Run TEST_LIST in parallel"
 	@echo "  make cov_report      Merge UCDB files and create HTML report"
 	@echo "  make assert_report   Assertion and cover-directive text reports"
+	@echo "  make code_report     DUT code coverage, uncovered lines in detail"
 	@echo "  make clean           Remove generated simulation outputs"
 	@echo ""
 	@echo "  TESTNAME=<name>      Default: $(TESTNAME)"
@@ -439,6 +450,35 @@ assert_report: $(if $(filter 1,$(SKIP_MERGE)),,merge_cov)
 		elif [ -n "$$missing" ]; then \
 			echo "  Absent from both reports:$$missing"; \
 		fi
+
+#-----------------------------------------------------------------------------
+# Code coverage report for the DUT
+#-----------------------------------------------------------------------------
+# Restricted to the design units of the bridge on purpose: a detailed report
+# over the whole merge would also walk the UVM package and the testbench,
+# which are not what BRG_ENV_005 reviews.
+code_report: $(if $(filter 1,$(SKIP_MERGE)),,merge_cov)
+	@cd "$(MAKEFILE_DIR)" && mkdir -p "$(REPORT_DIR)"
+	@cd "$(MAKEFILE_DIR)" && \
+		if [ ! -e "$(MERGED_UCDB)" ]; then \
+			echo "[CODE_REPORT] $(MERGED_UCDB) is missing, merging first"; \
+			$(MAKE) -C "$(MAKEFILE_DIR)" merge_cov; \
+		fi
+	@cd "$(MAKEFILE_DIR)" && \
+		"$(VCOVER)" report -details -code bcesf $(CODE_DU_ARGS) \
+			"$(MERGED_UCDB)" > "$(CODE_TXT)" 2>/dev/null || \
+		"$(VCOVER)" report -details -code bcs $(CODE_DU_ARGS) \
+			"$(MERGED_UCDB)" > "$(CODE_TXT)" 2>/dev/null || \
+		"$(VCOVER)" report -details -code bcs "$(MERGED_UCDB)" \
+			> "$(CODE_TXT)" || { \
+			echo "ERROR: this Questa rejects 'vcover report -code'."; \
+			echo "       Run 'vcover report -help' and use the switch it lists."; \
+			exit 1; \
+		}
+	@cd "$(MAKEFILE_DIR)" && \
+		echo "[CODE_REPORT] $(CODE_TXT) ($$(wc -l < "$(CODE_TXT)") lines)"; \
+		grep -iE 'Total Coverage|Coverage Summary|^Design Unit' "$(CODE_TXT)" \
+			| head -20 || true
 
 #-----------------------------------------------------------------------------
 # Cleanup
