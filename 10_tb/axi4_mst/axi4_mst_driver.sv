@@ -182,6 +182,12 @@ class axi4_mst_driver extends uvm_driver #(axi4_transaction);
     protected task drive_w(axi4_transaction tr);
         @(vif.master_cb);
         foreach (tr.data[i]) begin
+            // Let the write data run dry before this beat, if asked. Never
+            // before the first beat: a burst that has not started yet is a
+            // late request, not a starved one.
+            if (i != 0)
+                insert_w_gap(tr, i);
+
             vif.master_cb.WDATA  <= tr.data[i];
             vif.master_cb.WSTRB  <= tr.strb[i];
             vif.master_cb.WLAST  <= (i == tr.data.size() - 1);
@@ -201,6 +207,36 @@ class axi4_mst_driver extends uvm_driver #(axi4_transaction);
         vif.master_cb.WVALID <= 1'b0;
         vif.master_cb.WLAST  <= 1'b0;
     endtask : drive_w
+
+    // WVALID low for a while between two beats of a burst. A transaction may
+    // name one beat and a length, which is how the directed starvation test
+    // puts the gap exactly where a particular bridge state needs it;
+    // otherwise the agent's range applies to every beat. With neither set
+    // this returns before touching the bus, so a burst goes out back to back
+    // exactly as it did before the knob existed.
+    protected task insert_w_gap(axi4_transaction tr, int unsigned beat);
+        int unsigned gap;
+
+        if (tr.w_gap_cycles != 0) begin
+            if (beat != tr.w_gap_beat)
+                return;
+            gap = tr.w_gap_cycles;
+        end else begin
+            if ((cfg.wvalid_gap_min == 0) && (cfg.wvalid_gap_max == 0))
+                return;
+            gap = $urandom_range(cfg.wvalid_gap_max, cfg.wvalid_gap_min);
+            if (gap == 0)
+                return;
+        end
+
+        vif.master_cb.WVALID <= 1'b0;
+        vif.master_cb.WLAST  <= 1'b0;
+        `uvm_info(get_type_name(),
+                  $sformatf("[DRV][AXI][W] id=0x%0h gap of %0d cycles before beat %0d",
+                            tr.id, gap, beat + 1),
+                  UVM_HIGH)
+        repeat (gap) @(vif.master_cb);
+    endtask : insert_w_gap
 
     protected task drive_ar(axi4_transaction tr);
         @(vif.master_cb);

@@ -45,6 +45,7 @@ package bridge_test_pkg;
     `include "test/bridge_parameter_test.sv"
     `include "test/bridge_ordering_test.sv"
     `include "test/bridge_random_stress_test.sv"
+    `include "test/bridge_write_starvation_test.sv"
 
 endpackage : bridge_test_pkg
 

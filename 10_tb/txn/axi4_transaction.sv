@@ -26,6 +26,15 @@ class axi4_transaction extends uvm_sequence_item;
     rand axi4_resp_e                   bresp;
     rand axi4_resp_e                   rresp[];
 
+    // Stimulus-only: hold WVALID low for w_gap_cycles before beat
+    // w_gap_beat, so the bridge sees the write data run dry in the middle of
+    // a burst. Zero cycles means the beats go out back to back, which is what
+    // every sequence but bridge_write_starvation_seq wants. Deliberately not
+    // in the field macros: the monitor cannot observe them, so they must not
+    // take part in compare, print or pack.
+    int unsigned                       w_gap_beat;
+    int unsigned                       w_gap_cycles;
+
     //-------------------------------------------------------------------------
     // UVM utility macro
     //-------------------------------------------------------------------------
@@ -131,6 +140,10 @@ class axi4_transaction extends uvm_sequence_item;
         rresp = new[rhs_t.rresp.size()];
         foreach (rhs_t.rresp[i])
             rresp[i] = rhs_t.rresp[i];
+        // Not registered fields, so super.do_copy does not carry them and
+        // the driver's clone would otherwise lose the gap
+        w_gap_beat   = rhs_t.w_gap_beat;
+        w_gap_cycles = rhs_t.w_gap_cycles;
     endfunction : do_copy
 
     function bit do_compare(uvm_object rhs, uvm_comparer comparer);
