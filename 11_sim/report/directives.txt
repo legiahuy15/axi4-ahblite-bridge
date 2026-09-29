@@ -1,5 +1,5 @@
 QuestaSim-64 vcover 10.6b Coverage Utility 2017.05 May 25 2017
-Start time: 13:57:52 on Sep 29,2026
+Start time: 14:19:49 on Sep 29,2026
 vcover report -directive -details report/coverage/merged.ucdb 
 
 DIRECTIVE COVERAGE:
@@ -9,33 +9,33 @@ Name                                     Design Design   Lang File(Line)      Co
 ---------------------------------------------------------------------------------------------
 /bridge_tb_top/axi_checker/C_AW_HANDSHAKE 
                                          axi4_sva Verilog  SVA  ../10_tb/sva/axi4_sva.sv(423)
-                                                                              10882 Covered   
+                                                                              10936 Covered   
 /bridge_tb_top/axi_checker/C_W_STALL     axi4_sva Verilog  SVA  ../10_tb/sva/axi4_sva.sv(425)
-                                                                              96688 Covered   
+                                                                              97456 Covered   
 /bridge_tb_top/axi_checker/C_B_STALL     axi4_sva Verilog  SVA  ../10_tb/sva/axi4_sva.sv(427)
-                                                                               3451 Covered   
+                                                                               3630 Covered   
 /bridge_tb_top/axi_checker/C_AR_HANDSHAKE 
                                          axi4_sva Verilog  SVA  ../10_tb/sva/axi4_sva.sv(429)
-                                                                               8463 Covered   
+                                                                               8429 Covered   
 /bridge_tb_top/axi_checker/C_R_STALL     axi4_sva Verilog  SVA  ../10_tb/sva/axi4_sva.sv(431)
-                                                                              21629 Covered   
+                                                                              20422 Covered   
 /bridge_tb_top/axi_checker/C_B_SLVERR    axi4_sva Verilog  SVA  ../10_tb/sva/axi4_sva.sv(433)
-                                                                               3196 Covered   
+                                                                               3272 Covered   
 /bridge_tb_top/axi_checker/C_R_SLVERR    axi4_sva Verilog  SVA  ../10_tb/sva/axi4_sva.sv(435)
-                                                                               3908 Covered   
+                                                                               3630 Covered   
 /bridge_tb_top/ahb_checker/C_NONSEQ      ahb_sva Verilog  SVA  ../10_tb/sva/ahb_sva.sv(388)
-                                                                              26283 Covered   
+                                                                              26215 Covered   
 /bridge_tb_top/ahb_checker/C_WAIT_STATE  ahb_sva Verilog  SVA  ../10_tb/sva/ahb_sva.sv(392)
-                                                                              165546 Covered   
+                                                                              165740 Covered   
 /bridge_tb_top/ahb_checker/C_ERROR       ahb_sva Verilog  SVA  ../10_tb/sva/ahb_sva.sv(394)
-                                                                               2802 Covered   
+                                                                               2807 Covered   
 /bridge_tb_top/ahb_checker/C_INCR        ahb_sva Verilog  SVA  ../10_tb/sva/ahb_sva.sv(396)
-                                                                               3026 Covered   
+                                                                               3092 Covered   
 /bridge_tb_top/ahb_checker/C_WRAP        ahb_sva Verilog  SVA  ../10_tb/sva/ahb_sva.sv(399)
-                                                                               1330 Covered   
+                                                                               1349 Covered   
 /bridge_tb_top/ahb_checker/C_LOCKED_IDLE ahb_sva Verilog  SVA  ../10_tb/sva/ahb_sva.sv(407)
                                                                                 615 Covered   
 
 TOTAL DIRECTIVE COVERAGE: 100.0%  COVERS: 13
-End time: 13:57:52 on Sep 29,2026, Elapsed time: 0:00:00
+End time: 14:19:49 on Sep 29,2026, Elapsed time: 0:00:00
 Errors: 0, Warnings: 0
