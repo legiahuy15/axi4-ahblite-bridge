@@ -32,6 +32,9 @@ class e2e_rsp_ctx;
     bit              saw_wait;
     // Predicted beats not yet seen on the bus, oldest first
     e2e_beat_key_t   expected_beats[$];
+    // Set once the AXI completion of an abandoned request has been paired,
+    // so a later completion of another request cannot take it a second time
+    bit              completion_seen;
 
     function new(axi4_transaction tr);
         this.tr = tr;
@@ -587,6 +590,16 @@ class e2e_cov extends uvm_component;
                 end
             end
 
+            // A beat that is not the one the active request is still waiting
+            // for means that request is over: the watchdog ended it and the
+            // beats it still owed will never come. Without this the dead
+            // request stays active and swallows the beats of everything
+            // behind it, which is how an AHB ERROR ends up recorded against
+            // a request that completed with OKAY. The prediction and the bus
+            // agree on every live request, so this cannot fire on one.
+            if (beat_is_foreign(pending_actual_ahb_queue[0]))
+                abandon_active_ctx();
+
             if (rsp_active_ctx == null) begin
                 rsp_active_ctx = find_rsp_ctx(pending_actual_ahb_queue[0]);
                 // Request not predicted yet; retry when it is
@@ -629,6 +642,39 @@ class e2e_cov extends uvm_component;
         end
     endfunction : drain_actual_ahb
 
+    protected function bit beat_is_foreign(ahb_transfer tr);
+        if (rsp_active_ctx == null)
+            return 1'b0;
+        if (rsp_active_ctx.expected_beats.size() == 0)
+            return 1'b0;
+        return ((rsp_active_ctx.expected_beats[0].write != tr.write) ||
+                (rsp_active_ctx.expected_beats[0].addr  != tr.addr));
+    endfunction : beat_is_foreign
+
+    // Take the active request out of the live queue and keep what it still
+    // owed, so a beat of it that turns up later is recognised rather than
+    // credited to whoever is active then. Its AXI completion is dropped
+    // here if it has already arrived, and by sample_response_queue if it
+    // has not.
+    protected function void abandon_active_ctx();
+        if (rsp_active_ctx == null)
+            return;
+
+        foreach (rsp_ctx_queue[i]) begin
+            if (rsp_ctx_queue[i] == rsp_active_ctx) begin
+                rsp_ctx_queue.delete(i);
+                break;
+            end
+        end
+        if (rsp_predict_ctx == rsp_active_ctx)
+            rsp_predict_ctx = null;
+        abandoned_requests++;
+        if (rsp_active_ctx.expected_beats.size() != 0)
+            abandoned_ctx_queue.push_back(rsp_active_ctx);
+        rsp_active_ctx = null;
+        sample_response_queue();
+    endfunction : abandon_active_ctx
+
     // A beat of a request the watchdog already took, reported after its AXI
     // completion. Matched on direction and address against the beats that
     // request still owed, so a beat of a live request is never taken.
@@ -658,7 +704,10 @@ class e2e_cov extends uvm_component;
             ctx.beat_index++;
             void'(ctx.expected_beats.pop_front());
             abandoned_beats++;
-            if (ctx.expected_beats.size() == 0)
+            // Kept until its completion has been paired as well, or that
+            // completion would find nothing to pair with and sit in
+            // actual_axi_queue to the end of the test
+            if ((ctx.expected_beats.size() == 0) && ctx.completion_seen)
                 abandoned_ctx_queue.delete(i);
             return 1'b1;
         end
@@ -753,12 +802,22 @@ class e2e_cov extends uvm_component;
     // about a timeout as one of the two sources of SLVERR, and before this
     // no timeout ever reached cg_response_map.
     protected function bit take_abandoned_request(axi4_transaction axi_tr);
-        // An observed beat waiting for the request that owns it could still
-        // complete this one, so nothing is declared abandoned while the
-        // stream is behind. The beat the watchdog left behind arrives after
-        // the completion, so this queue is empty in the case being caught.
-        if (pending_actual_ahb_queue.size() != 0)
-            return 1'b0;
+        // A request the active beat stream has already shown to be dead, or
+        // one whose completion turned up first. Only a started request is
+        // judged here: an unstarted one is simply behind, its beats are
+        // waiting for the prediction that will let them drain, and
+        // beat_is_foreign will retire it later if the watchdog did take it.
+        foreach (abandoned_ctx_queue[i]) begin
+            e2e_rsp_ctx ctx;
+
+            ctx = abandoned_ctx_queue[i];
+            if ((ctx.tr.dir == axi_tr.dir) && (ctx.tr.id == axi_tr.id) &&
+                !ctx.completion_seen) begin
+                ctx.completion_seen = 1'b1;
+                sample_abandoned_response(ctx, axi_tr);
+                return 1'b1;
+            end
+        end
 
         foreach (rsp_ctx_queue[i]) begin
             e2e_rsp_ctx ctx;
@@ -766,12 +825,11 @@ class e2e_cov extends uvm_component;
             ctx = rsp_ctx_queue[i];
             if ((ctx.tr.dir != axi_tr.dir) || (ctx.tr.id != axi_tr.id))
                 continue;
+            if (!ctx.started)
+                continue;
 
-            m_rsp_dir        = axi_tr.dir;
-            m_rsp_ahb_error  = ctx.saw_error;
-            m_rsp_ahb_wait   = ctx.saw_wait;
-            m_rsp_axi_status = get_axi_status(axi_tr);
-            cg_response_map.sample();
+            ctx.completion_seen = 1'b1;
+            sample_abandoned_response(ctx, axi_tr);
 
             rsp_ctx_queue.delete(i);
             if (rsp_active_ctx == ctx)
@@ -785,6 +843,20 @@ class e2e_cov extends uvm_component;
         end
         return 1'b0;
     endfunction : take_abandoned_request
+
+    // Only the beats the request really got are behind saw_error and
+    // saw_wait, which is what makes the pair meaningful for a request the
+    // watchdog cut short.
+    protected function void sample_abandoned_response(
+        e2e_rsp_ctx      ctx,
+        axi4_transaction axi_tr
+    );
+        m_rsp_dir        = axi_tr.dir;
+        m_rsp_ahb_error  = ctx.saw_error;
+        m_rsp_ahb_wait   = ctx.saw_wait;
+        m_rsp_axi_status = get_axi_status(axi_tr);
+        cg_response_map.sample();
+    endfunction : sample_abandoned_response
 
     //-------------------------------------------------------------------------
     // Coverage helpers
