@@ -1,5 +1,5 @@
 QuestaSim-64 vopt 10.6b Compiler 2017.05 May 25 2017
-Start time: 09:36:15 on Sep 29,2026
+Start time: 12:16:49 on Sep 29,2026
 vopt "+acc" -work work -cover sbcet -l report/logs/optimize_tmo128.log -GC_DPHASE_TIMEOUT=128 work.bridge_tb_top -o opt_bridge_tb_top_tmo128 
 
 Top level modules:
@@ -44,5 +44,5 @@ Optimizing 18 design-units (inlining 0/11 module instances):
 -- Optimizing interface axi4_if(fast)
 -- Optimizing interface ahb_if(fast)
 Optimized design name is opt_bridge_tb_top_tmo128
-End time: 09:36:18 on Sep 29,2026, Elapsed time: 0:00:03
+End time: 12:16:51 on Sep 29,2026, Elapsed time: 0:00:02
 Errors: 0, Warnings: 0
