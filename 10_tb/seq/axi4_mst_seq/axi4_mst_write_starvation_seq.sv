@@ -196,6 +196,13 @@ class axi4_mst_write_starvation_seq extends axi4_mst_base_seq;
         // in AHB_WR_WAIT and re-issues the NONSEQ from there.
         add_case(AXI4_BURST_INCR, 1, 1, 4, 1'b1, 0, "ONEKB_LAST_GAP4");
         add_case(AXI4_BURST_INCR, 3, 1, 4, 1'b1, 1, "ONEKB_SPLIT_GAP4");
+        // Short gaps on the same shape. With a long gap the bridge is
+        // already sitting in AHB_LAST_WAIT when the data turns up and leaves
+        // through AHB_ONEKB_LAST; a gap of one or two cycles is the chance
+        // for the data to be there in the cycle it arrives, which is the one
+        // path out of that state the long gaps never take.
+        add_case(AXI4_BURST_INCR, 1, 1, 1, 1'b1, 2, "ONEKB_LAST_GAP1");
+        add_case(AXI4_BURST_INCR, 1, 1, 2, 1'b1, 3, "ONEKB_LAST_GAP2");
     endfunction : build_cases
 
     //-------------------------------------------------------------------------
@@ -377,7 +384,11 @@ class axi4_mst_write_starvation_seq extends axi4_mst_base_seq;
         if (!c.cross_1kb)
             return base_addr + (index * case_stride);
 
-        boundary = base_addr + ((c.region + 1) * 1024);
+        // Three 1 KB boundaries are usable inside one 4 KB page; the fourth
+        // is the page boundary itself, which a burst may not cross, so the
+        // regions roll over into the next page instead.
+        boundary = base_addr + ((c.region / 3) * 4096)
+                             + (((c.region % 3) + 1) * 1024);
         return boundary - BUS_BYTES;
     endfunction : case_address
 
