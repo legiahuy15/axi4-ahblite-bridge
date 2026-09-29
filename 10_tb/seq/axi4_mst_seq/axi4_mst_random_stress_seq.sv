@@ -29,6 +29,18 @@
 //                 directions before the random bulk starts, so no seed can
 //                 leave a shape untried and the variety checks at the end
 //                 cannot flake.
+//               On a C_DPHASE_TIMEOUT build a random policy would be unsafe
+//               on its own: a wait that happened to trip the watchdog was
+//               never declared, and the scoreboard would rightly report it
+//               as a fault. Ordinary requests are therefore capped four
+//               cycles below the threshold, and the watchdog is exercised
+//               deliberately instead. Every timeout_every-th request after
+//               the seeded head has all of its beats answered OKAY, so
+//               SLVERR can only mean the watchdog, one beat held well past
+//               the threshold, and expect_timeout declared for it, which
+//               requires the watchdog to fire rather than merely allowing
+//               it. A run on a build with a watchdog that never tripped it
+//               fails.
 //               The oracle is independent of the scoreboard. The plan for a
 //               request is drawn before it is sent, so the sequence knows
 //               which beat will be answered with ERROR and what the whole
@@ -66,10 +78,20 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
     int unsigned              max_wait      = 4;
     bit                       supports_narrow;
 
+    // C_DPHASE_TIMEOUT the image was built with, 0 when there is no watchdog.
+    // On a watchdog build every timeout_every-th request is turned into a
+    // deliberate timeout and declared to the scoreboard; the rest have their
+    // waits capped so they cannot trip it.
+    int unsigned              dphase_timeout;
+    int unsigned              timeout_every   = 8;
+    int unsigned              timeout_overshoot = 8;
+
     //-------------------------------------------------------------------------
     // Shared handles
     //-------------------------------------------------------------------------
     ahb_response_policy policy;
+    // Needed only on a watchdog build, to declare the deliberate timeouts
+    scoreboard          scb;
 
     //-------------------------------------------------------------------------
     // Statistics
@@ -82,13 +104,18 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
     int unsigned incr_run;
     int unsigned wrap_run;
     int unsigned narrow_run;
-    int unsigned unaligned_run;
+    // Requests whose address is not bus aligned. On a narrow build that is
+    // the normal case for a sub-word transfer, not an unaligned one: the
+    // address always suits the size.
+    int unsigned lane_offset_run;
     int unsigned w_before_aw_run;
     int unsigned beats_run;
     int unsigned error_beats_planned;
     int unsigned wait_beats_planned;
     int unsigned slverr_responses;
     int unsigned okay_responses;
+    int unsigned timeout_cases;
+    int unsigned timeout_beats;   // beats planned for those, issued or not
 
     //-------------------------------------------------------------------------
     // Internal state
@@ -113,16 +140,21 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
         if (!cfg.return_responses)
             `uvm_fatal(get_type_name(),
                        "The random oracle needs return_responses")
+        if ((dphase_timeout != 0) && (scb == null))
+            `uvm_fatal(get_type_name(),
+                       {"A watchdog build needs the scoreboard handle, so ",
+                        "the deliberate timeouts can be declared"})
 
         validate_knobs();
         wait_reset_release();
 
         `uvm_info(get_type_name(),
                   $sformatf({"Random stress: %0d requests, window 0x%0h..",
-                             "0x%0h, error=%0d%% max_wait=%0d narrow=%0b"},
+                             "0x%0h, error=%0d%% max_wait=%0d narrow=%0b ",
+                             "C_DPHASE_TIMEOUT=%0d"},
                             num_requests, base_addr,
                             base_addr + window_bytes - 1, error_percent,
-                            max_wait, supports_narrow),
+                            max_wait, supports_narrow, dphase_timeout),
                   UVM_LOW)
 
         for (int unsigned i = 0; i < num_requests; i++)
@@ -133,15 +165,16 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
         `uvm_info(get_type_name(),
                   $sformatf({"Random stress summary: run=%0d failed=%0d ",
                              "rd=%0d wr=%0d fixed=%0d incr=%0d wrap=%0d ",
-                             "narrow=%0d unaligned=%0d w_before_aw=%0d ",
+                             "narrow=%0d lane_offset=%0d w_before_aw=%0d ",
                              "beats=%0d error_beats=%0d wait_beats=%0d ",
-                             "slverr=%0d okay=%0d"},
+                             "slverr=%0d okay=%0d timeout_cases=%0d ",
+                             "timeout_beats=%0d"},
                             requests_run, requests_failed, reads_run,
                             writes_run, fixed_run, incr_run, wrap_run,
-                            narrow_run, unaligned_run, w_before_aw_run,
+                            narrow_run, lane_offset_run, w_before_aw_run,
                             beats_run, error_beats_planned,
                             wait_beats_planned, slverr_responses,
-                            okay_responses),
+                            okay_responses, timeout_cases, timeout_beats),
                   UVM_LOW)
     endtask : body
 
@@ -152,10 +185,17 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
         axi4_transaction req;
         axi4_transaction rsp;
         bit              failed;
+        bit              timeout_case;
 
+        timeout_case = is_timeout_case(index);
         req = build_request(index);
-        draw_plan(int'(req.len) + 1);
+        draw_plan(int'(req.len) + 1, timeout_case);
         load_policy();
+
+        // The scoreboard has to be told before the request is predicted,
+        // which happens when the monitor reports it
+        if (timeout_case)
+            scb.expect_timeout(req.dir, req.id);
 
         send_axi_request(req);
         get_response(rsp, req.get_transaction_id());
@@ -167,27 +207,79 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
         requests_run++;
         count_shape(req);
 
-        failed = check_response(index, req, rsp);
-        if (policy.pending_beats() != 0) begin
-            failed = 1'b1;
-            `uvm_error(get_type_name(),
-                       $sformatf({"Request %0d: %0d planned AHB beats were ",
-                                  "never issued"},
-                                 index, policy.pending_beats()))
+        if (timeout_case) begin
+            failed = check_timeout_response(index, req, rsp);
+            // The beats after the abandoned one were never issued, and the
+            // slave is still counting out the wait of the one the bridge
+            // walked away from
             policy.clear_plan();
+            wait_cycles(dphase_timeout + timeout_overshoot + 16);
+        end else begin
+            failed = check_response(index, req, rsp);
+            if (policy.pending_beats() != 0) begin
+                failed = 1'b1;
+                `uvm_error(get_type_name(),
+                           $sformatf({"Request %0d: %0d planned AHB beats ",
+                                      "were never issued"},
+                                     index, policy.pending_beats()))
+                policy.clear_plan();
+            end
         end
+
         if (failed)
             requests_failed++;
     endtask : run_request
+
+    // Spread over the run, but never inside the seeded head, so the shape
+    // sweep at the start is always compared in full
+    protected function bit is_timeout_case(int unsigned index);
+        if ((dphase_timeout == 0) || (timeout_every == 0))
+            return 1'b0;
+        if (index < SEEDED_CASES)
+            return 1'b0;
+        return (((index - SEEDED_CASES) % timeout_every) == 0);
+    endfunction : is_timeout_case
 
     //-------------------------------------------------------------------------
     // Independent AHB answer policy
     //-------------------------------------------------------------------------
     // Drawn before the request is sent and without reference to it: the only
     // thing the request contributes is how many beats need an answer.
-    protected function void draw_plan(int unsigned beats);
+    protected function void draw_plan(int unsigned beats, bit timeout_case);
+        int unsigned safe_wait;
+        int unsigned hang_beat;
+
         beat_resp.delete();
         beat_wait.delete();
+
+        // A deliberate timeout: every beat is answered OKAY so SLVERR can
+        // only mean the watchdog, which is the contract the scoreboard's
+        // declared-timeout path relies on, and one beat is held well past
+        // the threshold. The threshold measured by bridge_timeout_boundary_
+        // test is C_DPHASE_TIMEOUT plus one or two cycles, so the overshoot
+        // makes it certain rather than marginal.
+        if (timeout_case) begin
+            hang_beat = $urandom_range(beats - 1, 0);
+            for (int unsigned i = 0; i < beats; i++) begin
+                beat_resp.push_back(AHB_RESP_OKAY);
+                beat_wait.push_back((i == hang_beat) ?
+                                    (dphase_timeout + timeout_overshoot) : 0);
+                beats_run++;
+                timeout_beats++;
+            end
+            timeout_cases++;
+            return;
+        end
+
+        // On a watchdog build an ordinary request must stay clear of the
+        // threshold: a random wait that tripped it could not have been
+        // declared in advance, and the scoreboard would rightly call it a
+        // fault. Four cycles of margin rather than two, because an ERROR
+        // answer adds a cycle of its own on top of the wait.
+        safe_wait = max_wait;
+        if ((dphase_timeout != 0) && (safe_wait > (dphase_timeout - 4)))
+            safe_wait = dphase_timeout - 4;
+
         for (int unsigned i = 0; i < beats; i++) begin
             ahb_resp_e   resp;
             int unsigned waits;
@@ -197,7 +289,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
             // Mostly no wait, so the run stays short and the zero-wait path
             // keeps being exercised
             waits = ($urandom_range(2, 0) == 0) ?
-                        $urandom_range(max_wait, 1) : 0;
+                        $urandom_range(safe_wait, 1) : 0;
             beat_resp.push_back(resp);
             beat_wait.push_back(waits);
 
@@ -239,6 +331,40 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
             failed |= check_read_response(index, req, rsp);
         return failed;
     endfunction : check_response
+
+    // A declared timeout is not compared beat by beat: the bridge answered on
+    // its own rather than from the AHB, so the only thing owed is SLVERR on
+    // the channel the request used. The scoreboard drops the request and
+    // accounts for the beats the watchdog cancelled, and the AHB side of the
+    // recovery is bridge_timeout_recovery_test's job.
+    protected function bit check_timeout_response(
+        int unsigned     index,
+        axi4_transaction req,
+        axi4_transaction rsp
+    );
+        bit saw_slverr;
+
+        saw_slverr = 1'b0;
+        if (req.dir == AXI4_WRITE) begin
+            saw_slverr = (rsp.bresp == AXI4_RESP_SLVERR);
+        end else begin
+            foreach (rsp.rresp[i])
+                if (rsp.rresp[i] == AXI4_RESP_SLVERR)
+                    saw_slverr = 1'b1;
+        end
+
+        if (!saw_slverr) begin
+            `uvm_error(get_type_name(),
+                       $sformatf({"Request %0d: a beat was held %0d cycles ",
+                                  "with C_DPHASE_TIMEOUT=%0d, but the %s at ",
+                                  "0x%0h came back without SLVERR"},
+                                 index, dphase_timeout + timeout_overshoot,
+                                 dphase_timeout, req.dir.name(), req.addr))
+            return 1'b1;
+        end
+        slverr_responses++;
+        return 1'b0;
+    endfunction : check_timeout_response
 
     protected function bit check_write_response(
         int unsigned     index,
@@ -366,6 +492,24 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
                         "policy injected AHB errors"})
         if (okay_responses == 0)
             `uvm_error(get_type_name(), "No OKAY response was observed")
+        // A watchdog build must have exercised the watchdog, or the run says
+        // nothing that the C_DPHASE_TIMEOUT=0 build did not already say
+        if ((dphase_timeout != 0) && (timeout_cases == 0))
+            `uvm_error(get_type_name(),
+                       $sformatf({"Built with C_DPHASE_TIMEOUT=%0d but no ",
+                                  "request was made to trip the watchdog"},
+                                 dphase_timeout))
+        if ((dphase_timeout == 0) && (timeout_cases != 0))
+            `uvm_error(get_type_name(),
+                       "Timeout cases were run on a build with no watchdog")
+        if (supports_narrow && (narrow_run == 0))
+            `uvm_error(get_type_name(),
+                       {"The build supports narrow bursts but every request ",
+                        "was full width"})
+        if (!supports_narrow && (narrow_run != 0))
+            `uvm_error(get_type_name(),
+                       {"A narrow request was sent on a build that does not ",
+                        "support narrow bursts"})
     endfunction : check_run_was_varied
 
     //-------------------------------------------------------------------------
@@ -516,7 +660,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
         if ((1 << int'(req.size)) < BUS_BYTES)
             narrow_run++;
         if ((req.addr % BUS_BYTES) != 0)
-            unaligned_run++;
+            lane_offset_run++;
         if (req.wr_order == AXI4_WR_W_BEFORE_AW)
             w_before_aw_run++;
     endfunction : count_shape
@@ -549,6 +693,17 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
         if ((max_wait == 0) || (max_wait > 8))
             `uvm_fatal(get_type_name(),
                        "max_wait must be between 1 and 8")
+        // An ordinary request is capped at dphase_timeout - 2, which has to
+        // leave at least one usable wait value
+        if ((dphase_timeout != 0) && (dphase_timeout < 6))
+            `uvm_fatal(get_type_name(),
+                       $sformatf({"C_DPHASE_TIMEOUT=%0d is too small to keep ",
+                                  "ordinary traffic clear of the watchdog"},
+                                 dphase_timeout))
+        if ((dphase_timeout != 0) && (timeout_overshoot < 4))
+            `uvm_fatal(get_type_name(),
+                       {"timeout_overshoot must clear the measured threshold ",
+                        "of C_DPHASE_TIMEOUT plus one or two cycles"})
     endfunction : validate_knobs
 
 endclass : axi4_mst_random_stress_seq

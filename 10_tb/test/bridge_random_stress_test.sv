@@ -17,14 +17,26 @@
 //               also has to be varied to pass: it fails if a direction, a
 //               burst type, an injected error, a wait state or a SLVERR
 //               never appeared.
-//               It runs on the default build, where C_DPHASE_TIMEOUT is 0.
-//               That is deliberate. The policy injects waits of up to four
-//               cycles at random, and on a timeout build an unlucky wait
-//               would be abandoned by the watchdog, which the scoreboard
-//               only tolerates for a request the test declared in advance;
-//               a random policy cannot declare one. Adding this test to the
-//               timeout matrix would need the wait cap tied to the built
-//               C_DPHASE_TIMEOUT first.
+//               It runs on three build axes: the default build, the narrow
+//               build and all five C_DPHASE_TIMEOUT builds.
+//               On the narrow build the size is drawn per request instead of
+//               being fixed at the bus width, so the burst carries narrow
+//               beats. That is the point of adding it there: the only narrow
+//               traffic the regression had was the single writes of
+//               bridge_parameter_test, and a single write never increments an
+//               address, so gen_32_data_width_narrow in ahb_mstr_if, which
+//               holds the whole per-size increment and wrap path for narrow
+//               bursts, had never been driven.
+//               On a watchdog build the policy cannot simply draw waits at
+//               random, because a wait that tripped the watchdog would not
+//               have been declared and the scoreboard would rightly call it
+//               a fault. Ordinary requests are therefore capped two cycles
+//               below C_DPHASE_TIMEOUT, and every eighth request after the
+//               seeded head is turned into a deliberate timeout instead: all
+//               its beats are answered OKAY so SLVERR can only mean the
+//               watchdog, one beat is held well past the threshold, and the
+//               request is declared with expect_timeout so the watchdog is
+//               required to fire rather than merely allowed to.
 //               Covers BRG_ENV_008, and drives both supported responses on
 //               both channels for BRG_UNS_003.
 //               Included inside the bridge test package.
@@ -79,13 +91,11 @@ class bridge_random_stress_test extends bridge_base_test;
     //-------------------------------------------------------------------------
     function void start_of_simulation_phase(uvm_phase phase);
         super.start_of_simulation_phase(phase);
-        if (env_cfg.dphase_timeout != 0)
-            `uvm_fatal(get_type_name(),
-                       $sformatf({"This test draws AHB waits at random and ",
-                                  "cannot declare a timeout in advance, so ",
-                                  "it must not run on a watchdog build ",
-                                  "(C_DPHASE_TIMEOUT=%0d)"},
-                                 env_cfg.dphase_timeout))
+        `uvm_info(get_type_name(),
+                  $sformatf({"Built configuration: data=%0d narrow=%0b ",
+                             "C_DPHASE_TIMEOUT=%0d"},
+                            AXI4_DATA_WIDTH, env_cfg.supports_narrow_burst,
+                            env_cfg.dphase_timeout), UVM_LOW)
     endfunction : start_of_simulation_phase
 
     //-------------------------------------------------------------------------

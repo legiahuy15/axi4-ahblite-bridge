@@ -47,6 +47,10 @@ class bridge_random_stress_seq extends bridge_base_seq;
         if (!cfg.is_valid())
             `uvm_fatal(get_type_name(),
                        "The environment configuration is not valid")
+        if ((cfg.dphase_timeout != 0) && (p_sequencer.scb == null))
+            `uvm_fatal(get_type_name(),
+                       {"A watchdog build needs the scoreboard, so the ",
+                        "deliberate timeouts can be declared"})
 
         policy = ahb_response_policy::type_id::create("policy");
 
@@ -61,6 +65,8 @@ class bridge_random_stress_seq extends bridge_base_seq;
         axi_seq.error_percent   = error_percent;
         axi_seq.max_wait        = max_wait;
         axi_seq.supports_narrow = cfg.supports_narrow_burst;
+        axi_seq.dphase_timeout  = cfg.dphase_timeout;
+        axi_seq.scb             = p_sequencer.scb;
 
         fork
             ahb_seq.start(p_sequencer.ahb_sqr);

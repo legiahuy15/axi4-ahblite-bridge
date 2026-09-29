@@ -76,13 +76,14 @@ TEST_LIST ?= bridge_sanity_test bridge_data_integrity_test \
 # Tests that also run on the C_S_AXI_SUPPORTS_NARROW_BURST=1 build
 NARROW_TEST_LIST ?= bridge_data_integrity_test bridge_size_mapping_test \
 		            bridge_single_wstrb_test bridge_unaligned_read_test \
-		            bridge_parameter_test
+		            bridge_parameter_test bridge_random_stress_test
 
 # Supported non-zero C_DPHASE_TIMEOUT values (PG177) and the tests that run on
 # every one of them. The default build covers the C_DPHASE_TIMEOUT=0 case.
 TIMEOUT_VALUES    ?= 16 32 64 128 256
 TIMEOUT_TEST_LIST ?= bridge_timeout_test bridge_timeout_boundary_test \
-                     bridge_timeout_recovery_test
+                     bridge_timeout_recovery_test \
+                     bridge_random_stress_test
 
 # The compliance subset that also runs on the 64-bit build, narrow off and on.
 # Timeout and reset behaviour does not depend on the bus width, so those tests
