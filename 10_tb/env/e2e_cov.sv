@@ -624,9 +624,6 @@ class e2e_cov extends uvm_component;
             if (tr.wait_cycles != 0)
                 rsp_active_ctx.saw_wait = 1'b1;
 
-            if (rsp_active_ctx.expected_beats.size() != 0)
-                void'(rsp_active_ctx.expected_beats.pop_front());
-
             rsp_active_ctx.beat_index++;
             if (rsp_active_ctx.beat_index >= beat_count) begin
                 foreach (rsp_ctx_queue[i]) begin
@@ -642,14 +639,26 @@ class e2e_cov extends uvm_component;
         end
     endfunction : drain_actual_ahb
 
+    // expected_beats is the whole predicted burst and beat_index says how far
+    // through it the request is, so the two never drift. The predictor
+    // appends the beats of a request in one go, but a write's AHB beats are
+    // reported before the request is predicted at WLAST, so the list can
+    // still be short of beat_index; there is simply nothing to judge against
+    // yet and the beat is accepted.
     protected function bit beat_is_foreign(ahb_transfer tr);
         if (rsp_active_ctx == null)
             return 1'b0;
-        if (rsp_active_ctx.expected_beats.size() == 0)
+        if (rsp_active_ctx.beat_index >= rsp_active_ctx.expected_beats.size())
             return 1'b0;
-        return ((rsp_active_ctx.expected_beats[0].write != tr.write) ||
-                (rsp_active_ctx.expected_beats[0].addr  != tr.addr));
+        return ((rsp_active_ctx.expected_beats[rsp_active_ctx.beat_index].write
+                 != tr.write) ||
+                (rsp_active_ctx.expected_beats[rsp_active_ctx.beat_index].addr
+                 != tr.addr));
     endfunction : beat_is_foreign
+
+    protected function bit ctx_owes_beats(e2e_rsp_ctx ctx);
+        return (ctx.beat_index < ctx.expected_beats.size());
+    endfunction : ctx_owes_beats
 
     // Take the active request out of the live queue and keep what it still
     // owed, so a beat of it that turns up later is recognised rather than
@@ -669,7 +678,7 @@ class e2e_cov extends uvm_component;
         if (rsp_predict_ctx == rsp_active_ctx)
             rsp_predict_ctx = null;
         abandoned_requests++;
-        if (rsp_active_ctx.expected_beats.size() != 0)
+        if (ctx_owes_beats(rsp_active_ctx))
             abandoned_ctx_queue.push_back(rsp_active_ctx);
         rsp_active_ctx = null;
         sample_response_queue();
@@ -687,9 +696,9 @@ class e2e_cov extends uvm_component;
             int unsigned beat_count;
 
             ctx = abandoned_ctx_queue[i];
-            if ((ctx.expected_beats.size() == 0) ||
-                (ctx.expected_beats[0].write != tr.write) ||
-                (ctx.expected_beats[0].addr  != tr.addr))
+            if (!ctx_owes_beats(ctx) ||
+                (ctx.expected_beats[ctx.beat_index].write != tr.write) ||
+                (ctx.expected_beats[ctx.beat_index].addr  != tr.addr))
                 continue;
 
             beat_count        = int'(ctx.tr.len) + 1;
@@ -702,12 +711,11 @@ class e2e_cov extends uvm_component;
             cg_ahb_response.sample();
 
             ctx.beat_index++;
-            void'(ctx.expected_beats.pop_front());
             abandoned_beats++;
             // Kept until its completion has been paired as well, or that
             // completion would find nothing to pair with and sit in
             // actual_axi_queue to the end of the test
-            if ((ctx.expected_beats.size() == 0) && ctx.completion_seen)
+            if (!ctx_owes_beats(ctx) && ctx.completion_seen)
                 abandoned_ctx_queue.delete(i);
             return 1'b1;
         end
@@ -837,7 +845,7 @@ class e2e_cov extends uvm_component;
             if (rsp_predict_ctx == ctx)
                 rsp_predict_ctx = null;
             abandoned_requests++;
-            if (ctx.expected_beats.size() != 0)
+            if (ctx_owes_beats(ctx))
                 abandoned_ctx_queue.push_back(ctx);
             return 1'b1;
         end
