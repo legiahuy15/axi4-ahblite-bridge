@@ -21,8 +21,8 @@ the architecture, the microarchitecture of each block and the design findings.
 | Parameter | Legal values | Effect |
 |---|---|---|
 | `C_S_AXI_DATA_WIDTH`, `C_M_AHB_DATA_WIDTH` | 32, 64; equal | Data path width. No width conversion. |
-| `C_S_AXI_ADDR_WIDTH`, `C_M_AHB_ADDR_WIDTH` | 32–64; equal | Address passed through. |
-| `C_S_AXI_ID_WIDTH` | 1–32 | AXI ID width. |
+| `C_S_AXI_ADDR_WIDTH`, `C_M_AHB_ADDR_WIDTH` | 32-64; equal | Address passed through. |
+| `C_S_AXI_ID_WIDTH` | 1-32 | AXI ID width. |
 | `C_S_AXI_SUPPORTS_NARROW_BURST` | 0, 1 | Selects the address generator (Section 5.3). |
 | `C_DPHASE_TIMEOUT` | 0, 16, 32, 64, 128, 256 | 0 removes the watchdog. |
 | `C_FAMILY`, `C_INSTANCE` | - | Unused; kept for interface compatibility. |
@@ -31,6 +31,8 @@ Illegal combinations are rejected by `initial $fatal` blocks in generate branche
 level. These guards act in simulation only; synthesis does not enforce them.
 
 ## 3. Architecture
+
+![AXI4 to AHB-Lite bridge architecture](../../00_doc/axi4-ahblite-bridge.png)
 
 - **Clock and reset:** single clock `s_axi_aclk` for both interfaces; no CDC. One active-low
   synchronous reset `s_axi_aresetn` for both interfaces (`ahb_skid_buf` uses its inverted
@@ -167,4 +169,4 @@ One of four generate branches drives `HADDR` (32/64-bit × narrow off/on):
 | 8 | Implementation | Parameter guards are simulation-only (`initial $fatal`). | Synthesis of an illegal configuration is not blocked. |
 | 9 | Code quality | Dead logic: `axi_wlast` and `ahb_write_sm` are never read; the skid-buffer stop and `STRB`/`USER` paths and the up-count path of `counter_f` are unused; `C_FAMILY` and `C_INSTANCE` have no effect. Signal names are kept from the reference design, including misspellings (`write_statrted`, `wr_err_occured`). | Removed by synthesis; adds review noise only. |
 
-Findings 3–5 reproduce the reference design and are kept unchanged.
+Findings 3-5 reproduce the reference design and are kept unchanged.
