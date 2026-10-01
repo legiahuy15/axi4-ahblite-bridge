@@ -612,10 +612,8 @@ class scoreboard extends uvm_scoreboard;
             end else begin
                 if (!mutation_mode)
                     mismatched_axi++;
-                report_mismatch($sformatf({"AXI completion mismatch
-",
-                                           "  expected: %s
-",
+                report_mismatch($sformatf({"AXI completion mismatch\n",
+                                           "  expected: %s\n",
                                            "  actual  : %s"},
                                           expected_tr.sprint(),
                                           actual_tr.sprint()));
