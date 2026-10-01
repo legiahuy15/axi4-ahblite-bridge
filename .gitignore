@@ -1,10 +1,17 @@
 # Office lock files (e.g. an open vplan workbook)
 ~$*
 
-# Questa compiled libraries and waveforms
+# Questa compiled libraries, library mappings and waveforms
 11_sim/work/
+11_sim/work64/
+11_sim/guardwork/
 11_sim/report/wlf/
+01_src/dut_tb_basic/work/
+modelsim.ini
 *.wlf
+
+# Basic testbench logs
+01_src/dut_tb_basic/*.log
 
 # Simulator scratch output
 transcript
