@@ -18,6 +18,31 @@
 `uvm_analysis_imp_decl(_expected_axi)
 `uvm_analysis_imp_decl(_actual_axi)
 
+// Faults bridge_mutation_test asks the scoreboard to put into the stream it
+// observes, one at a time, to find out whether the comparison notices. They
+// name a field of ahb_request_matches or of axi_transaction_matches, both of
+// which are hand-written lists, so a field quietly left out of one of them
+// is the bug this is looking for. There is deliberately no entry for the
+// ID: completions are paired with their request by direction and ID, so a
+// corrupted one would not be compared and found wrong, it would simply
+// never be paired.
+typedef enum {
+    MUT_NONE,
+    MUT_AHB_ADDR,
+    MUT_AHB_DIR,
+    MUT_AHB_TRANS,
+    MUT_AHB_BURST,
+    MUT_AHB_SIZE,
+    MUT_AHB_PROT,
+    MUT_AHB_MASTLOCK,
+    MUT_AHB_WDATA,
+    MUT_AXI_ADDR,
+    MUT_AXI_LEN,
+    MUT_AXI_RESP,
+    MUT_AXI_DATA,
+    MUT_AXI_STRB
+} mutation_e;
+
 class scoreboard extends uvm_scoreboard;
 
     `uvm_component_utils(scoreboard)
@@ -86,6 +111,25 @@ class scoreboard extends uvm_scoreboard;
     protected scoreboard_axi_ctx declared_ctx_queue[$];
 
     //-------------------------------------------------------------------------
+    // Fault injection, used only by bridge_mutation_test
+    //-------------------------------------------------------------------------
+    // While mutation_mode is set, a comparison that fails is reported as a
+    // caught fault rather than as an error, so the suite can run inside the
+    // regression without turning it red. It is the counts that decide the
+    // verdict: every fault armed has to be caught, and nothing may be caught
+    // that was not armed.
+    protected bit          mutation_mode;
+    protected mutation_e   pending_ahb_mut = MUT_NONE;
+    // Beats to let past before the fault goes in. The first beat of a
+    // request is the one find_start_ctx uses to bind the context, by
+    // direction and address, so corrupting that one stops the beat being
+    // attributed at all instead of being compared and found wrong.
+    protected int unsigned pending_ahb_skip;
+    protected mutation_e   pending_axi_mut = MUT_NONE;
+    protected int unsigned mutations_armed;
+    protected int unsigned mutations_caught;
+
+    //-------------------------------------------------------------------------
     // Constructor
     //-------------------------------------------------------------------------
     function new(string name, uvm_component parent);
@@ -102,6 +146,108 @@ class scoreboard extends uvm_scoreboard;
         expected_axi_export = new("expected_axi_export", this);
         actual_axi_export   = new("actual_axi_export", this);
     endfunction : build_phase
+
+    //-------------------------------------------------------------------------
+    // Fault injection interface
+    //-------------------------------------------------------------------------
+    function void set_mutation_mode(bit enable);
+        mutation_mode = enable;
+    endfunction : set_mutation_mode
+
+    // Armed one at a time: the next observed AHB beat, or the next observed
+    // AXI completion, is corrupted in the named field before it is compared
+    function void inject_ahb_mutation(mutation_e kind, int unsigned skip = 1);
+        if (!mutation_mode)
+            `uvm_fatal(get_type_name(),
+                       "Fault injection needs mutation mode")
+        pending_ahb_mut  = kind;
+        pending_ahb_skip = skip;
+        mutations_armed++;
+    endfunction : inject_ahb_mutation
+
+    function void inject_axi_mutation(mutation_e kind);
+        if (!mutation_mode)
+            `uvm_fatal(get_type_name(),
+                       "Fault injection needs mutation mode")
+        pending_axi_mut = kind;
+        mutations_armed++;
+    endfunction : inject_axi_mutation
+
+    // Still armed means the comparison let the fault through
+    function bit injection_pending();
+        return ((pending_ahb_mut != MUT_NONE) ||
+                (pending_axi_mut != MUT_NONE));
+    endfunction : injection_pending
+
+    function void clear_injection();
+        pending_ahb_mut = MUT_NONE;
+        pending_axi_mut = MUT_NONE;
+    endfunction : clear_injection
+
+    function int unsigned faults_armed();
+        return mutations_armed;
+    endfunction : faults_armed
+
+    function int unsigned faults_caught();
+        return mutations_caught;
+    endfunction : faults_caught
+
+    protected function void apply_ahb_mutation(ahb_transfer tr);
+        case (pending_ahb_mut)
+            MUT_AHB_ADDR:     tr.addr     = tr.addr ^ 'h40;
+            MUT_AHB_DIR:      tr.write    = (tr.write == AHB_WRITE) ? AHB_READ
+                                                                    : AHB_WRITE;
+            MUT_AHB_TRANS:    tr.trans    = (tr.trans == AHB_TRANS_NONSEQ) ?
+                                                AHB_TRANS_SEQ : AHB_TRANS_NONSEQ;
+            MUT_AHB_BURST:    tr.burst    = (tr.burst == AHB_BURST_SINGLE) ?
+                                                AHB_BURST_INCR4 : AHB_BURST_SINGLE;
+            MUT_AHB_SIZE:     tr.size     = (tr.size == AHB_SIZE_1BYTE) ?
+                                                AHB_SIZE_2BYTE : AHB_SIZE_1BYTE;
+            MUT_AHB_PROT:     tr.prot     = ~tr.prot;
+            MUT_AHB_MASTLOCK: tr.mastlock = ~tr.mastlock;
+            MUT_AHB_WDATA:    tr.wdata    = ~tr.wdata;
+            default: ;
+        endcase
+        pending_ahb_mut = MUT_NONE;
+    endfunction : apply_ahb_mutation
+
+    protected function void apply_axi_mutation(axi4_transaction tr);
+        case (pending_axi_mut)
+            MUT_AXI_ADDR: tr.addr = tr.addr ^ 'h40;
+            MUT_AXI_LEN:  tr.len  = tr.len + 1;
+            MUT_AXI_RESP: begin
+                if (tr.dir == AXI4_WRITE)
+                    tr.bresp = (tr.bresp == AXI4_RESP_OKAY) ? AXI4_RESP_SLVERR
+                                                            : AXI4_RESP_OKAY;
+                else if (tr.rresp.size() != 0)
+                    tr.rresp[0] = (tr.rresp[0] == AXI4_RESP_OKAY) ?
+                                      AXI4_RESP_SLVERR : AXI4_RESP_OKAY;
+            end
+            MUT_AXI_DATA: begin
+                if (tr.data.size() != 0)
+                    tr.data[0] = ~tr.data[0];
+            end
+            MUT_AXI_STRB: begin
+                if (tr.strb.size() != 0)
+                    tr.strb[0] = ~tr.strb[0];
+            end
+            default: ;
+        endcase
+        pending_axi_mut = MUT_NONE;
+    endfunction : apply_axi_mutation
+
+    // One place decides how a failed comparison is reported, so an injected
+    // fault and a real one cannot drift apart
+    protected function void report_mismatch(string message);
+        if (mutation_mode) begin
+            mutations_caught++;
+            `uvm_info(get_type_name(),
+                      $sformatf("[SCB][MUTATION] caught: %s", message),
+                      UVM_MEDIUM)
+        end else begin
+            `uvm_error(get_type_name(), message)
+        end
+    endfunction : report_mismatch
 
     //-------------------------------------------------------------------------
     // Declared timeouts
@@ -234,6 +380,14 @@ class scoreboard extends uvm_scoreboard;
 
         if (!$cast(copy_tr, tr.clone()))
             `uvm_fatal(get_type_name(), "Actual AHB transfer clone failed")
+        // Corrupt the observed beat before it is compared, so the
+        // comparison is the only thing that can notice
+        if (pending_ahb_mut != MUT_NONE) begin
+            if (pending_ahb_skip != 0)
+                pending_ahb_skip--;
+            else
+                apply_ahb_mutation(copy_tr);
+        end
         actual_ahb_queue.push_back(copy_tr);
         compare_ahb_queues();
     endfunction : write_actual_ahb
@@ -250,10 +404,9 @@ class scoreboard extends uvm_scoreboard;
             // threshold sweep, a fault when the test said it must time out.
             if (timed_out_ctx.timeout_strict) begin
                 missed_timeouts++;
-                `uvm_error(get_type_name(),
-                           $sformatf({"Declared timeout on %s id=0x%0h ",
-                                      "completed without SLVERR"},
-                                     tr.dir.name(), tr.id))
+                report_mismatch($sformatf({"Declared timeout on %s id=0x%0h ",
+                                           "completed without SLVERR"},
+                                          tr.dir.name(), tr.id));
             end
             timed_out_ctx.timed_out = 1'b0;
             forget_declared_ctx(timed_out_ctx);
@@ -289,6 +442,8 @@ class scoreboard extends uvm_scoreboard;
 
         if (!$cast(copy_tr, tr.clone()))
             `uvm_fatal(get_type_name(), "Actual AXI transaction clone failed")
+        if (pending_axi_mut != MUT_NONE)
+            apply_axi_mutation(copy_tr);
         actual_axi_queue.push_back(copy_tr);
         compare_axi_queues();
     endfunction : write_actual_axi
@@ -359,12 +514,11 @@ class scoreboard extends uvm_scoreboard;
                           UVM_HIGH)
             end else begin
                 mismatched_ahb++;
-                `uvm_error(get_type_name(),
-                           $sformatf({"AHB request mismatch\n",
-                                     "  expected: %s\n",
-                                     "  actual  : %s"},
-                                     expected_tr.sprint(),
-                                     actual_tr.sprint()))
+                report_mismatch($sformatf({"AHB request mismatch\n",
+                                           "  expected: %s\n",
+                                           "  actual  : %s"},
+                                          expected_tr.sprint(),
+                                          actual_tr.sprint()));
             end
 
             update_axi_completion(actual_tr);
@@ -506,12 +660,13 @@ class scoreboard extends uvm_scoreboard;
                               UVM_HIGH)
             end else begin
                 mismatched_axi++;
-                `uvm_error(get_type_name(),
-                           $sformatf({"AXI completion mismatch\n",
-                                     "  expected: %s\n",
-                                     "  actual  : %s"},
-                                     expected_tr.sprint(),
-                                     actual_tr.sprint()))
+                report_mismatch($sformatf({"AXI completion mismatch
+",
+                                           "  expected: %s
+",
+                                           "  actual  : %s"},
+                                          expected_tr.sprint(),
+                                          actual_tr.sprint()));
             end
         end
     endfunction : compare_axi_queues
@@ -570,6 +725,9 @@ class scoreboard extends uvm_scoreboard;
         timeout_keys.delete();
         abandoned_ctx_queue.delete();
         declared_ctx_queue.delete();
+        pending_ahb_mut  = MUT_NONE;
+        pending_axi_mut  = MUT_NONE;
+        pending_ahb_skip = 0;
     endfunction : reset_state
 
     //-------------------------------------------------------------------------

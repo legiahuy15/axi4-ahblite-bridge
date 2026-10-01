@@ -89,7 +89,7 @@ TEST_LIST ?= bridge_sanity_test bridge_data_integrity_test \
 	         bridge_reset_test bridge_reset_mid_transfer_test \
 	         bridge_parameter_test bridge_ordering_test \
 	         bridge_random_stress_test bridge_write_starvation_test \
-	         bridge_illegal_narrow_test
+	         bridge_illegal_narrow_test bridge_mutation_test
 
 # Tests that also run on the C_S_AXI_SUPPORTS_NARROW_BURST=1 build
 NARROW_TEST_LIST ?= bridge_data_integrity_test bridge_size_mapping_test \
