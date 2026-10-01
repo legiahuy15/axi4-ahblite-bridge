@@ -54,11 +54,7 @@ module ahb_sva #(
     bit data_phase_active;
     bit data_phase_write;
 
-    // Address and size of the last issued NONSEQ/SEQ beat. The bridge drives
-    // BUSY between the beats of a burst and holds it through wait states, so
-    // the previous beat of a burst is not $past(HADDR): BUSY cycles and wait
-    // cycles sit in between. The address rules below compare against this
-    // instead, which is what "the previous transfer" means in AHB-Lite.
+    // Last issued NONSEQ/SEQ beat (BUSY and wait cycles in between)
     bit [AHB_ADDR_WIDTH-1:0] last_beat_addr;
     bit [2:0]                last_beat_size;
     bit                      last_beat_valid;
@@ -112,10 +108,7 @@ module ahb_sva #(
     //-------------------------------------------------------------------------
     // Previous-beat tracking
     //-------------------------------------------------------------------------
-    // A beat is issued on a rising edge with HREADY high and HTRANS NONSEQ or
-    // SEQ. BUSY leaves the reference beat alone, because BUSY only stretches
-    // the burst. IDLE ends the burst, so the next NONSEQ starts fresh and no
-    // address relation is checked across it.
+    // Updated on NONSEQ/SEQ with HREADY high; kept through BUSY
     always @(posedge clk) begin
         if (!rst_n) begin
             last_beat_addr  <= '0;
@@ -143,11 +136,7 @@ module ahb_sva #(
             (HTRANS == TRANS_IDLE && HREADY && !HRESP);
     endproperty
 
-    // Address and control outputs during reset. Kept apart from
-    // RESET_DEFAULTS, which is about the bus handshake, so a failure names
-    // which of the two rules broke. Values are the reset assignments of
-    // ahb_mstr_if: HADDR, HBURST, HSIZE, HWRITE and HMASTLOCK clear, while
-    // HPROT resets to 4'b0011 and is checked by RESET_HPROT.
+    // Address/control reset values (HPROT is checked by RESET_HPROT)
     property p_reset_ahb_control;
         @(posedge clk)
         (!rst_n && reset_active_q) |->
@@ -364,9 +353,7 @@ module ahb_sva #(
                 active_transfer |-> !HPROT[3];
             endproperty
 
-            // PG177 default HPROT: non-cacheable, non-bufferable, privileged
-            // data access. Checked from the second reset cycle so the
-            // synchronous reset has taken effect.
+            // PG177 default HPROT, from the second reset cycle
             property p_reset_hprot;
                 @(posedge clk)
                 (!rst_n && reset_active_q) |-> (HPROT == 4'b0011);
@@ -398,9 +385,7 @@ module ahb_sva #(
         HREADY && HTRANS == TRANS_NONSEQ &&
         (HBURST inside {BURST_WRAP4, BURST_WRAP8, BURST_WRAP16}));
 
-    // HMASTLOCK held high on an IDLE bus. The bridge reference design does
-    // this after a locked request until the next request is accepted; the
-    // first occurrence is reported so the behavior is visible in the log.
+    // HMASTLOCK held on an IDLE bus after a locked request (reference design)
     bit locked_idle_reported;
 
     C_LOCKED_IDLE: cover property (@(posedge clk) disable iff (!rst_n)

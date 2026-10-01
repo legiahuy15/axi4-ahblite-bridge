@@ -26,12 +26,8 @@ class axi4_transaction extends uvm_sequence_item;
     rand axi4_resp_e                   bresp;
     rand axi4_resp_e                   rresp[];
 
-    // Stimulus-only: hold WVALID low for w_gap_cycles before beat
-    // w_gap_beat, so the bridge sees the write data run dry in the middle of
-    // a burst. Zero cycles means the beats go out back to back, which is what
-    // every sequence but bridge_write_starvation_seq wants. Deliberately not
-    // in the field macros: the monitor cannot observe them, so they must not
-    // take part in compare, print or pack.
+    // Stimulus only (not in field macros): WVALID low for w_gap_cycles
+    // before beat w_gap_beat
     int unsigned                       w_gap_beat;
     int unsigned                       w_gap_cycles;
 

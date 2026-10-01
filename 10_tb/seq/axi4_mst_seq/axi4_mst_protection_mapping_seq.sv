@@ -8,16 +8,9 @@
 //                 HPROT[2] = AxCACHE[0] & ~AxCACHE[2] & ~AxCACHE[3]
 //                 HPROT[1] = AxPROT[0]                          (privileged)
 //                 HPROT[0] = ~AxPROT[2]                         (data)
-//               Sweeps every AXI4 AxCACHE encoding that is not reserved
-//               (IHI0022E Table A4-5, including the legacy AXI3 values) with
-//               every AxPROT value, as a single write followed by a single
-//               read-back at the same address. Each AxPROT value is also
-//               applied to an INCR4 write/read-back with a bufferable and a
-//               non-bufferable AxCACHE, so HPROT is checked on every burst
-//               beat. The scoreboard checks HPROT per beat and the
-//               NONCACHEABLE assertion checks HPROT[3]; this sequence checks
-//               responses and read-back data and records the HPROT values
-//               the requests exercise.
+//               Every non-reserved AxCACHE x every AxPROT (single write and
+//               read-back), plus INCR4 per AxPROT with bufferable and
+//               non-bufferable AxCACHE.
 //               Covers BRG_ATT_001 to BRG_ATT_004.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -181,8 +174,7 @@ class axi4_mst_protection_mapping_seq extends axi4_mst_base_seq;
             cases_failed++;
     endtask : run_case
 
-    // Independent statement of PG177 Table 3-1, used for logging and the
-    // exercised-value summary (the scoreboard compares HPROT per beat)
+    // Reference PG177 Table 3-1 mapping, for logging and summary
     protected function bit [3:0] get_expected_hprot(
         bit [3:0] cache,
         bit [2:0] prot
@@ -236,8 +228,7 @@ class axi4_mst_protection_mapping_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Knob validation
     //-------------------------------------------------------------------------
-    // Each case fits in its own region, and regions never cross a 1 KB
-    // boundary when both knobs are multiples of the region size.
+    // One region per case, no 1 KB crossing
     protected function void validate_knobs();
         int unsigned burst_bytes;
 

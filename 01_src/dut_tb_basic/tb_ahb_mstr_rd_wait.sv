@@ -1,10 +1,8 @@
 //=============================================================================
 // File        : tb_ahb_mstr_rd_wait
 // Project     : AXI4 to AHB-Lite Bridge VIP
-// Description : Directed regression for restarting a read from AHB_RD_WAIT.
-//               Read backpressure is applied at the axi_rready boundary used
-//               by ahb_mstr_if so all restart modes, including WRAP2, are
-//               exercised deterministically.
+// Description : Directed test of ahb_mstr_if read restart from AHB_RD_WAIT
+//               (FIXED, WRAP2, 1 KB split, INCR).
 //=============================================================================
 
 `timescale 1ns/1ps
@@ -32,8 +30,7 @@ module tb_ahb_mstr_rd_wait;
     localparam logic [2:0] AHB_HBURST_INCR   = 3'b001;
     localparam logic [2:0] AHB_HSIZE_WORD    = 3'b010;
 
-    // ahb_sm_t is local to ahb_mstr_if. Keep the encoded value here solely
-    // to prove that each directed stimulus actually reaches AHB_RD_WAIT.
+    // Encoded ahb_sm_t values, used to confirm the FSM reaches AHB_RD_WAIT
     localparam logic [3:0] AHB_RD_WAIT_STATE = 4'd5;
     localparam logic [3:0] AHB_IDLE_STATE    = 4'd0;
 
@@ -163,9 +160,7 @@ module tb_ahb_mstr_rd_wait;
         begin
             apply_reset();
 
-            // Every case is two beats. Holding axi_rready low makes the first
-            // returned beat park the AHB controller in AHB_RD_WAIT with one
-            // beat remaining, which targets the formerly faulty decision.
+            // Two beats with axi_rready low: park in AHB_RD_WAIT, one beat left
             @(negedge clk);
             axi_address    = first_addr;
             axi_length     = 8'd1;
@@ -199,8 +194,7 @@ module tb_ahb_mstr_rd_wait;
                             $sformatf("%s expected one transfer before restart, got %0d",
                                       case_name, ahb_log_count));
 
-            // Resume at the source-ready boundary and inspect the newly
-            // registered address phase immediately after the clock edge.
+            // Release axi_rready and check the restarted address phase
             axi_rready = 1'b1;
             @(posedge clk);
             #1;

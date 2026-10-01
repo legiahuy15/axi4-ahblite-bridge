@@ -2,11 +2,8 @@
 // File        : bridge_timeout_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Coordinates the C_DPHASE_TIMEOUT watchdog scenario. Starts the
-//               reactive AHB slave sequence that answers from the shared plan,
-//               hands the AXI stimulus the timeout the build was elaborated
-//               with and the scoreboard it must declare abandoned requests to,
-//               then stops the slave sequence.
+// Description : Coordinates the timeout scenario with the reactive AHB slave
+//               sequence.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 

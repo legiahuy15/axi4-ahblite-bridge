@@ -142,7 +142,7 @@ class axi4_mst_wrap_mapping_seq extends axi4_mst_base_seq;
                 check_readback(tag, addr, rd_rsp, req, entry.beats);
             end
         end else begin
-            // Read — scoreboard/predictor verify AHB burst and address
+            // Read
             req = create_request(cases_run, AXI4_READ, addr, entry.len);
             send_axi_request_wait(req, rsp);
             cases_run++;
@@ -151,7 +151,7 @@ class axi4_mst_wrap_mapping_seq extends axi4_mst_base_seq;
     endtask : run_wrap_case
 
     //-------------------------------------------------------------------------
-    // Address computation — align wrap base to wrap boundary
+    // Address computation (wrap base aligned to the wrap boundary)
     //-------------------------------------------------------------------------
     protected function bit [AXI4_ADDR_WIDTH-1:0] compute_wrap_base(
         int unsigned index,

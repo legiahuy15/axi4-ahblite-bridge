@@ -2,10 +2,8 @@
 // File        : bridge_write_starvation_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Coordinates the write-data starvation scenario. The AHB
-//               slave answers from its memory model with no wait states, so
-//               the only thing holding the bridge up is the gap in the write
-//               data and every burst can be read back afterwards.
+// Description : Coordinates the write-data starvation scenario (AHB slave
+//               answers from its memory model, no wait states).
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 

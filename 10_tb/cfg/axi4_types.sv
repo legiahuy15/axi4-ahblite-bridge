@@ -9,11 +9,8 @@
     //-------------------------------------------------------------------------
     // Bus parameters
     //-------------------------------------------------------------------------
-    // These live in a package, so a vopt -G override cannot reach them: a
-    // different width needs its own compilation. BRIDGE_DATA_WIDTH and
-    // BRIDGE_ADDR_WIDTH are the one pair of knobs for it, shared with
-    // ahb_types.sv so the two sides of the bridge cannot be built unequal by
-    // accident. The Makefile compiles the 64-bit variant into its own library.
+    // Set at compile time by BRIDGE_DATA_WIDTH/BRIDGE_ADDR_WIDTH (vopt -G
+    // cannot reach package parameters)
 `ifndef BRIDGE_DATA_WIDTH
     `define BRIDGE_DATA_WIDTH 32
 `endif

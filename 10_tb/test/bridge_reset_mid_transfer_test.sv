@@ -2,23 +2,9 @@
 // File        : bridge_reset_mid_transfer_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge reset-during-transfer and recovery test.
-//               Interrupts a transfer with a reset at each phase the plan
-//               names, the AXI address, write data, read data and response
-//               phases and the AHB wait and error phases, then checks that
-//               nothing comes back for the discarded request and that fresh
-//               write and read traffic completes correctly.
-//               BREADY and RREADY are held off by a few cycles for the whole
-//               test, which is what keeps the AXI response phase open long
-//               enough to place a reset inside it. The driver picks the
-//               delayed-ready path once, when it starts waiting for a
-//               response, so both windows are non-zero from the start.
-//               clear_queues_on_reset is the feature under test as much as a
-//               setting: the scoreboard end-of-test check requires every
-//               queue to be empty, so a reset hook that failed to clear the
-//               partial transfer shows up there.
-//               Runs on the default build: the AHB wait used to open the wait
-//               phase is longer than the smallest supported watchdog.
+// Description : Bridge reset-during-transfer test. Reset in every AXI and
+//               AHB phase; no response for the discarded request and clean
+//               traffic afterwards. Default build only.
 //               Covers BRG_RST_005 and BRG_RST_006.
 //               Included inside the bridge test package.
 //=============================================================================

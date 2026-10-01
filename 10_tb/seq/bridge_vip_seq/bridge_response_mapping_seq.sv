@@ -2,10 +2,8 @@
 // File        : bridge_response_mapping_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Coordinates the AHB response to AXI response mapping
-//               scenario. Starts the reactive AHB slave sequence that answers
-//               from the shared plan, runs the AXI stimulus, then stops the
-//               slave sequence.
+// Description : Coordinates the AHB-to-AXI response mapping scenario with
+//               the reactive AHB slave sequence.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 

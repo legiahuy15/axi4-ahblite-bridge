@@ -2,10 +2,8 @@
 // File        : bridge_reset_mid_transfer_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Coordinates the reset-during-transfer scenario. Starts the
-//               reactive AHB slave sequence and hands the AXI stimulus the AHB
-//               interface it detects the AHB wait and error phases on, then
-//               stops the slave sequence.
+// Description : Coordinates the reset-during-transfer scenario with the
+//               reactive AHB slave sequence.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 

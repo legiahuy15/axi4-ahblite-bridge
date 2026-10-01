@@ -2,20 +2,9 @@
 // File        : bridge_timeout_recovery_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge data-phase timeout termination and recovery test.
-//               Checks the three things BRG_TMO_004 asks for: the watchdog
-//               returns the AHB bus to IDLE, the AXI side gets SLVERR, and
-//               the bridge recovers cleanly after a reset.
-//               Termination is observed on the AHB interface, not inferred
-//               from the response: the sequence counts the address phases the
-//               bridge issues and watches HTRANS once the watchdog has fired,
-//               so a burst that kept running after being abandoned is caught.
-//               Recovery is driven through the bridge_reset_req event that
-//               bridge_tb_top listens on, and the traffic that follows each
-//               reset is compared by the scoreboard in full.
-//               The test needs a build with a watchdog, so it belongs to
-//               TIMEOUT_TEST_LIST and not to TEST_LIST; on the default build
-//               the sequence stops with a message naming the TIMEOUT to use.
+// Description : Bridge timeout termination and recovery test: AHB returns
+//               to IDLE, AXI gets SLVERR, traffic is clean after reset.
+//               Timeout builds only.
 //               Covers BRG_TMO_004.
 //               Included inside the bridge test package.
 //=============================================================================

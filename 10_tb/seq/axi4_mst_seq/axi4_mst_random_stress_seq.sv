@@ -2,68 +2,16 @@
 // File        : axi4_mst_random_stress_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Constrained-random mixed traffic with an independent AHB
-//               wait and error policy.
-//               Every other sequence in this environment pins what it sends:
-//               a case list decides the direction, burst, length, size and
-//               address, and the AHB answers are chosen to suit the case.
-//               This one does neither. The request is handed to the solver
-//               with only the legal profile fixed, so it is the constraint
-//               set of axi4_transaction that shapes the traffic, and the
-//               AHB answer for each beat is drawn on its own, without
-//               looking at the request it will answer. That is what BRG_ENV_008
-//               asks for and it is the one thing multiple seeds can then
-//               actually vary, because until now a seed only moved the AXI
-//               IDs and the FIXED lengths.
-//               What is still pinned, and why:
-//               - lock stays normal and the strobes are the contiguous lanes
-//                 the address and size select. Sparse strobes and unaligned
-//                 narrow writes are negative cases (BRG_SIZ_006), not legal
-//                 traffic, so a random run must not wander into them.
-//               - narrow sizes are used only where the build supports them,
-//                 the same rule axi4_mst_parameter_seq follows.
-//               - AXI4_WR_AW_BEFORE_W is never sent: this DUT raises AWREADY
-//                 and WREADY together, so a master that holds WVALID back
-//                 until the AW handshake deadlocks.
-//               - the first twelve requests walk every burst type in both
-//                 directions before the random bulk starts, so no seed can
-//                 leave a shape untried and the variety checks at the end
-//                 cannot flake.
-//               On a C_DPHASE_TIMEOUT build a random policy would be unsafe
-//               on its own: a wait that happened to trip the watchdog was
-//               never declared, and the scoreboard would rightly report it
-//               as a fault. Ordinary requests are therefore capped four
-//               cycles below the threshold, and the watchdog is exercised
-//               deliberately instead. Every timeout_every-th request after
-//               the seeded head has all of its beats answered OKAY, so
-//               SLVERR can only mean the watchdog, one beat held well past
-//               the threshold, and expect_timeout declared for it, which
-//               requires the watchdog to fire rather than merely allowing
-//               it. A run on a build with a watchdog that never tripped it
-//               fails.
-//               It is the last beat of the burst that is held, never a
-//               middle one. Once the watchdog fires the bridge drives HTRANS
-//               IDLE and accepts the rest of a write burst, moving HWDATA as
-//               it goes, which WDATA_STABLE_DURING_WAIT allows while HTRANS
-//               is IDLE, so the beat the slave eventually reports would
-//               carry later data than the address phase it belongs to. No
-//               choice of hold clears that, because the bridge answers on B
-//               in the same cycle the slave releases HREADY: the corrupted
-//               beat and the completion that marks the request abandoned
-//               reach the scoreboard in one time step. Hanging the last beat
-//               leaves no W beat to move HWDATA and cancels no beat at all.
-//               Abandoning a burst part way through belongs to
-//               bridge_timeout_test, which is directed and can control the
-//               traffic around it.
-//               The oracle is independent of the scoreboard. The plan for a
-//               request is drawn before it is sent, so the sequence knows
-//               which beat will be answered with ERROR and what the whole
-//               response must look like: every read beat carries the
-//               address-derived word for its own address, a beat answered
-//               with ERROR reports SLVERR and no other beat does, and a
-//               write reports SLVERR exactly when one of its beats was.
-//               Covers BRG_ENV_008, and feeds BRG_UNS_003 by driving both
-//               supported responses on both channels in one run.
+// Description : Constrained-random traffic with an independent AHB
+//               wait/error policy.
+//               - legal profile only: normal lock, contiguous strobes, narrow
+//                 sizes only on the narrow build, no AW-before-W
+//               - the first twelve requests cover every burst type
+//               - timeout builds: waits capped below the threshold; every
+//                 timeout_every-th request holds its last beat past it and
+//                 is declared with expect_timeout
+//               - read data and responses are checked against the drawn plan
+//               Covers BRG_ENV_008 and BRG_UNS_003.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 
@@ -74,9 +22,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
     localparam int unsigned FULL_SIZE = $clog2(AXI4_STRB_WIDTH);
     localparam int unsigned BUS_BYTES = AXI4_STRB_WIDTH;
 
-    // Bounded so a run stays short and every AHB burst mapping stays
-    // reachable: 1, 2, 4, 8 and 16 beats cover SINGLE, INCR4/8/16 and
-    // WRAP4/8/16, and FIXED is limited to 16 beats by the protocol anyway.
+    // Covers SINGLE, INCR4/8/16 and WRAP4/8/16
     localparam int unsigned MAX_LEN = 15;
 
     // Directed head of the run: every burst type in both directions
@@ -92,15 +38,10 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
     int unsigned              max_wait      = 4;
     bit                       supports_narrow;
 
-    // C_DPHASE_TIMEOUT the image was built with, 0 when there is no watchdog.
-    // On a watchdog build every timeout_every-th request is turned into a
-    // deliberate timeout and declared to the scoreboard; the rest have their
-    // waits capped so they cannot trip it.
+    // C_DPHASE_TIMEOUT of the DUT (0 = no watchdog)
     int unsigned              dphase_timeout;
     int unsigned              timeout_every   = 8;
-    // How far past C_DPHASE_TIMEOUT the last beat is held. Only has to clear
-    // the measured threshold of C_DPHASE_TIMEOUT plus one or two cycles, so
-    // that the watchdog is certain to fire rather than marginal.
+    // Hold beyond C_DPHASE_TIMEOUT for a declared timeout
     int unsigned              timeout_overshoot = 16;
 
     //-------------------------------------------------------------------------
@@ -121,9 +62,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
     int unsigned incr_run;
     int unsigned wrap_run;
     int unsigned narrow_run;
-    // Requests whose address is not bus aligned. On a narrow build that is
-    // the normal case for a sub-word transfer, not an unaligned one: the
-    // address always suits the size.
+    // Requests whose address is not bus aligned
     int unsigned lane_offset_run;
     int unsigned w_before_aw_run;
     int unsigned beats_run;
@@ -209,8 +148,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
         draw_plan(int'(req.len) + 1, timeout_case);
         load_policy();
 
-        // The scoreboard has to be told before the request is predicted,
-        // which happens when the monitor reports it
+        // Declare before the request is predicted
         if (timeout_case)
             scb.expect_timeout(req.dir, req.id);
 
@@ -226,9 +164,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
 
         if (timeout_case) begin
             failed = check_timeout_response(index, req, rsp);
-            // The beats after the abandoned one were never issued, and the
-            // slave is still counting out the wait of the one the bridge
-            // walked away from
+            // Remaining beats are never issued
             policy.clear_plan();
             wait_cycles(dphase_timeout + timeout_overshoot + 16);
         end else begin
@@ -247,8 +183,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
             requests_failed++;
     endtask : run_request
 
-    // Spread over the run, but never inside the seeded head, so the shape
-    // sweep at the start is always compared in full
+    // Never inside the seeded head
     protected function bit is_timeout_case(int unsigned index);
         if ((dphase_timeout == 0) || (timeout_every == 0))
             return 1'b0;
@@ -260,8 +195,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Independent AHB answer policy
     //-------------------------------------------------------------------------
-    // Drawn before the request is sent and without reference to it: the only
-    // thing the request contributes is how many beats need an answer.
+    // Drawn independently of the request (only the beat count is used)
     protected function void draw_plan(int unsigned beats, bit timeout_case);
         int unsigned safe_wait;
         int unsigned hang_beat;
@@ -269,27 +203,8 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
         beat_resp.delete();
         beat_wait.delete();
 
-        // A deliberate timeout: every beat is answered OKAY so SLVERR can
-        // only mean the watchdog, which is the contract the scoreboard's
-        // declared-timeout path relies on, and the last beat is held well
-        // past the threshold. The threshold measured by
-        // bridge_timeout_boundary_test is C_DPHASE_TIMEOUT plus one or two
-        // cycles, so the overshoot makes it certain rather than marginal.
-        //
-        // It has to be the last beat, not a random one. When the watchdog
-        // fires the bridge drives HTRANS IDLE and accepts the rest of the
-        // write burst, moving HWDATA on while the slave is still in the
-        // data phase, which WDATA_STABLE_DURING_WAIT permits once HTRANS is
-        // IDLE. The beat the slave finally reports then carries later data
-        // than the address phase it belongs to. That cannot be worked around
-        // with timing, because the bridge answers on B in the same cycle the
-        // slave releases HREADY, so the corrupted beat and the completion
-        // that would mark the request abandoned reach the scoreboard in one
-        // time step and their order is a delta race. Hanging the last beat
-        // removes the problem at the source: no W beat is left to move
-        // HWDATA, and no beat is cancelled either. Abandoning a burst part
-        // way through is bridge_timeout_test's job, where the traffic around
-        // it is directed and the ordering is under control.
+        // Declared timeout: all beats OKAY, last beat held past the
+        // threshold (a middle beat would let HWDATA move on after the timeout)
         if (timeout_case) begin
             hang_beat = beats - 1;
             for (int unsigned i = 0; i < beats; i++) begin
@@ -303,11 +218,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
             return;
         end
 
-        // On a watchdog build an ordinary request must stay clear of the
-        // threshold: a random wait that tripped it could not have been
-        // declared in advance, and the scoreboard would rightly call it a
-        // fault. Four cycles of margin rather than two, because an ERROR
-        // answer adds a cycle of its own on top of the wait.
+        // Keep ordinary waits 4 cycles below the threshold (ERROR adds one)
         safe_wait = max_wait;
         if ((dphase_timeout != 0) && (safe_wait > (dphase_timeout - 4)))
             safe_wait = dphase_timeout - 4;
@@ -318,8 +229,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
 
             resp = ($urandom_range(99, 0) < error_percent) ? AHB_RESP_ERROR
                                                            : AHB_RESP_OKAY;
-            // Mostly no wait, so the run stays short and the zero-wait path
-            // keeps being exercised
+            // Mostly zero wait
             waits = ($urandom_range(2, 0) == 0) ?
                         $urandom_range(safe_wait, 1) : 0;
             beat_resp.push_back(resp);
@@ -364,11 +274,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
         return failed;
     endfunction : check_response
 
-    // A declared timeout is not compared beat by beat: the bridge answered on
-    // its own rather than from the AHB, so the only thing owed is SLVERR on
-    // the channel the request used. The scoreboard drops the request and
-    // accounts for the beats the watchdog cancelled, and the AHB side of the
-    // recovery is bridge_timeout_recovery_test's job.
+    // Declared timeout: only SLVERR is checked
     protected function bit check_timeout_response(
         int unsigned     index,
         axi4_transaction req,
@@ -439,8 +345,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
                                  int'(req.len) + 1))
             return 1'b1;
         end
-        // The plan is drawn from the beat count, so this cannot differ; an
-        // out-of-range read of the queue would quietly return OKAY instead
+        // Plan size must equal the beat count
         if (rsp.rresp.size() != beat_resp.size()) begin
             `uvm_error(get_type_name(),
                        $sformatf({"Request %0d: %0d read responses against a ",
@@ -494,8 +399,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
         return total;
     endfunction : count_plan_errors
 
-    // The seeded head guarantees the shapes, so these can only fail if the
-    // run was cut short or the policy never injected anything.
+    // Variety checks (shapes are guaranteed by the seeded head)
     protected function void check_run_was_varied();
         if (requests_run != num_requests)
             `uvm_error(get_type_name(),
@@ -524,8 +428,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
                         "policy injected AHB errors"})
         if (okay_responses == 0)
             `uvm_error(get_type_name(), "No OKAY response was observed")
-        // A watchdog build must have exercised the watchdog, or the run says
-        // nothing that the C_DPHASE_TIMEOUT=0 build did not already say
+        // A watchdog build must have fired the watchdog
         if ((dphase_timeout != 0) && (timeout_cases == 0))
             `uvm_error(get_type_name(),
                        $sformatf({"Built with C_DPHASE_TIMEOUT=%0d but no ",
@@ -547,11 +450,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Request construction
     //-------------------------------------------------------------------------
-    // Only the legal profile is pinned. Direction, burst, length, address,
-    // ID, cache and protection are left to the solver, so the constraints of
-    // axi4_transaction shape the traffic: c_burst_length, c_wrap_alignment,
-    // c_4kb_boundary, c_cache_legal and c_distribution all take part, which
-    // no other sequence lets them do.
+    // Only the legal profile is pinned; the rest is left to the solver
     protected function axi4_transaction build_request(int unsigned index);
         axi4_transaction          req;
         int unsigned              chosen_size;
@@ -582,8 +481,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
                 len   <= local::max_len;
                 size  == axi4_size_e'(local::chosen_size);
                 lock  == AXI4_LOCK_NORMAL;
-                // Sparse and unaligned narrow traffic is a negative case,
-                // so the address always suits the size
+                // Address always suits the size
                 (addr % local::bytes) == 0;
                 addr >= local::base_addr;
                 addr <= local::window_hi;
@@ -700,10 +598,8 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Knob validation
     //-------------------------------------------------------------------------
-    // The window holds the longest burst the sequence can build, and a wait
-    // never reaches the shortest C_DPHASE_TIMEOUT build, so a random wait can
-    // never be mistaken for a watchdog timeout if this test is ever added to
-    // the timeout matrix.
+    // Window must hold the longest burst; waits stay below the smallest
+    // timeout
     protected function void validate_knobs();
         int unsigned max_bytes;
 
@@ -725,8 +621,7 @@ class axi4_mst_random_stress_seq extends axi4_mst_base_seq;
         if ((max_wait == 0) || (max_wait > 8))
             `uvm_fatal(get_type_name(),
                        "max_wait must be between 1 and 8")
-        // An ordinary request is capped at dphase_timeout - 2, which has to
-        // leave at least one usable wait value
+        // The wait cap (dphase_timeout - 2) must leave a usable value
         if ((dphase_timeout != 0) && (dphase_timeout < 6))
             `uvm_fatal(get_type_name(),
                        $sformatf({"C_DPHASE_TIMEOUT=%0d is too small to keep ",

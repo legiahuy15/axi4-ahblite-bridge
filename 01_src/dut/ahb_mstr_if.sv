@@ -2,9 +2,8 @@
 // File        : ahb_mstr_if
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : AHB-Lite master-side control for the AXI4-to-AHB-Lite bridge.
-//               Converts AXI burst semantics into AHB SINGLE/INCR/WRAP transfers,
-//               including WRAP2 expansion and 1-KB boundary splitting.
+// Description : AHB-Lite master: converts AXI bursts to AHB SINGLE/INCR/WRAP
+//               transfers, with WRAP2 expansion and 1 KB boundary split.
 //=============================================================================
 
 `timescale 1ns/1ps
@@ -166,7 +165,7 @@ module ahb_mstr_if #(
             HWDATA_i <= axi_wdata;
     end
 
-    // HTRANS is registered. During a timeout the bridge explicitly returns AHB to IDLE.
+    // Registered HTRANS; forced to IDLE during a timeout
     always_ff @(posedge AHB_HCLK) begin
         if (!AHB_HRESETN) begin
             M_AHB_HTRANS <= IDLE;

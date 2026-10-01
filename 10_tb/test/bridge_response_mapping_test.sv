@@ -2,13 +2,9 @@
 // File        : bridge_response_mapping_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge AHB response to AXI response mapping test.
-//               The AHB slave answers from a plan instead of the automatic
-//               OKAY/zero-wait model, so every burst shape, every ERROR beat
-//               position and wait states of 1, 2, 8 and 16 cycles are
-//               exercised, with and without ERROR, on reads and writes, on
-//               WRAP/FIXED/INCR16 bursts, across a 1 KB split and with a
-//               different wait on every beat.
+// Description : Bridge AHB-to-AXI response mapping test. Planned AHB ERROR
+//               and wait states on every burst shape, beat position and a
+//               1 KB split.
 //               Covers BRG_RSP_001 to BRG_RSP_004 and BRG_WAI_001.
 //               Included inside the bridge test package.
 //=============================================================================

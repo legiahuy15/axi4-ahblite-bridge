@@ -2,29 +2,13 @@
 // File        : axi4_mst_response_mapping_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : AHB response to AXI response mapping directed sequence.
-//               PG177: AHB OKAY maps to AXI OKAY, AHB ERROR maps to AXI
-//               SLVERR, and the bridge never generates EXOKAY or DECERR.
-//               PG177 does not state whether a burst continues after an AHB
-//               ERROR; the reference design does, and the predictor models
-//               that, so this sequence checks it directly: the plan holds one
-//               entry per expected AHB beat and a burst that stops early
-//               leaves entries behind.
-//               Cases, each a single AXI request answered from the plan:
-//               - every AHB burst shape (SINGLE, INCR4/8/16, undefined INCR,
-//                 WRAP2/4/8/16, FIXED) with one ERROR beat, read and write
-//               - ERROR at the first, a middle and the last beat of an INCR4,
-//                 plus an all-OKAY INCR4, read and write, without and with
-//                 wait states
-//               - wait states 1, 2, 8 and 16 with OKAY (read and write) and
-//                 with ERROR
-//               - wait states on WRAP8, FIXED3 and INCR16, read and write
-//               - INCR16 split at a 1 KB boundary, with wait states and with
-//                 ERROR on the first beat after the boundary
-//               - different wait states on every beat of one burst
-//               - two ERROR beats in one burst, read and write
-//               Checks BRESP, per-beat RRESP, beat count and the read data of
-//               every OKAY beat.
+// Description : AHB-to-AXI response mapping sequence (OKAY->OKAY,
+//               ERROR->SLVERR; the burst continues after ERROR). Cases:
+//               - one ERROR beat on every AHB burst shape
+//               - ERROR at first/middle/last beat, with and without waits
+//               - waits of 1, 2, 8 and 16 cycles; a different wait per beat
+//               - 1 KB split with waits and ERROR; two ERROR beats per burst
+//               Checks BRESP, per-beat RRESP, beat count and read data.
 //               Covers BRG_RSP_001 to BRG_RSP_004 and BRG_WAI_001.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -218,8 +202,7 @@ class axi4_mst_response_mapping_seq extends axi4_mst_base_seq;
         end
     endfunction : add_position_cases
 
-    // Wait states with OKAY and with ERROR. The AHB ERROR response adds one
-    // cycle of its own, so an ERROR beat is never a zero-wait beat.
+    // Wait states with OKAY and ERROR (ERROR adds one cycle)
     protected function void add_wait_cases(ref rsp_case_t cases[$]);
         int unsigned waits[] = '{1, 2, 8, 16};
 
@@ -261,8 +244,7 @@ class axi4_mst_response_mapping_seq extends axi4_mst_base_seq;
                      $sformatf("INCR4_WAIT%0d_OKAY", waits[w]));
     endfunction : add_write_wait_cases
 
-    // Wait states on bursts where the bridge inserts BUSY or IDLE between
-    // beats (WRAP, FIXED as SINGLE transfers) and on a 16-beat burst
+    // Wait states on WRAP, FIXED and INCR16
     protected function void add_shape_wait_cases(ref rsp_case_t cases[$]);
         int unsigned bytes;
 
@@ -277,9 +259,7 @@ class axi4_mst_response_mapping_seq extends axi4_mst_base_seq;
         end
     endfunction : add_shape_wait_cases
 
-    // INCR16 starting 8 beats before a 1 KB boundary: the bridge restarts
-    // with NONSEQ at beat 8. Wait states across the split, and ERROR on the
-    // first beat after the boundary.
+    // INCR16 crossing 1 KB at beat 8 (NONSEQ restart)
     protected function void add_cross_1kb_cases(ref rsp_case_t cases[$]);
         int unsigned bytes;
 
@@ -467,9 +447,7 @@ class axi4_mst_response_mapping_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Addresses
     //-------------------------------------------------------------------------
-    // The k-th 1 KB boundary above every per-case region, skipping 4 KB
-    // boundaries (an AXI burst must not cross 4 KB). Consecutive crossing
-    // cases use different boundaries, so their bursts never overlap.
+    // k-th 1 KB boundary above the case regions, skipping 4 KB boundaries
     protected function bit [AXI4_ADDR_WIDTH-1:0] get_cross_boundary(
         int unsigned k
     );
@@ -565,9 +543,7 @@ class axi4_mst_response_mapping_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Knob validation
     //-------------------------------------------------------------------------
-    // Every non-crossing case fits in its own region, so no burst crosses a
-    // 1 KB boundary unless the case asks for it, and the AHB beats of one
-    // case never overlap another case.
+    // Each non-crossing case fits in its own region
     protected function void validate_knobs();
         int unsigned region_bytes;
 

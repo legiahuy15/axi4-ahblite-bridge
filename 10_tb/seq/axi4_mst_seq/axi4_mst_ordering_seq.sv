@@ -2,47 +2,12 @@
 // File        : axi4_mst_ordering_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Completion ordering under a deep request queue.
-//               PG177: the bridge completes accepted AXI requests in order,
-//               with no response reordering and no read-data interleaving.
-//               On this DUT that is structural rather than incidental: in
-//               axi_slv_if the read FSM leaves AXI_RD_IDLE only on
-//               !write_pending && !write_in_progress and the write FSM leaves
-//               AXI_WR_IDLE only on !read_in_progress, so the two machines
-//               exclude each other and one request is accepted at a time.
-//               A test can only show that by giving the bridge the chance to
-//               do otherwise, so every phase here hands the driver its whole
-//               request list in one time step and lets the queue back up
-//               behind the bridge instead of sending one request at a time.
-//               Nothing is assumed about the order that produces:
-//               - the reference order is the order the bridge accepted the
-//                 requests on AW and AR, which is what the requirement says,
-//                 not the order this sequence issued them in. The two differ
-//                 by design, because a read arriving with a write wins
-//                 arbitration and the write then takes the next turn.
-//               - completions on B and R must come back in that acceptance
-//                 order, per direction, with each read returning the beat
-//                 count its AR asked for
-//               - the observed acceptance order is replayed through a
-//                 reference memory that mirrors the AHB slave model, and
-//                 every read is compared against what an in-order bridge
-//                 would have returned at that point in the order. A read
-//                 that overtook a write to the same address, or a write that
-//                 overtook a read, changes that value and fails.
-//               - the AHB beat stream must fall into one contiguous run per
-//                 accepted request, in the same order and with the same beat
-//                 count, so the two sides cannot be interleaved either
-//               - RID may not change inside a read burst
-//               The phases build up to that: eight reads sharing one ID,
-//               eight reads with rotating IDs and falling burst lengths so a
-//               reordering bridge would be rewarded, a write and read stream
-//               over the same addresses, four read/write conflict phases on a
-//               single address each, and a randomized mixed stress phase with
-//               AHB wait states and AXI response backpressure.
-//               Each phase also has to earn its result: the number of cycles
-//               a request spent asking while the bridge refused it is
-//               counted, and a phase where the queue never backed up fails
-//               instead of passing on a technicality.
+// Description : In-order completion under a deep request queue. Each phase
+//               queues all its requests at once and checks:
+//               - B/R completions in AW/AR acceptance order, per direction
+//               - read data against a reference memory replayed in that order
+//               - one contiguous AHB run per request, no interleaving
+//               - RID constant within a burst; the queue must back up
 //               Covers BRG_UNS_002.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -54,8 +19,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
     localparam int unsigned FULL_SIZE = $clog2(AXI4_STRB_WIDTH);
     localparam int unsigned BUS_BYTES = AXI4_STRB_WIDTH;
 
-    // Longest burst any phase builds, in beats. The address slot of a request
-    // is sized from it so no burst can leave its slot.
+    // Longest burst in beats; sets the slot size
     localparam int unsigned MAX_BEATS = 16;
 
     //-------------------------------------------------------------------------
@@ -69,9 +33,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Shared handles
     //-------------------------------------------------------------------------
-    // The AHB slave answers from its memory model, so a read returns what an
-    // earlier write put there. ready_delay_max is moved per phase to vary the
-    // latency the queue builds up behind.
+    // ready_delay_max is changed per phase
     ahb_slv_agent_cfg ahb_cfg;
     ahb_vif_t         ahb_vif;
 
@@ -84,8 +46,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
     int unsigned reads_run;
     int unsigned writes_run;
     int unsigned r_bursts;
-    // Measured, not assumed: the most requests the bridge had accepted and
-    // not yet completed at any one time
+    // Maximum requests accepted but not yet completed
     int unsigned max_accepted;
     int unsigned max_queue_depth;
     int unsigned stall_cycles;
@@ -94,8 +55,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
     int unsigned raw_pairs;
     int unsigned war_pairs;
     int unsigned waw_pairs;
-    // Reads whose expected word came from an earlier write rather than from
-    // the address pattern, so the read really did depend on the order
+    // Reads whose expected data came from an earlier write
     int unsigned ordered_reads;
 
     //-------------------------------------------------------------------------
@@ -140,8 +100,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Reference state that survives the whole run
     //-------------------------------------------------------------------------
-    // Mirror of the AHB slave memory: only the bytes a write has touched.
-    // Everything else reads as the address pattern the slave returns.
+    // Written bytes only; the rest read as the address pattern
     protected bit [7:0] shadow_mem[bit [AXI4_ADDR_WIDTH-1:0]];
     protected int       next_tag = 1;
     protected int unsigned data_tag;
@@ -180,8 +139,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
 
         validate_knobs();
 
-        // Every response of a phase is collected after the whole phase has
-        // been sent, so the default queue of eight is far too small
+        // Responses are collected per phase: enlarge the queue
         set_response_queue_depth(-1);
 
         wait_reset_release();
@@ -218,9 +176,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Phases
     //-------------------------------------------------------------------------
-    // One ID, eight outstanding reads. AXI4 orders completions of a shared ID,
-    // and the driver pairs its responses from a per-ID queue, so a swap here
-    // hands a read the other one's data.
+    // Eight outstanding reads on one ID
     protected task run_same_id_read_phase();
         int unsigned lens[8];
 
@@ -239,9 +195,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
         run_request_phase("SAME_ID_READS");
     endtask : run_same_id_read_phase
 
-    // Rotating IDs and falling burst lengths: the requests accepted last are
-    // the quickest to finish, so a bridge that returned completions as they
-    // became ready rather than in order would show it here.
+    // Rotating IDs, falling burst lengths
     protected task run_id_sweep_read_phase();
         int unsigned lens[8];
 
@@ -260,9 +214,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
         run_request_phase("ID_SWEEP_READS");
     endtask : run_id_sweep_read_phase
 
-    // Eight writes and eight reads over the same eight regions, all queued
-    // together. The arbiter alternates the two directions, so what each read
-    // is entitled to see depends on where its write landed in the order.
+    // Eight writes and eight reads over the same regions
     protected task run_write_read_phase();
         int unsigned lens[8];
 
@@ -290,11 +242,8 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
         run_request_phase("WRITE_READ_STREAM");
     endtask : run_write_read_phase
 
-    // Four phases, each one address and nothing else: read before write,
-    // write before read and write before write, all queued at once. This is
-    // where the replay has real work to do, because every request in the
-    // phase changes or observes the same word. Two of the four share one ID
-    // across both directions and two use a different ID per request.
+    // Four single-address conflict phases (RAW, WAR, WAW), shared and
+    // distinct IDs
     protected task run_conflict_phases();
         ahb_cfg.ready_delay_max = 0;
         for (int unsigned slot = 0; slot < 4; slot++) begin
@@ -341,11 +290,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
                                    (dir == AXI4_WRITE) ? "WR" : "RD")));
     endfunction : add_conflict_request
 
-    // Randomized traffic over a small set of regions, so reads and writes
-    // keep colliding, with AHB wait states and AXI response backpressure on
-    // top. The backpressure is what lets a write be accepted while the last
-    // beat of the previous read is still waiting for RREADY, which is the one
-    // overlap this bridge allows and is reported by max_accepted.
+    // Random traffic over few regions, with AHB waits and AXI backpressure
     protected task run_stress_phase();
         ahb_cfg.ready_delay_max  = 3;
         cfg.rready_delay_max     = 3;
@@ -368,10 +313,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
         int unsigned              slot;
         bit [AXI4_ADDR_WIDTH-1:0] addr;
         bit [AXI4_ID_WIDTH-1:0]   id;
-        // WRAP2 is left out on purpose: the bridge expands it into two AHB
-        // SINGLE transfers, so one request would show up as two bursts and
-        // the run check below could not tell that from interleaving. Its
-        // mapping is bridge_wrap_mapping_test's job.
+        // No WRAP2: it maps to two AHB bursts
         int unsigned              wrap_lens[3];
 
         wrap_lens = '{3, 7, 15};
@@ -380,8 +322,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
         id    = $urandom_range((1 << AXI4_ID_WIDTH) - 1, 0);
         addr  = slot_addr(28 + slot);
 
-        // A WRAP burst is started inside its wrap block, otherwise it behaves
-        // like an INCR and the wrap never happens
+        // Start WRAP inside its wrap block
         if ($urandom_range(3, 0) == 0) begin
             int unsigned span;
 
@@ -436,14 +377,11 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
             phases_failed++;
     endtask : run_request_phase
 
-    // The whole list is handed over before a single response is collected, so
-    // the driver has every request queued and the bridge decides the order.
+    // Queue all requests before collecting any response
     protected task drive_phase();
         foreach (phase_reqs[i]) begin
             start_item(phase_reqs[i]);
-            // Set after the grant so nothing start_item does can overwrite it.
-            // The driver copies it onto the response, which is how a
-            // completion is paired with its request while many are in flight.
+            // Set after the grant; pairs the response with its request
             phase_reqs[i].set_transaction_id(next_tag);
             phase_tags.push_back(next_tag);
             next_tag++;
@@ -461,8 +399,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
             phase_rsps.push_back(rsp);
         end
 
-        // The observers sample on the same edge the driver takes the last
-        // completion on, so give them a few cycles before they are killed
+        // Let the observers see the last completion
         wait_cycles(4);
     endtask : drive_phase
 
@@ -475,8 +412,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
             if (cfg.vif.rst_n !== 1'b1)
                 continue;
 
-            // A request asking while the bridge refuses it: without this the
-            // phase never queued anything and proves nothing about ordering
+            // Request pending while refused by the bridge
             if (((cfg.vif.monitor_cb.ARVALID === 1'b1) &&
                  (cfg.vif.monitor_cb.ARREADY !== 1'b1)) ||
                 ((cfg.vif.monitor_cb.AWVALID === 1'b1) &&
@@ -568,10 +504,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
             accepted_open--;
     endfunction : note_complete
 
-    // One run per contiguous AHB burst: a NONSEQ opens it and every SEQ that
-    // follows belongs to it. Only cycles with HREADY high are counted, so a
-    // held address phase counts once, which is the same rule the AHB monitor
-    // uses.
+    // One run per AHB burst (NONSEQ + SEQ beats, HREADY high)
     protected task observe_ahb();
         forever begin
             ahb_trans_e htrans;
@@ -636,10 +569,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
         return failed;
     endfunction : check_phase_results
 
-    // Every request of the phase was handed over before any response was
-    // collected, so the bridge must have refused at least one of them for a
-    // while. If it never did, the requests were served one at a time and the
-    // ordering result is worthless.
+    // The bridge must have stalled at least one queued request
     protected function bit check_queue_was_real();
         if (phase_stall_cycles == 0) begin
             `uvm_error(get_type_name(),
@@ -736,10 +666,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
         return failed;
     endfunction : check_completion_order
 
-    // Walk the order the bridge accepted the requests in, apply each write to
-    // the reference memory and compare each read against what that memory
-    // held at that point. A completion that overtook another one, in either
-    // direction, lands on a different value here.
+    // Replay the acceptance order on the reference memory and check reads
     protected function bit replay_acceptance_order();
         axi4_transaction rd_reqs[$];
         axi4_transaction rd_rsps[$];
@@ -800,9 +727,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
         return failed;
     endfunction : replay_acceptance_order
 
-    // The driver keeps each channel in issue order, so the k-th accepted
-    // request of a direction must be the k-th one this phase issued. Checked
-    // rather than trusted, because the replay below depends on it.
+    // Per direction, acceptance order must equal issue order
     protected function bit check_accepted_request(
         accept_rec_t     rec,
         axi4_transaction req,
@@ -895,9 +820,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
         return 1'b0;
     endfunction : check_write_response
 
-    // The AHB side must show one contiguous run per accepted request, in the
-    // same order and of the same length, which is where interleaving of the
-    // two directions would appear.
+    // One AHB run per accepted request, same order and length
     protected function bit check_ahb_runs();
         bit failed;
 
@@ -939,11 +862,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
         return failed;
     endfunction : check_ahb_runs
 
-    // The per-phase checks only bite where the traffic gave them something to
-    // bite on. If the run produced no conflicting neighbours and no read that
-    // depended on an earlier write, every ordering check above was satisfied
-    // by traffic that could not have failed it, and that is a hole in the
-    // test rather than a result.
+    // The run must contain conflicting accesses, or the checks are vacuous
     protected function void check_run_was_conclusive();
         if (raw_pairs == 0)
             `uvm_error(get_type_name(),
@@ -996,9 +915,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
         return text;
     endfunction : ahb_run_summary
 
-    // How often two neighbouring accesses in the accepted order touched the
-    // same bytes. Reported, not asserted: it says how much of the ordering
-    // the phase actually put at risk.
+    // Neighbouring accesses to the same bytes (reported only)
     protected function void count_conflict_pairs();
         for (int unsigned i = 1; i < accept_log.size(); i++) begin
             if (!ranges_overlap(accept_log[i - 1], accept_log[i]))
@@ -1058,8 +975,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
         return word;
     endfunction : shadow_read
 
-    // The word the slave returns for an address nothing has written, which is
-    // get_unwritten_word in ahb_slv_driver
+    // Unwritten-word pattern (as in ahb_slv_driver)
     protected function bit [AXI4_DATA_WIDTH-1:0] pattern_word(
         bit [AXI4_ADDR_WIDTH-1:0] base
     );
@@ -1137,8 +1053,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
                                  label, burst.name(), len, addr))
 
         if (dir == AXI4_WRITE) begin
-            // A distinct word per request and beat, so a write that overtook
-            // another one cannot leave the same value behind
+            // Unique data per request and beat
             data_tag++;
             foreach (req.data[beat]) begin
                 for (int unsigned lane = 0; lane < BUS_BYTES; lane++)
@@ -1153,10 +1068,7 @@ class axi4_mst_ordering_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Knob validation
     //-------------------------------------------------------------------------
-    // Every request lives in its own slot, and a slot holds twice the longest
-    // burst so a WRAP can start halfway into its wrap block. Slots divide a
-    // 1 KB page, so no burst crosses the boundary the bridge splits on and
-    // one request stays one AHB burst.
+    // Slot = twice the longest burst, dividing 1 KB (no 1 KB split)
     protected function void validate_knobs();
         int unsigned max_bytes;
 

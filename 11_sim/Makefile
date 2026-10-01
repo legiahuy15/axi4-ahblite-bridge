@@ -27,10 +27,7 @@ MERGED_UCDB   = $(COV_DIR)/merged.ucdb
 ASSERT_TXT    = $(REPORT_DIR)/assertions.txt
 DIRECTIVE_TXT = $(REPORT_DIR)/directives.txt
 
-# The HTML report stops at a percentage per design unit, which is enough to
-# see where code coverage is weak but not to say what is missing. The review
-# BRG_ENV_005 asks for needs the uncovered statements, branches and
-# conditions by line, and only a text report has those.
+# Uncovered DUT statements/branches/conditions by line (BRG_ENV_005)
 CODE_TXT      = $(REPORT_DIR)/code.txt
 CODE_DU_LIST ?= axi_ahblite_bridge axi_slv_if ahb_mstr_if ahb_skid_buf \
                 counter_f time_out
@@ -38,10 +35,7 @@ CODE_DU_ARGS  = $(foreach du,$(CODE_DU_LIST),-du $(du))
 SVA_DIR       = ../10_tb/sva
 COV_SUMMARY_AWK = cov_summary.awk
 
-# Negative parameter cases (BRG_CFG_003). Each one is its own compilation of
-# the bridge on its own, with the parameter under test set from a define and
-# every other one legal, and each has to fail. The case list is
-# "name:defines", with the defines separated by commas.
+# Illegal parameter cases (BRG_CFG_003), each must fail: "name:define,define"
 GUARD_LIB  ?= guardwork
 GUARD_TOP  ?= bridge_illegal_param_top
 GUARD_SRC  ?= ../10_tb/bridge_illegal_param_top.sv
@@ -114,9 +108,7 @@ TIMEOUT_TEST_LIST ?= bridge_timeout_test bridge_timeout_boundary_test \
                      bridge_timeout_recovery_test \
                      bridge_random_stress_test
 
-# The compliance subset that also runs on the 64-bit build, narrow off and on.
-# Timeout and reset behaviour does not depend on the bus width, so those tests
-# stay on the 32-bit build.
+# Compliance subset also run on the 64-bit build, narrow off and on
 PARAM_TEST_LIST ?= bridge_parameter_test bridge_sanity_test \
                    bridge_data_integrity_test bridge_burst_matrix_test \
                    bridge_size_mapping_test bridge_response_mapping_test \
@@ -137,9 +129,7 @@ VOPT64_FLAGS = $(VOPT_BASE) -work $(WORK64)
 VLOG_FLAGS   += -l $(LOG_DIR)/compile.log
 VLOG64_FLAGS += -l $(LOG_DIR)/compile_w64.log
 
-# A run fails on non-zero UVM error/fatal counts, on simulator error/fatal
-# messages (SVA $error/$fatal bypass the UVM report server), or on a
-# non-zero vsim error summary.
+# Fail on UVM errors/fatals, simulator errors/fatals (SVA) or vsim errors
 FAIL_REGEX := UVM_(ERROR|FATAL)[[:space:]]*:[[:space:]]*[1-9][0-9]*|^\# \*\* (Error|Fatal)|^\# Errors: [1-9]
 
 RUN_OPT_TMO = $(if $(filter 0,$(TIMEOUT)),$(OPT_TOP),$(OPT_TOP_TMO)$(TIMEOUT))
@@ -401,20 +391,8 @@ cov_report: merge_cov
 #-----------------------------------------------------------------------------
 # Assertion and cover-directive report
 #-----------------------------------------------------------------------------
-# The HTML report shows covergroups and code coverage only: after a run its
-# global.json holds g_assertViews = 0 and g_directViews = 0, so assertions such
-# as B_STABLE and cover directives such as C_B_STALL cannot be reviewed there.
-# These text reports are the evidence for the Assertions sheet of the vplan.
-#
-# Questa collects these counts under plain 'vsim -coverage', so the data is in
-# the UCDB already; only the HTML view of it is missing. An assertion pass
-# count is one per test, so it reads as the number of runs that hit the
-# assertion, not the number of evaluations.
-#
-# SKIP_MERGE=1 reuses the merged database instead of building it again, which
-# is worth it after a plain 'make cov_report'. It is only a shortcut: if the
-# database is not there, for instance right after a clean regression, the
-# merge runs anyway.
+# Text reports for assertions and cover directives (not in the HTML report).
+# SKIP_MERGE=1 reuses an existing merged UCDB.
 SKIP_MERGE ?= 0
 
 assert_report: $(if $(filter 1,$(SKIP_MERGE)),,merge_cov)
@@ -475,9 +453,7 @@ assert_report: $(if $(filter 1,$(SKIP_MERGE)),,merge_cov)
 #-----------------------------------------------------------------------------
 # Code coverage report for the DUT
 #-----------------------------------------------------------------------------
-# Restricted to the design units of the bridge on purpose: a detailed report
-# over the whole merge would also walk the UVM package and the testbench,
-# which are not what BRG_ENV_005 reviews.
+# DUT design units only
 code_report: $(if $(filter 1,$(SKIP_MERGE)),,merge_cov)
 	@cd "$(MAKEFILE_DIR)" && mkdir -p "$(REPORT_DIR)"
 	@cd "$(MAKEFILE_DIR)" && \
@@ -504,11 +480,8 @@ code_report: $(if $(filter 1,$(SKIP_MERGE)),,merge_cov)
 #-----------------------------------------------------------------------------
 # Negative parameter check
 #-----------------------------------------------------------------------------
-# Every case here has to fail, which is why this is its own target and not
-# part of regress: a run that is supposed to end in a fatal cannot share a
-# pass criterion with one that is supposed to end clean. A case counts as
-# rejected whichever stage catches it, because some illegal widths are
-# caught by the tool before the guards in the design get a chance.
+# Every case must be rejected (at compile, optimize or run); not part of
+# regress
 illegal_param_check: check-tools
 	@cd "$(MAKEFILE_DIR)" && mkdir -p "$(LOG_DIR)"
 	@cd "$(MAKEFILE_DIR)" && \

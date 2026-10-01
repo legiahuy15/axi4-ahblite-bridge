@@ -2,22 +2,9 @@
 // File        : bridge_reset_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge synchronous reset timing and interface defaults test.
-//               Places s_axi_aresetn at five points inside the clock cycle,
-//               from just after one rising edge to just before the next, with
-//               the bus parked in a non-reset state, and checks that nothing
-//               moves until that next edge and that every output sits at its
-//               reset value one edge later. Ordinary traffic after each reset
-//               confirms the bridge is still usable.
-//               The reset values are those of the reference design: on AHB
-//               HTRANS IDLE with HADDR, HBURST, HSIZE, HWRITE and HMASTLOCK
-//               clear and HPROT 4'b0011, and on AXI AWREADY, WREADY, BVALID,
-//               ARREADY, RVALID and RLAST low. The AHB half is also covered
-//               from now on by the RESET_AHB_CONTROL assertion, which runs in
-//               every test.
-//               Runs on the default build only: the read it parks on the bus
-//               is held off longer than any supported watchdog, so a timeout
-//               build would cut it short.
+// Description : Bridge synchronous reset test. Reset asserted at five points
+//               in the clock cycle; outputs must take their reset values on
+//               the next edge. Default build only.
 //               Covers BRG_RST_002, BRG_RST_003, BRG_RST_004 and BRG_ATT_005.
 //               Included inside the bridge test package.
 //=============================================================================

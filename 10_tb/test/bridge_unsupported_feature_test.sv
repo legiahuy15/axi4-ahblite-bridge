@@ -2,11 +2,8 @@
 // File        : bridge_unsupported_feature_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge unsupported-feature test.
-//               Locked/exclusive requests are outside the PG177 profile, but
-//               the reference design completes them normally, returns OKAY
-//               (never EXOKAY) and drives HMASTLOCK from AxLOCK. This test
-//               checks that behavior with the lock-profile assertions off.
+// Description : Bridge locked-request test: normal completion, no EXOKAY,
+//               HMASTLOCK follows AxLOCK (lock assertions off).
 //               Covers BRG_UNS_001.
 //               Included inside the bridge test package.
 //=============================================================================

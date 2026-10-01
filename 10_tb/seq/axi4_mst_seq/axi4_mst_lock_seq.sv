@@ -2,12 +2,8 @@
 // File        : axi4_mst_lock_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : AXI4 unsupported-lock directed sequence.
-//               Interleaves AxLOCK=1 and AxLOCK=0 requests for read and
-//               write across the burst mappings and checks that locked
-//               requests complete normally with OKAY (never EXOKAY) and
-//               correct data. HMASTLOCK is checked per beat by the
-//               scoreboard.
+// Description : Locked-request sequence: interleaved AxLOCK=1/0 requests
+//               must complete with OKAY (never EXOKAY) and correct data.
 //               Covers BRG_UNS_001.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -85,9 +81,7 @@ class axi4_mst_lock_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Run one entry
     //-------------------------------------------------------------------------
-    // Locked write, normal read-back, normal write, then two back-to-back
-    // locked read-backs, so HMASTLOCK is checked on 0->1, 1->0 and 1->1
-    // transitions between transactions.
+    // Covers HMASTLOCK 0->1, 1->0 and 1->1 between transactions
     protected task run_lock_case(int unsigned index, lock_entry_t entry);
         bit [AXI4_ADDR_WIDTH-1:0] addr;
         bit [AXI4_DATA_WIDTH-1:0] expected[];

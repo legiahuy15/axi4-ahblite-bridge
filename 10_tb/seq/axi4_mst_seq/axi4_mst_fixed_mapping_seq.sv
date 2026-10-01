@@ -95,7 +95,7 @@ class axi4_mst_fixed_mapping_seq extends axi4_mst_base_seq;
                   UVM_MEDIUM)
 
         if (dir == AXI4_WRITE) begin
-            // Write — each beat writes to the same address, last beat wins
+            // Write: all beats to the same address, last beat wins
             req = create_request(cases_run, AXI4_WRITE, addr, len);
             fill_write_data(req, entry_index);
             send_axi_request_wait(req, rsp);
@@ -107,8 +107,7 @@ class axi4_mst_fixed_mapping_seq extends axi4_mst_base_seq;
                                      tag, rsp.bresp.name(), addr))
             end
 
-            // Read-back: FIXED overwrites same address so only last beat
-            // data remains. Read a single beat to verify.
+            // FIXED keeps only the last beat: read back one beat
             begin
                 axi4_transaction rd_req, rd_rsp;
                 bit [AXI4_DATA_WIDTH-1:0] last_data;
@@ -120,8 +119,7 @@ class axi4_mst_fixed_mapping_seq extends axi4_mst_base_seq;
                 check_single_readback(tag, addr, rd_rsp, last_data);
             end
         end else begin
-            // Read — scoreboard/predictor verify AHB SINGLE/NONSEQ at
-            // constant address for each beat
+            // Read: one AHB SINGLE/NONSEQ per beat at the same address
             req = create_request(cases_run, AXI4_READ, addr, len);
             send_axi_request_wait(req, rsp);
             cases_run++;

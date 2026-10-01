@@ -2,21 +2,10 @@
 // File        : bridge_timeout_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge data-phase timeout test.
-//               The same test runs on every C_DPHASE_TIMEOUT build and reads
-//               the value the DUT was elaborated with from bridge_tb_top, so
-//               the whole 0/16/32/64/128/256 matrix is one test:
-//               - on the default build the watchdog is generated away, so an
-//                 AHB wait longer than every supported threshold must still
-//                 complete with OKAY (BRG_TMO_001)
-//               - on a timeout build a wait below the threshold completes and
-//                 a wait above it returns SLVERR, on a single transfer and in
-//                 the middle of an INCR4, read and write, after which ordinary
-//                 traffic must still work (BRG_TMO_002)
-//               The scoreboard is told about each request the watchdog is
-//               expected to abandon, so the beats the bridge never issues are
-//               not reported as lost. Everything else in the run, including
-//               the traffic after a timeout, is compared as usual.
+// Description : Bridge timeout test on every C_DPHASE_TIMEOUT build:
+//               - 0: a long AHB wait still completes with OKAY
+//               - non-zero: a wait below the threshold completes, above it
+//                 returns SLVERR (single and INCR4, read and write)
 //               Covers BRG_TMO_001 and BRG_TMO_002.
 //               Included inside the bridge test package.
 //=============================================================================

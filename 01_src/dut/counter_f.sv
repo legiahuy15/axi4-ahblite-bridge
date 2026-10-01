@@ -2,8 +2,7 @@
 // File        : counter_f
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Parameterized synchronous up/down counter used by the bridge
-//               timeout logic.
+// Description : Loadable up/down counter for the timeout watchdog.
 //=============================================================================
 
 `timescale 1ns/1ps

@@ -29,8 +29,7 @@ class ahb_slv_agent_cfg extends uvm_object;
     int unsigned ready_delay_max = 0;
 
     // Memory controls
-    // Unwritten bytes read as an address-derived word XOR default_read_data
-    // when addr_pattern_read is set, otherwise as default_read_data.
+    // Unwritten bytes: default_read_data, XOR address pattern if enabled
     bit [AHB_DATA_WIDTH-1:0] default_read_data  = '0;
     bit                      addr_pattern_read  = 1'b1;
     bit                      clear_mem_on_reset = 1'b0;

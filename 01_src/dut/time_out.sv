@@ -2,8 +2,7 @@
 // File        : time_out
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Watchdog for an AHB transfer whose data phase does not
-//               complete within the configured timeout interval.
+// Description : AHB data-phase timeout watchdog.
 //=============================================================================
 
 `timescale 1ns/1ps

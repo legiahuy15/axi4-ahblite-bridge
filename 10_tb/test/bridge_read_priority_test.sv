@@ -2,18 +2,8 @@
 // File        : bridge_read_priority_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge simultaneous read/write arbitration test.
-//               Presents a read and a write together and checks that the read
-//               reaches AHB first and that the write then follows, over
-//               repeated collisions and with the write channels in both
-//               orders the bridge accepts.
-//               This is the first test with two requests outstanding at once,
-//               so max_outstanding is 2; every other test runs with one. The
-//               scoreboard matches AHB beats to requests by first-beat
-//               direction and address and AXI completions by direction and
-//               ID, so it does not depend on the order the two were predicted
-//               in, and the write and read of a pair sit in different halves
-//               of their region to keep the addresses apart.
+// Description : Bridge read/write arbitration test. A read and a write
+//               arrive together; the read must reach AHB first.
 //               Covers BRG_ARB_001 and BRG_ARB_002.
 //               Included inside the bridge test package.
 //=============================================================================

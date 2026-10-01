@@ -215,10 +215,7 @@ module bridge_tb_top #(
     //-------------------------------------------------------------------------
     // Unsupported-lock policy
     //-------------------------------------------------------------------------
-    // PG177 lists locked/exclusive access as unsupported, but the reference
-    // design completes such requests and drives HMASTLOCK from AxLOCK. A test
-    // that verifies this behavior triggers "bridge_allow_lock" to turn off the
-    // assertions that forbid lock in the legal profile.
+    // "bridge_allow_lock" disables the no-lock assertions for lock tests
     generate
         if (CHECK_BRIDGE_PROFILE) begin : g_lock_policy
             initial begin

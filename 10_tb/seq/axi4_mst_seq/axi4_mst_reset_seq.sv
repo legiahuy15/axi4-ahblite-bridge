@@ -2,29 +2,11 @@
 // File        : axi4_mst_reset_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Synchronous reset timing and interface defaults sequence.
-//               PG177: s_axi_aresetn is an active-low synchronous reset, so
-//               asserting it between two clock edges must change nothing until
-//               the next rising edge, and from then on every bridge output
-//               must sit at its reset value.
-//               Both halves need sampling away from the clock edge, which an
-//               edge-triggered assertion cannot do, so the sequence reads the
-//               interfaces directly:
-//               - it drives the bus into a state that is not the reset state,
-//                 a read held off by a long AHB wait, so there is something to
-//                 see change
-//               - it asserts reset at a measured fraction of the clock period
-//                 after an edge, at the edge itself and just before the next
-//                 one, and checks that every output still holds its previous
-//                 value right up to that next edge
-//               - one edge later it checks the reset values taken from the
-//                 reference design: on AHB HTRANS IDLE, HADDR, HBURST, HSIZE,
-//                 HWRITE and HMASTLOCK clear and HPROT 4'b0011; on AXI
-//                 AWREADY, WREADY, BVALID, ARREADY, RVALID and RLAST low
-//               - it then runs ordinary traffic, so a reset that left the
-//                 bridge unusable is caught as well
-//               The clock period is measured rather than assumed, so the
-//               fractions follow whatever CLK_PERIOD the top level uses.
+// Description : Synchronous reset sequence. With a read parked on the bus,
+//               reset is asserted at several points within a clock cycle:
+//               - outputs must not change before the next rising edge
+//               - after that edge all outputs must hold their reset values
+//               - ordinary traffic must work afterwards
 //               Covers BRG_RST_002, BRG_RST_003, BRG_RST_004 and BRG_ATT_005.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -35,9 +17,7 @@ class axi4_mst_reset_seq extends axi4_mst_base_seq;
 
     localparam int unsigned FULL_SIZE = $clog2(AXI4_STRB_WIDTH);
 
-    // Long enough that the AHB side sits in a stable non-reset state while the
-    // reset is placed. The default build has no watchdog, so nothing cuts it
-    // short.
+    // AHB wait that parks the bus during reset (default build only)
     localparam int unsigned HOLD_WAIT = 30;
 
     //-------------------------------------------------------------------------
@@ -63,8 +43,7 @@ class axi4_mst_reset_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Internal types
     //-------------------------------------------------------------------------
-    // Packed, so the whole bus state compares in one 4-state !== and an X on
-    // any output shows up as a difference instead of poisoning the result
+    // Packed bus state, compared with 4-state !==
     typedef struct packed {
         logic [1:0]                htrans;
         logic [AHB_ADDR_WIDTH-1:0] haddr;
@@ -113,9 +92,7 @@ class axi4_mst_reset_seq extends axi4_mst_base_seq;
                             clk_period),
                   UVM_LOW)
 
-        // Just after the edge, a quarter, half and three quarters into the
-        // cycle, and as late as the sampler can still place it. Never exactly
-        // on the edge, where reading the interface would race the DUT.
+        // Reset points within the cycle (never exactly on the edge)
         run_case(epsilon);
         run_case(clk_period / 4);
         run_case(clk_period / 2);
@@ -159,8 +136,7 @@ class axi4_mst_reset_seq extends axi4_mst_base_seq;
 
         start_held_read();
 
-        // Place the reset inside the cycle, then look at the bus just before
-        // the next edge: a synchronous reset may not have changed anything yet
+        // Just before the next edge nothing may have changed
         @(posedge cfg.vif.clk);
         #(offset);
         before_reset = capture();
@@ -170,8 +146,7 @@ class axi4_mst_reset_seq extends axi4_mst_base_seq;
         before_edge = capture();
         failed |= check_unchanged(offset, before_reset, before_edge);
 
-        // One edge later the reset has been taken and every output must sit at
-        // its reset value
+        // One edge later: reset values
         @(posedge cfg.vif.clk);
         #(epsilon);
         failed |= check_defaults(offset);
@@ -189,9 +164,7 @@ class axi4_mst_reset_seq extends axi4_mst_base_seq;
             cases_failed++;
     endtask : run_case
 
-    // A read whose single AHB beat is held off long enough that the bus stays
-    // in a non-reset state while the reset is placed. The response never comes
-    // back, because the reset discards the request, so it is not waited for.
+    // Parked read; its response is discarded by the reset
     protected task start_held_read();
         axi4_transaction req;
 
@@ -201,8 +174,7 @@ class axi4_mst_reset_seq extends axi4_mst_base_seq;
         req = create_request(AXI4_READ, base_addr + (case_index * case_stride));
         send_axi_request(req);
 
-        // Wait until the bridge is actually driving the bus. Bounded, so a
-        // bridge that never starts fails here instead of hanging the run.
+        // Wait (bounded) until the bridge drives the bus
         for (int unsigned i = 0; ahb_vif.HTRANS === 2'b00; i++) begin
             if (i > HOLD_WAIT) begin
                 `uvm_fatal(get_type_name(),
@@ -229,8 +201,7 @@ class axi4_mst_reset_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Sampling
     //-------------------------------------------------------------------------
-    // Read straight off the interfaces, not through a clocking block, because
-    // the point is what the outputs do between two edges
+    // Sampled directly (no clocking block) to see values between edges
     protected function bus_state_t capture();
         bus_state_t s;
 

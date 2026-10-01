@@ -2,24 +2,9 @@
 // File        : bridge_timeout_boundary_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge data-phase timeout threshold boundary test.
-//               Sweeps the AHB wait of a single transfer across a window
-//               around C_DPHASE_TIMEOUT, read and write, and measures the
-//               smallest wait the watchdog terminates. The three cases
-//               BRG_TMO_003 names, one clock before the threshold, on it and
-//               one clock after, are the measured value and its neighbours.
-//               The test runs only on a build with a watchdog, so it belongs
-//               to TIMEOUT_TEST_LIST and not to TEST_LIST; on the default
-//               build the sequence stops with a message saying which TIMEOUT
-//               to use.
-//               The thresholds are required, not just reported: read must be
-//               C_DPHASE_TIMEOUT+2 and write C_DPHASE_TIMEOUT+1. Read and
-//               write have their own offset because they share the counter
-//               but not the pipeline that feeds it, and both offsets come
-//               from that pipeline rather than from the value, so they hold
-//               on every build. EXPECT_OFFSET_RD/WR change what is required
-//               and +MEASURE_ONLY reports the measurement instead, for
-//               re-characterising a changed design.
+// Description : Bridge timeout threshold test. Sweeps the AHB wait around
+//               C_DPHASE_TIMEOUT; the threshold must be +2 (read) and +1
+//               (write). +MEASURE_ONLY only reports it. Timeout builds only.
 //               Covers BRG_TMO_003.
 //               Included inside the bridge test package.
 //=============================================================================
@@ -33,10 +18,7 @@ class bridge_timeout_boundary_test extends bridge_base_test;
     //-------------------------------------------------------------------------
     bit [AXI4_ADDR_WIDTH-1:0] base_addr   = 'h1000;
     int unsigned              case_stride = 'h100;
-    // Measured on every supported build in regression 14 and identical on all
-    // of them, as a pipeline offset must be. Read costs one cycle more than
-    // write because the beat travels back through the read path before the
-    // watchdog sees it complete.
+    // Pipeline offsets, the same on every build
     bit                       has_expected_offset = 1'b1;
     int                       expected_offset_rd  = 2;
     int                       expected_offset_wr  = 1;

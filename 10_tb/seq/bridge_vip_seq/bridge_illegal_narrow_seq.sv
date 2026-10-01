@@ -2,12 +2,8 @@
 // File        : bridge_illegal_narrow_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Coordinates the unsupported-write scenario. The AHB slave
-//               answers from its memory model, which is the whole point:
-//               these cases are judged by what they leave in memory, not by
-//               the response, because an unsupported write is still answered
-//               with OKAY. The response policy is handed over only for its
-//               read-data pattern, the value an untouched word returns.
+// Description : Coordinates the unsupported-write scenario (AHB slave
+//               answers from its memory model).
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 

@@ -2,27 +2,9 @@
 // File        : bridge_write_starvation_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge write-data starvation test.
-//               Written to close a gap the code coverage review of
-//               regression 24 found: no test had ever dropped WVALID in the
-//               middle of a write burst, because the AXI master driver
-//               streamed the beats of a burst back to back and the agent had
-//               no knob for a gap. That single hole left four states of the
-//               AHB write FSM unreached, AHB_WR_WAIT, AHB_LAST_WAIT,
-//               AHB_LAST and AHB_ONEKB_LAST, which is 24 of the 26
-//               unexecuted statements in ahb_mstr_if, and AXI_WVALID_WAIT
-//               unreached in axi_slv_if.
-//               Each of those states needs a different shape of gap, so the
-//               cases are directed: a gap in the middle of a plain INCR, a
-//               gap before its last beat, the same on a FIXED burst and a
-//               WRAP2, and both again on a burst already split at a 1 KB
-//               boundary. What the bridge does in reply is counted rather
-//               than assumed: the run fails unless it issued AHB BUSY
-//               transfers and drove IDLE inside a burst.
-//               The AHB slave answers from its memory model with no wait
-//               states, so nothing but the gap holds the bridge up, and
-//               every burst is read back and compared beat by beat: a gap
-//               must change the timing of a write and nothing else.
+// Description : Bridge write-data starvation test. WVALID gaps mid-burst
+//               and before the last beat (INCR, FIXED, WRAP2, 1 KB split);
+//               data is read back and compared.
 //               Covers BRG_ENV_005.
 //               Included inside the bridge test package.
 //=============================================================================

@@ -2,27 +2,9 @@
 // File        : axi4_mst_read_priority_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Simultaneous read/write arbitration sequence.
-//               PG177: when a read and a write request arrive together the
-//               bridge serves the read first. The reference design implements
-//               it in axi_slv_if: the write FSM leaves AXI_WR_IDLE only on
-//               (!write_pending && !ARVALID) || write_pending, so a read that
-//               is already asking blocks the write from starting, while
-//               write_pending latches when a read completes with a write
-//               waiting and then blocks the read FSM in turn. The second half
-//               is what stops a stream of reads starving the write.
-//               Both halves are checked here:
-//               - the first AHB transfer of every contended pair is the read
-//               - the write that lost then runs, so each pair produces the
-//                 AHB order read, write
-//               Contention is not assumed either. An observer on the AXI
-//               interface counts the cycles where AWVALID and ARVALID are both
-//               asserted with neither accepted, so a case whose two requests
-//               did not actually collide fails instead of passing on a
-//               technicality.
-//               The pairs vary the write channel order (parallel, AW first,
-//               W first), the burst shapes and the AHB wait, because the
-//               arrival shape of the write is what the arbiter looks at.
+// Description : Read/write arbitration sequence. For each contended pair the
+//               AHB order must be read then write; the requests must really
+//               collide. Varies write channel order, burst shape and AHB wait.
 //               Covers BRG_ARB_001 and BRG_ARB_002.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -159,18 +141,12 @@ class axi4_mst_read_priority_seq extends axi4_mst_base_seq;
         add_case(AXI4_WR_PARALLEL,     0, 3, 0, "PAR_SINGLE_INCR4");
         add_case(AXI4_WR_PARALLEL,     3, 0, 0, "PAR_INCR4_SINGLE");
 
-        // Write channel order. AXI4_WR_AW_BEFORE_W is deliberately absent: on
-        // this DUT axi_slv_if asserts AWREADY and WREADY together in
-        // AXI_WVALIDS_WAIT, gated on AWVALID && WVALID, so a master that holds
-        // WVALID back until the AW handshake deadlocks. W before AW is the
-        // only skew the bridge accepts, and it is the interesting one anyway:
-        // the write asks through WVALID while its address is still missing.
+        // No AW-before-W: the DUT needs AWVALID and WVALID together
         add_case(AXI4_WR_W_BEFORE_AW,  0, 0, 0, "WFIRST_SINGLE");
         add_case(AXI4_WR_W_BEFORE_AW,  3, 3, 0, "WFIRST_INCR4");
         add_case(AXI4_WR_W_BEFORE_AW,  3, 0, 0, "WFIRST_INCR4_SINGLE");
 
-        // With AHB wait states, so the losing write starts from a bus that is
-        // still busy with the read
+        // With AHB wait states
         add_case(AXI4_WR_PARALLEL,     3, 3, 1, "PAR_INCR4_WAIT1");
         add_case(AXI4_WR_PARALLEL,     3, 3, 4, "PAR_INCR4_WAIT4");
 
@@ -201,10 +177,7 @@ class axi4_mst_read_priority_seq extends axi4_mst_base_seq;
         end
     endtask : observe_ahb
 
-    // Cycles where both requests are asking and neither has been taken. A
-    // write asks through AWVALID or WVALID, which is also what the arbiter in
-    // axi_slv_if looks at, so a W-before-AW pair counts from its first beat
-    // rather than only once its address turns up.
+    // Cycles with both requests pending (write = AWVALID or WVALID)
     protected task observe_contention();
         forever begin
             @(cfg.vif.monitor_cb);
@@ -247,8 +220,7 @@ class axi4_mst_read_priority_seq extends axi4_mst_base_seq;
         ahb_order.delete();
         collect_ahb = 1'b1;
 
-        // Both handed over in the same time step, so the driver puts AWVALID
-        // and ARVALID up on the same clock edge
+        // Same time step: AWVALID and ARVALID rise together
         fork
             begin
                 observe_contention();
@@ -292,8 +264,7 @@ class axi4_mst_read_priority_seq extends axi4_mst_base_seq;
 
         failed = 1'b0;
 
-        // The pair must really have collided, otherwise the order below says
-        // nothing about arbitration
+        // The pair must have collided
         if (contention_cycles == 0) begin
             failed = 1'b1;
             `uvm_error(get_type_name(),
@@ -333,10 +304,7 @@ class axi4_mst_read_priority_seq extends axi4_mst_base_seq;
         return failed;
     endfunction : check_pair
 
-    // The read transfer is served to completion and the write follows once
-    // write_pending releases it, so the two are never interleaved on AHB.
-    // One entry per NONSEQ, which for the INCR bursts used here is one per
-    // request.
+    // One entry per NONSEQ (one per request here)
     protected function bit check_write_follows(arb_case_t c);
         int unsigned reads;
         int unsigned writes;
@@ -458,9 +426,7 @@ class axi4_mst_read_priority_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Knob validation
     //-------------------------------------------------------------------------
-    // The write of a pair sits in the lower half of its region and the read in
-    // the upper half, so the scoreboard can tell the two apart by address and
-    // neither burst crosses a 1 KB boundary.
+    // Write in the lower half of the region, read in the upper half
     protected function void validate_knobs();
         int unsigned half_bytes;
 

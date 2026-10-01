@@ -2,30 +2,13 @@
 // File        : axi4_mst_reset_mid_transfer_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Reset during an active transfer, and recovery from it.
-//               BRG_RST_005 asks that a reset taken while a transfer is in
-//               flight clears the partial AXI and AHB activity and the
-//               predictor and scoreboard queues, without a hang and without a
-//               ghost response; BRG_RST_006 asks that a fresh write and read
-//               then complete correctly.
-//               The reset is placed at each phase the plan names, detected on
-//               the interfaces rather than guessed from a delay:
-//               - AXI address phase, AWVALID or ARVALID asserted
-//               - AXI write data phase, WVALID asserted before WLAST
-//               - AXI read data phase, RVALID asserted before RLAST
-//               - AXI response phase, BVALID asserted with BREADY still low,
-//                 which the master's B delay window holds open
-//               - AHB wait phase, HREADY low
-//               - AHB error phase, HRESP asserted
-//               The interrupted request is sent without waiting for its
-//               response, because the driver discards it at the reset and
-//               waiting would hang the sequence rather than test it. After
-//               each reset an observer watches the B and R channels while
-//               nothing is outstanding, so a response arriving for a request
-//               that no longer exists is caught; then ordinary write and read
-//               traffic runs and is compared by the scoreboard in full. The
-//               scoreboard end-of-test check, which requires every queue to
-//               be empty, is what shows the reset hooks cleared them.
+// Description : Reset during an active transfer, then recovery. Reset is
+//               asserted when the interface shows each phase:
+//               - AXI: address, write data, read data, response (BVALID
+//                 with BREADY low)
+//               - AHB: wait (HREADY low), error (HRESP high)
+//               After reset no B/R response may appear for the discarded
+//               request, and fresh write/read traffic must pass.
 //               Covers BRG_RST_005 and BRG_RST_006.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -39,8 +22,7 @@ class axi4_mst_reset_mid_transfer_seq extends axi4_mst_base_seq;
     // Long enough to hold the AHB wait phase open while the reset is placed
     localparam int unsigned HOLD_WAIT = 20;
 
-    // Cycles the B and R channels are watched after a reset, with nothing
-    // outstanding, before recovery traffic starts
+    // B/R watch time after reset
     localparam int unsigned GHOST_WINDOW = 32;
 
     // Guard on phase detection, so a phase that never arrives fails here
@@ -137,16 +119,14 @@ class axi4_mst_reset_mid_transfer_seq extends axi4_mst_base_seq;
         run_case(PH_AHB_WAIT,  AXI4_READ,  3, "AHB_WAIT");
         run_case(PH_AHB_ERROR, AXI4_WRITE, 3, "AHB_ERROR");
         run_case(PH_AHB_ERROR, AXI4_READ,  3, "AHB_ERROR");
-        // A single beat has no burst state to unwind, so the reset lands on a
-        // different part of the write path than the INCR4 case above
+        // Single beat: no burst state
         run_case(PH_AXI_ADDR,  AXI4_WRITE, 0, "AXI_ADDR_SINGLE");
     endtask : run_all_cases
 
     //-------------------------------------------------------------------------
     // Ghost-response observer
     //-------------------------------------------------------------------------
-    // Between a reset and the next request nothing is outstanding, so any B or
-    // R beat belongs to a request the reset was supposed to have discarded.
+    // Any B/R beat after reset belongs to a discarded request
     protected task observe_ghost();
         forever begin
             @(cfg.vif.monitor_cb);
@@ -220,8 +200,7 @@ class axi4_mst_reset_mid_transfer_seq extends axi4_mst_base_seq;
             policy.add_beat(AHB_RESP_OKAY, 0);
     endfunction : plan_clean_beats
 
-    // The AHB wait and error phases need the slave to produce them; the AXI
-    // phases only need the request to be running.
+    // AHB wait/error phases need the slave to produce them
     protected function void plan_beats(reset_phase_e phase, int unsigned beats);
         policy.clear_plan();
         for (int unsigned i = 0; i < beats; i++) begin

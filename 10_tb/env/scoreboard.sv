@@ -2,14 +2,9 @@
 // File        : scoreboard.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge request and response scoreboard.
-//               Observed AHB beats are matched to predicted requests without
-//               relying on the order in which requests were predicted: a new
-//               AHB transfer sequence is assigned to the pending request whose
-//               first predicted beat has the same direction and address, and
-//               the bridge's following beats stay with that request until it
-//               completes (the bridge serves one request at a time). AXI
-//               completions are matched by direction and ID.
+// Description : Bridge scoreboard. AHB beats are matched to requests by
+//               first-beat direction and address, AXI completions by
+//               direction and ID.
 //               Included inside the bridge package.
 //=============================================================================
 
@@ -18,14 +13,8 @@
 `uvm_analysis_imp_decl(_expected_axi)
 `uvm_analysis_imp_decl(_actual_axi)
 
-// Faults bridge_mutation_test asks the scoreboard to put into the stream it
-// observes, one at a time, to find out whether the comparison notices. They
-// name a field of ahb_request_matches or of axi_transaction_matches, both of
-// which are hand-written lists, so a field quietly left out of one of them
-// is the bug this is looking for. There is deliberately no entry for the
-// ID: completions are paired with their request by direction and ID, so a
-// corrupted one would not be compared and found wrong, it would simply
-// never be paired.
+// Faults injected by bridge_mutation_test, one compared field each (no ID:
+// it is the pairing key)
 typedef enum {
     MUT_NONE,
     MUT_AHB_ADDR,
@@ -66,8 +55,7 @@ class scoreboard extends uvm_scoreboard;
     protected scoreboard_axi_ctx pending_ctx_queue[$];
     // Request currently receiving observed AHB beats
     protected scoreboard_axi_ctx active_ctx;
-    // Request receiving predicted beats (the predictor sends a request and
-    // then all of its beats in the same call)
+    // Request receiving predicted beats
     protected scoreboard_axi_ctx predict_ctx;
     protected ahb_transfer       actual_ahb_queue[$];
     protected axi4_transaction   completed_axi_queue[$];
@@ -87,9 +75,7 @@ class scoreboard extends uvm_scoreboard;
     //-------------------------------------------------------------------------
     // Declared timeouts
     //-------------------------------------------------------------------------
-    // Direction and ID of requests the test expects the C_DPHASE_TIMEOUT
-    // watchdog to abandon, oldest first. Each key is consumed by the next
-    // predicted request that matches it.
+    // Direction/ID of requests expected to time out, oldest first
     typedef struct {
         axi4_dir_e              dir;
         bit [AXI4_ID_WIDTH-1:0] id;
@@ -98,32 +84,19 @@ class scoreboard extends uvm_scoreboard;
 
     protected timeout_key_t timeout_keys[$];
 
-    // Requests the watchdog abandoned, taken out of the live queues once their
-    // AXI completion was dropped. The AHB slave is still counting out the wait
-    // of the beat the bridge walked away from, so that one beat is reported by
-    // the monitor after the AXI side has already finished; it is matched here
-    // and discarded instead of being attributed to the next request.
+    // Abandoned requests; a late beat of one is discarded
     protected scoreboard_axi_ctx abandoned_ctx_queue[$];
 
-    // Declared requests whose AXI completion has not arrived yet, in
-    // declaration order. Kept separate from pending_ctx_queue so a request
-    // stays findable after its beats have all been accounted for.
+    // Declared requests still waiting for their AXI completion
     protected scoreboard_axi_ctx declared_ctx_queue[$];
 
     //-------------------------------------------------------------------------
     // Fault injection, used only by bridge_mutation_test
     //-------------------------------------------------------------------------
-    // While mutation_mode is set, a comparison that fails is reported as a
-    // caught fault rather than as an error, so the suite can run inside the
-    // regression without turning it red. It is the counts that decide the
-    // verdict: every fault armed has to be caught, and nothing may be caught
-    // that was not armed.
+    // In mutation_mode a failed comparison counts as a caught fault
     protected bit          mutation_mode;
     protected mutation_e   pending_ahb_mut = MUT_NONE;
-    // Beats to let past before the fault goes in. The first beat of a
-    // request is the one find_start_ctx uses to bind the context, by
-    // direction and address, so corrupting that one stops the beat being
-    // attributed at all instead of being compared and found wrong.
+    // Beats skipped before the fault (the first beat binds the request)
     protected int unsigned pending_ahb_skip;
     protected mutation_e   pending_axi_mut = MUT_NONE;
     protected int unsigned mutations_armed;
@@ -236,8 +209,7 @@ class scoreboard extends uvm_scoreboard;
         pending_axi_mut = MUT_NONE;
     endfunction : apply_axi_mutation
 
-    // One place decides how a failed comparison is reported, so an injected
-    // fault and a real one cannot drift apart
+    // Single reporting point for real and injected faults
     protected function void report_mismatch(string message);
         if (mutation_mode) begin
             mutations_caught++;
@@ -252,28 +224,18 @@ class scoreboard extends uvm_scoreboard;
     //-------------------------------------------------------------------------
     // Declared timeouts
     //-------------------------------------------------------------------------
-    // Called by the stimulus before it sends a request whose AHB data phase
-    // the watchdog will abandon. Without it such a request looks like a
-    // bridge fault: the beats after the abandoned one are never issued and
-    // the completion carries the forced SLVERR instead of the AHB response.
-    // The response itself is checked by the sequence, and the AHB side by
-    // bridge_timeout_recovery_test.
+    // Declare a request that must time out (completion is not compared)
     function void expect_timeout(
         axi4_dir_e              dir,
         bit [AXI4_ID_WIDTH-1:0] id
     );
-        // A declaration that will not come true is itself a fault the suite
-        // arms, so it is counted like the field mutations
+        // A false declaration is counted as an armed fault
         if (mutation_mode)
             mutations_armed++;
         timeout_keys.push_back('{dir, id, 1'b1});
     endfunction : expect_timeout
 
-    // For stimulus that sweeps the threshold and so cannot say in advance
-    // which side of it a wait falls on. A request that times out is dropped
-    // like a declared one; a request that completes is compared as usual.
-    // It relies on SLVERR meaning "watchdog", so the AHB slave must answer
-    // OKAY throughout such a test.
+    // Declare a request that may time out; requires all-OKAY AHB responses
     function void allow_timeout(
         axi4_dir_e              dir,
         bit [AXI4_ID_WIDTH-1:0] id
@@ -306,11 +268,7 @@ class scoreboard extends uvm_scoreboard;
         return 1'b0;
     endfunction : response_is_timeout
 
-    // Oldest declared request of this direction and ID still waiting for its
-    // completion. It is looked up in its own list rather than in
-    // pending_ctx_queue, because the beat the watchdog cancelled can be
-    // reported before the AXI completion arrives, and that removes the
-    // request from pending_ctx_queue on the way.
+    // Oldest declared request of this direction and ID
     protected function scoreboard_axi_ctx find_timed_out_ctx(
         axi4_dir_e              dir,
         bit [AXI4_ID_WIDTH-1:0] id
@@ -334,8 +292,7 @@ class scoreboard extends uvm_scoreboard;
         end
     endfunction : forget_declared_ctx
 
-    // The completion rebuilt from the AHB beats of a request the watchdog took
-    // is not an oracle for it, so it is withdrawn rather than compared
+    // Withdraw the rebuilt completion of an abandoned request
     protected function void drop_rebuilt_completion(
         axi4_dir_e              dir,
         bit [AXI4_ID_WIDTH-1:0] id
@@ -384,8 +341,7 @@ class scoreboard extends uvm_scoreboard;
 
         if (!$cast(copy_tr, tr.clone()))
             `uvm_fatal(get_type_name(), "Actual AHB transfer clone failed")
-        // Corrupt the observed beat before it is compared, so the
-        // comparison is the only thing that can notice
+        // Corrupt the observed beat before comparison
         if (pending_ahb_mut != MUT_NONE) begin
             if (pending_ahb_skip != 0)
                 pending_ahb_skip--;
@@ -400,12 +356,10 @@ class scoreboard extends uvm_scoreboard;
         axi4_transaction   copy_tr;
         scoreboard_axi_ctx timed_out_ctx;
 
-        // Dropped as soon as it arrives, so it can never be mistaken later for
-        // the completion of another request with the same direction and ID
+        // Dropped on arrival
         timed_out_ctx = find_timed_out_ctx(tr.dir, tr.id);
         if ((timed_out_ctx != null) && !response_is_timeout(tr)) begin
-            // A declared request that completed instead. Permissive on a
-            // threshold sweep, a fault when the test said it must time out.
+            // Declared request completed: allowed for allow_timeout only
             if (timed_out_ctx.timeout_strict) begin
                 if (!mutation_mode)
                     missed_timeouts++;
@@ -420,12 +374,10 @@ class scoreboard extends uvm_scoreboard;
         if (timed_out_ctx != null) begin
             timed_out_ctx.response_dropped = 1'b1;
             forget_declared_ctx(timed_out_ctx);
-            // The beats may all have been accounted for already, in which case
-            // a completion was rebuilt for this request; withdraw it
+            // Withdraw a completion already rebuilt for this request
             drop_rebuilt_completion(tr.dir, tr.id);
             timed_out_requests++;
-            // Taken out of the live queues at once: the bridge has finished
-            // with it, so it must not keep receiving the next request's beats
+            // Remove from the live queues
             foreach (pending_ctx_queue[i]) begin
                 if (pending_ctx_queue[i] == timed_out_ctx) begin
                     pending_ctx_queue.delete(i);
@@ -456,9 +408,7 @@ class scoreboard extends uvm_scoreboard;
     //-------------------------------------------------------------------------
     // AHB request comparison
     //-------------------------------------------------------------------------
-    // A beat of a request the watchdog already abandoned, reported after its
-    // AXI completion was dropped. Matched on direction and address so it can
-    // never swallow a beat that belongs to a live request.
+    // Late beat of an abandoned request (matched on direction/address)
     protected function bit take_abandoned_beat(ahb_transfer actual_tr);
         foreach (abandoned_ctx_queue[i]) begin
             scoreboard_axi_ctx ctx;
@@ -531,10 +481,8 @@ class scoreboard extends uvm_scoreboard;
         end
     endfunction : compare_ahb_queues
 
-    // Pending request that an observed transfer starts: first choice is the
-    // oldest unstarted request whose first predicted beat has the same
-    // direction and address; otherwise the oldest unstarted request of the
-    // same direction, so a wrong address is still reported as a mismatch.
+    // Oldest unstarted request with matching first beat, else the oldest of
+    // the same direction (a wrong address is then reported)
     protected function scoreboard_axi_ctx find_start_ctx(ahb_transfer actual_tr);
         foreach (pending_ctx_queue[i]) begin
             scoreboard_axi_ctx ctx;
@@ -607,9 +555,7 @@ class scoreboard extends uvm_scoreboard;
             if (active_ctx.tr.dir == AXI4_WRITE)
                 active_ctx.tr.bresp = active_ctx.write_error ? AXI4_RESP_SLVERR
                                                              : AXI4_RESP_OKAY;
-            // Always rebuilt: whether a declared request actually timed out is
-            // only known when its AXI completion arrives, which may be after
-            // its beats. The drop path withdraws this again if it did.
+            // Always rebuilt; withdrawn if the request times out
             completed_axi_queue.push_back(active_ctx.tr);
             active_ctx = null;
             compare_axi_queues();
@@ -619,8 +565,7 @@ class scoreboard extends uvm_scoreboard;
     //-------------------------------------------------------------------------
     // AXI response comparison
     //-------------------------------------------------------------------------
-    // Each observed completion is matched with the oldest reconstructed
-    // completion of the same direction and ID.
+    // Match each completion with the oldest rebuilt one (direction, ID)
     protected function void compare_axi_queues();
         int unsigned actual_index;
 
@@ -746,8 +691,7 @@ class scoreboard extends uvm_scoreboard;
 
         super.check_phase(phase);
 
-        // Beats the watchdog cancelled are expected to be missing, so they are
-        // taken out of the balance rather than reported as lost
+        // Beats cancelled by the watchdog are not counted as lost
         unmatched_expected_ahb = 0;
         pending_requests       = 0;
         foreach (pending_ctx_queue[i]) begin
@@ -763,8 +707,7 @@ class scoreboard extends uvm_scoreboard;
                                  unmatched_expected_ahb,
                                  actual_ahb_queue.size()))
 
-        // An abandoned request is removed from the live queues as soon as its
-        // completion is dropped, so anything still here is unfinished
+        // Anything left here is unfinished
         if ((pending_requests != 0) || (active_ctx != null) ||
             (completed_axi_queue.size() != 0) ||
             (actual_axi_queue.size() != 0))
@@ -775,8 +718,7 @@ class scoreboard extends uvm_scoreboard;
                                  completed_axi_queue.size(),
                                  actual_axi_queue.size()))
 
-        // A declared timeout that never happened is a hole in the test, not a
-        // pass: the watchdog was expected to abandon a request and did not
+        // A declared timeout that never happened is an error
         if (timeout_keys.size() != 0)
             `uvm_error(get_type_name(),
                        $sformatf({"%0d declared timeout(s) were never matched ",

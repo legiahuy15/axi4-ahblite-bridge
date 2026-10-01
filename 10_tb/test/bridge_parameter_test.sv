@@ -2,21 +2,9 @@
 // File        : bridge_parameter_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge configuration compliance test.
-//               Runs the same compliance profile on every supported build and
-//               lets the profile grow with the bus: the bus widths are
-//               package parameters, so each configuration is its own
-//               compilation and the sequence reads AXI4_DATA_WIDTH and
-//               AXI4_STRB_WIDTH instead of assuming them.
-//               The regression covers four builds, 32 and 64 bits with narrow
-//               bursts off and on. On the 32-bit build the profile is 12
-//               full-width bursts plus 6 narrow writes; on the 64-bit build
-//               the same 12 bursts run at 8 bytes a beat and the narrow part
-//               grows to 14 writes, because a wider bus has more legal narrow
-//               sizes and more lanes for each.
-//               The AHB slave answers automatically from its memory model, so
-//               a narrow write can be read back at full width and the lanes
-//               it did not touch checked as well.
+// Description : Bridge configuration compliance test on the 32/64-bit,
+//               narrow off/on builds: full-width bursts plus narrow writes,
+//               read back at full width.
 //               Covers BRG_CFG_001 and BRG_CFG_002.
 //               Included inside the bridge test package.
 //=============================================================================

@@ -2,10 +2,8 @@
 // File        : bridge_read_priority_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Coordinates the simultaneous read/write arbitration scenario.
-//               Starts the reactive AHB slave sequence and hands the AXI
-//               stimulus the AHB interface it watches the transfer order on,
-//               then stops the slave sequence.
+// Description : Coordinates the read/write arbitration scenario with the
+//               reactive AHB slave sequence.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 

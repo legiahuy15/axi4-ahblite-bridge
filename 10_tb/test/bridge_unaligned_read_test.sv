@@ -2,12 +2,9 @@
 // File        : bridge_unaligned_read_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge unaligned-read directed test.
-//               Reads with ARADDR at every byte offset of the first bus word
-//               (SINGLE, INCR4, undefined INCR and FIXED) and checks the
-//               aligned AHB address and the AXI-valid read lanes. Full-width
-//               ARSIZE runs on every build; narrow ARSIZE cases run only on a
-//               DUT built with C_S_AXI_SUPPORTS_NARROW_BURST=1.
+// Description : Bridge unaligned-read test: every byte offset, aligned
+//               HADDR and valid read lanes. Narrow ARSIZE needs the narrow
+//               build.
 //               Covers BRG_SIZ_005.
 //               Included inside the bridge test package.
 //=============================================================================

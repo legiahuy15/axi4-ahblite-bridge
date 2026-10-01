@@ -2,28 +2,12 @@
 // File        : axi4_mst_parameter_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Compliance profile driven from the configuration the build
-//               was compiled with.
-//               PG177 supports equal AXI and AHB data widths of 32 or 64 bits
-//               with narrow bursts off or on. The widths are package
-//               parameters, so each one is a separate compilation, and this
-//               sequence reads AXI4_DATA_WIDTH and AXI4_STRB_WIDTH rather
-//               than assuming either. The same source therefore runs on all
-//               four builds and the case list grows with the bus:
-//               - full-width SINGLE, INCR4, INCR16, undefined INCR5, WRAP4
-//                 and FIXED3, read and write, with the read data checked
-//                 beat by beat
-//               - one single write per legal narrow size on every lane it can
-//                 sit on, but only where the build supports narrow bursts;
-//                 the word is then read back at full width, so the lanes
-//                 outside the transfer are checked to be untouched as well
-//               On a 64-bit build that adds the 8-byte size and a third
-//               narrow size on twice as many lanes, which is what makes the
-//               profile a width sweep rather than the same traffic twice.
-//               The AHB slave answers automatically from its memory model,
-//               so a read returns what was written and an untouched word
-//               returns its address pattern. ahb_response_policy is kept only
-//               because read_data is the canonical form of that pattern.
+// Description : Compliance profile sized from AXI4_DATA_WIDTH (32/64-bit,
+//               narrow off/on builds):
+//               - full-width SINGLE, INCR4, INCR16, INCR5, WRAP4 and FIXED3,
+//                 read and write
+//               - narrow builds: one single write per narrow size and lane,
+//                 read back at full width
 //               Covers BRG_CFG_001 and BRG_CFG_002.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -44,8 +28,7 @@ class axi4_mst_parameter_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Shared handles
     //-------------------------------------------------------------------------
-    // Not used to answer anything here: only read_data, which is the same
-    // address pattern the slave returns for a word nothing has written
+    // Only read_data is used (pattern of an unwritten word)
     ahb_response_policy pattern;
 
     //-------------------------------------------------------------------------
@@ -169,8 +152,7 @@ class axi4_mst_parameter_seq extends axi4_mst_base_seq;
                          1'b0, shapes[s].label);
     endfunction : add_full_width_cases
 
-    // One single write per legal narrow size on every lane it can occupy.
-    // On 32 bits that is 1 and 2 bytes; on 64 bits it also covers 4.
+    // One single write per narrow size and lane
     protected function void add_narrow_cases();
         for (int unsigned sz = 0; sz < FULL_SIZE; sz++) begin
             int unsigned bytes;
@@ -248,8 +230,7 @@ class axi4_mst_parameter_seq extends axi4_mst_base_seq;
         failed = check_read_beats(c, addr, beats, rsp);
     endtask : run_full_width_case
 
-    // A narrow single write, then a full-width read of the word it landed in:
-    // the strobed lanes must carry the new data and the others must not move
+    // Narrow write, then full-width read: only strobed lanes change
     protected task run_narrow_case(
         input  param_case_t              c,
         input  bit [AXI4_ADDR_WIDTH-1:0] region,
@@ -446,8 +427,7 @@ class axi4_mst_parameter_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Knob validation
     //-------------------------------------------------------------------------
-    // Every case owns a region, so a read case never lands on a word another
-    // case wrote and the address pattern is the whole oracle for it.
+    // One region per case
     protected function void validate_knobs();
         int unsigned region_bytes;
 

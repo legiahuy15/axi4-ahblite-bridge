@@ -2,39 +2,9 @@
 // File        : axi4_mst_mutation_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Faults put into the stream on purpose, to find out whether
-//               the checking notices them.
-//               Everything else in this environment asks whether the bridge
-//               is right. This asks whether the answer would have been
-//               different if it were wrong. The target is the pair of
-//               hand-written comparisons at the heart of the scoreboard,
-//               ahb_request_matches and axi_transaction_matches: both are
-//               lists of fields, and a field quietly left out of one of them
-//               would make every test in the regression blind to that field
-//               while still reporting a pass.
-//               One fault at a time. The scoreboard is asked to corrupt the
-//               next beat or completion it observes, in one named field, and
-//               the case passes only if the comparison then reports a
-//               mismatch. A field that is not compared is exactly the case
-//               where nothing is reported, which is what this is looking
-//               for.
-//               Faults go into the beats of a burst after the first, because
-//               the first beat is what find_start_ctx uses to bind a
-//               transfer to its request, by direction and address; a fault
-//               there would stop the beat being attributed rather than being
-//               compared and found wrong.
-//               Two things it deliberately does not cover, each for a
-//               reason:
-//               - a wrong ID cannot be injected this way. The scoreboard
-//                 pairs a completion with its request by direction and ID,
-//                 so a corrupted ID does not produce a mismatch, it produces
-//                 an unmatched completion. ID sensitivity rests on the
-//                 driver and monitor ID checks and on the B_WITH_REQUEST and
-//                 R_WITH_REQUEST assertions instead.
-//               - the assertions themselves. They report with $error, which
-//                 does not pass through the UVM report server and so cannot
-//                 be demoted; proving their sensitivity needs a run whose
-//                 pass criterion is inverted, which is not this suite.
+// Description : Scoreboard fault injection. One field is corrupted per case
+//               (never in the first beat) and a mismatch must be reported.
+//               ID and assertions are not covered.
 //               Covers BRG_ENV_006.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -165,9 +135,7 @@ class axi4_mst_mutation_seq extends axi4_mst_base_seq;
         add_case(1, MUT_AXI_RESP, AXI4_READ,  "AXI_RRESP");
         add_case(1, MUT_AXI_DATA, AXI4_READ,  "AXI_RDATA");
 
-        // A declared timeout that does not happen. Not a corrupted field
-        // but the same question: the scoreboard says it checks for this, so
-        // it has to report one.
+        // Declared timeout that does not happen must be reported
         add_case(2, MUT_NONE, AXI4_WRITE, "TIMEOUT_NOT_TAKEN");
         add_case(2, MUT_NONE, AXI4_READ,  "TIMEOUT_NOT_TAKEN_RD");
     endfunction : build_cases
@@ -232,8 +200,7 @@ class axi4_mst_mutation_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Request creation
     //-------------------------------------------------------------------------
-    // Always the same shape, so a case that behaves differently differs
-    // because of its fault and nothing else
+    // Same request shape for every case
     protected function axi4_transaction create_request(
         int unsigned              index,
         mutation_case_t           c,

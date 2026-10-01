@@ -9,8 +9,7 @@
     //-------------------------------------------------------------------------
     // Bus parameters
     //-------------------------------------------------------------------------
-    // Same knobs as axi4_types.sv, repeated so this file does not depend on
-    // the include order. The bridge requires equal widths on both sides.
+    // Same defines as axi4_types.sv; both sides must be equal
 `ifndef BRIDGE_DATA_WIDTH
     `define BRIDGE_DATA_WIDTH 32
 `endif

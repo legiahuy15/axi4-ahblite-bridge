@@ -2,43 +2,11 @@
 // File        : bridge_random_stress_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge constrained-random regression.
-//               The one test in the regression whose traffic is not a case
-//               list. Direction, burst, length, address, ID, cache and
-//               protection are left to the constraint set of
-//               axi4_transaction, and the AHB answer for each beat is drawn
-//               on its own without looking at the request it answers, so a
-//               seed changes the whole run rather than only the AXI IDs and
-//               the FIXED lengths.
-//               Both oracles are active and independent: the sequence knows
-//               the plan it drew, so it checks every read word and every
-//               per-beat response against it, while the scoreboard rebuilds
-//               the AXI completion from the AHB beats it observed. The run
-//               also has to be varied to pass: it fails if a direction, a
-//               burst type, an injected error, a wait state or a SLVERR
-//               never appeared.
-//               It runs on three build axes: the default build, the narrow
-//               build and all five C_DPHASE_TIMEOUT builds.
-//               On the narrow build the size is drawn per request instead of
-//               being fixed at the bus width, so the burst carries narrow
-//               beats. That is the point of adding it there: the only narrow
-//               traffic the regression had was the single writes of
-//               bridge_parameter_test, and a single write never increments an
-//               address, so gen_32_data_width_narrow in ahb_mstr_if, which
-//               holds the whole per-size increment and wrap path for narrow
-//               bursts, had never been driven.
-//               On a watchdog build the policy cannot simply draw waits at
-//               random, because a wait that tripped the watchdog would not
-//               have been declared and the scoreboard would rightly call it
-//               a fault. Ordinary requests are therefore capped two cycles
-//               below C_DPHASE_TIMEOUT, and every eighth request after the
-//               seeded head is turned into a deliberate timeout instead: all
-//               its beats are answered OKAY so SLVERR can only mean the
-//               watchdog, one beat is held well past the threshold, and the
-//               request is declared with expect_timeout so the watchdog is
-//               required to fire rather than merely allowed to.
-//               Covers BRG_ENV_008, and drives both supported responses on
-//               both channels for BRG_UNS_003.
+// Description : Bridge constrained-random test: random requests and
+//               independent random AHB waits/errors. Runs on the default,
+//               narrow (random size) and timeout builds (every eighth
+//               request is a declared timeout).
+//               Covers BRG_ENV_008 and BRG_UNS_003.
 //               Included inside the bridge test package.
 //=============================================================================
 

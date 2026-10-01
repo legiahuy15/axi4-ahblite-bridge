@@ -2,34 +2,14 @@
 // File        : axi4_mst_backpressure_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : AXI response-channel backpressure directed sequence.
-//               AMBA AXI4: once BVALID (RVALID) is asserted the response must
-//               stay asserted and its payload must not change until the master
-//               accepts it with BREADY (RREADY). The bridge has no B-channel
-//               buffer and a read skid buffer, so a stalled response must be
-//               held while the AHB side is held off.
-//               The sequence owns the master ready windows: before every case
-//               it sets bready_delay_min/max and rready_delay_min/max to the
-//               case value, so the driver stalls that channel by a known
-//               number of cycles. A sampler running beside the stimulus
-//               watches the interface on every clock and checks, cycle by
-//               cycle, that a stalled response keeps VALID high and keeps its
-//               payload unchanged; it also measures the stall so a case whose
-//               window never took effect fails instead of passing silently.
-//               Cases, each a single AXI request answered from the plan:
-//               - B windows 1, 2, 3, 8 and 16 cycles on a write SINGLE/INCR4
-//               - R windows 1, 2, 3, 8 and 16 cycles on a read SINGLE/INCR4
-//               - R windows on INCR16, undefined INCR5, WRAP4, WRAP8 and
-//                 FIXED3, so every beat of every burst shape is stalled
-//               - independent B and R windows (1 with 16 and 16 with 1),
-//                 read and write: only the channel of the request stalls
-//               - AXI backpressure together with AHB wait states, so both
-//                 sides of the bridge are held off at once
-//               - SLVERR held under backpressure: BRESP and the per-beat
-//                 RRESP must stay SLVERR for the whole stall
-//               - INCR16 split at a 1 KB boundary with every read beat stalled
-//               Checks BRESP, per-beat RRESP, read data, beat count, that all
-//               planned AHB beats were issued, and the stall itself.
+// Description : AXI B/R backpressure sequence. Sets the BREADY/RREADY delay
+//               per case; a sampler checks VALID and payload stay stable and
+//               measures the stall. Cases:
+//               - B/R windows of 1, 2, 3, 8 and 16 cycles, SINGLE and INCR4
+//               - R windows on INCR16, INCR5, WRAP4, WRAP8 and FIXED3
+//               - independent B and R windows
+//               - with AHB wait states, with SLVERR, across a 1 KB split
+//               Checks responses, read data, beat count and the stall.
 //               Covers BRG_WAI_002 and BRG_WAI_003.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -92,8 +72,7 @@ class axi4_mst_backpressure_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Internal state
     //-------------------------------------------------------------------------
-    // The case list is a member, so the stimulus thread of the fork below does
-    // not take it as a ref argument
+    // Member so the forked thread needs no ref argument
     protected bp_case_t    case_list[$];
     protected int unsigned num_cases;
     protected int unsigned cross_cases_run;
@@ -128,8 +107,7 @@ class axi4_mst_backpressure_seq extends axi4_mst_base_seq;
                   $sformatf("AXI backpressure: %0d cases", num_cases),
                   UVM_LOW)
 
-        // The sampler must see every clock of every case, so it runs beside
-        // the stimulus and is killed once the last case has completed.
+        // Sampler runs beside the stimulus until the last case ends
         fork
             begin
                 fork
@@ -161,10 +139,7 @@ class axi4_mst_backpressure_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Response-channel stall sampler
     //-------------------------------------------------------------------------
-    // Runs on every clock for the whole sequence. A response that is presented
-    // while its READY is low must still be presented on the next clock with
-    // the same payload; anything else is an AXI4 violation of BRG_WAI_002 or
-    // BRG_WAI_003. The counters prove the stall really happened.
+    // A stalled response must hold VALID and payload; counts stall cycles
     protected task sample_stalls();
         bit                       b_stalled;
         bit [AXI4_ID_WIDTH-1:0]   b_id;
@@ -340,8 +315,7 @@ class axi4_mst_backpressure_seq extends axi4_mst_base_seq;
         add_case(cases, AXI4_READ, AXI4_BURST_INCR, 0, 0, 1, 16, "SINGLE_R16");
     endfunction : add_r_window_cases
 
-    // Every read beat of every burst shape is stalled, so the skid buffer is
-    // held through SEQ, BUSY and NONSEQ restarts alike
+    // Every read beat stalled, on every burst shape
     protected function void add_r_shape_cases(ref bp_case_t cases[$]);
         shape_t shapes[] = '{
             '{AXI4_BURST_INCR,  15, 0, 1, "INCR16_R1"},
@@ -358,8 +332,7 @@ class axi4_mst_backpressure_seq extends axi4_mst_base_seq;
                      1, shapes[s].r_delay, shapes[s].label);
     endfunction : add_r_shape_cases
 
-    // The two windows are configured independently: a write must stall only on
-    // B and a read only on R, whatever the other window is set to
+    // Independent windows: a write stalls only on B, a read only on R
     protected function void add_independent_window_cases(ref bp_case_t cases[$]);
         for (int unsigned d = 0; d < 2; d++) begin
             add_case(cases, dir_of(d), AXI4_BURST_INCR, 3, 0,  1, 16,
@@ -369,8 +342,7 @@ class axi4_mst_backpressure_seq extends axi4_mst_base_seq;
         end
     endfunction : add_independent_window_cases
 
-    // AXI backpressure on top of AHB wait states: both sides of the bridge are
-    // held off at the same time
+    // AXI backpressure together with AHB wait states
     protected function void add_ahb_wait_cases(ref bp_case_t cases[$]);
         add_case(cases, AXI4_WRITE, AXI4_BURST_INCR,  3, 0, 8, 1,
                  "INCR4_B8_HW2",   2);
@@ -394,8 +366,7 @@ class axi4_mst_backpressure_seq extends axi4_mst_base_seq;
                  "INCR4_R4_ERR0",  0, one_hot(0));
     endfunction : add_error_cases
 
-    // INCR16 starting 8 beats before a 1 KB boundary: the bridge restarts with
-    // NONSEQ at beat 8 while the AXI response channel is stalled on every beat
+    // INCR16 crossing 1 KB at beat 8, R stalled on every beat
     protected function void add_cross_1kb_cases(ref bp_case_t cases[$]);
         int unsigned bytes;
 
@@ -481,8 +452,7 @@ class axi4_mst_backpressure_seq extends axi4_mst_base_seq;
             cases_failed++;
     endtask : run_case
 
-    // The driver reads the window when it starts waiting for the response, so
-    // both ends are set here, before the request is sent.
+    // Set both windows before the request is sent
     protected function void set_ready_windows(
         int unsigned b_delay,
         int unsigned r_delay
@@ -496,10 +466,7 @@ class axi4_mst_backpressure_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Stall checks
     //-------------------------------------------------------------------------
-    // A case that never stalled would pass every response check while proving
-    // nothing, so the measured stall is part of the result. The driver holds
-    // READY low from the cycle it sees VALID until the window has elapsed, so
-    // the run is at least as long as the window.
+    // The measured stall must be at least the window
     protected function bit check_stall(
         bp_case_t                 c,
         bit [AXI4_ADDR_WIDTH-1:0] addr
@@ -619,9 +586,7 @@ class axi4_mst_backpressure_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Addresses
     //-------------------------------------------------------------------------
-    // The k-th 1 KB boundary above every per-case region, skipping 4 KB
-    // boundaries (an AXI burst must not cross 4 KB). Consecutive crossing
-    // cases use different boundaries, so their bursts never overlap.
+    // k-th 1 KB boundary above the case regions, skipping 4 KB boundaries
     protected function bit [AXI4_ADDR_WIDTH-1:0] get_cross_boundary(
         int unsigned k
     );
@@ -717,12 +682,7 @@ class axi4_mst_backpressure_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Knob validation
     //-------------------------------------------------------------------------
-    // Every non-crossing case fits in its own region, so no burst crosses a
-    // 1 KB boundary unless the case asks for it, and the AHB beats of one case
-    // never overlap another case.
-    // The driver picks the zero-delay path once and for all when it starts
-    // waiting for a response, so a test that leaves both windows at zero can
-    // never be made to stall from here.
+    // Each case fits its region; the test must start with non-zero windows
     protected function void validate_knobs();
         int unsigned region_bytes;
 

@@ -2,16 +2,10 @@
 // File        : axi4_mst_size_mapping_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : AXI4 transfer-size to HSIZE mapping directed sequence.
-//               Full width: SINGLE, INCR4, undefined INCR, FIXED, WRAP2 and
-//               WRAP4 for read and write (HSIZE = AxSIZE).
-//               Narrow (only when enabled): every legal byte lane for each
-//               narrow single transfer, single writes whose size is carried
-//               only by WSTRB, the same burst set at each narrow size, and
-//               INCR8, INCR16, WRAP8 and WRAP16 at each narrow size.
-//               Every case writes, then reads back with the same attributes.
-//               The scoreboard checks HSIZE/HADDR per beat; this sequence
-//               checks responses and the written byte lanes.
+// Description : Transfer size to HSIZE mapping sequence: full-width bursts
+//               on every build; on the narrow build every lane of each
+//               narrow single, WSTRB-sized writes and narrow bursts. Each
+//               case is written and read back.
 //               Covers BRG_SIZ_001 and BRG_SIZ_003.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -127,8 +121,7 @@ class axi4_mst_size_mapping_seq extends axi4_mst_base_seq;
         cases.push_back('{AXI4_BURST_WRAP,  3, size_code, 3 * bytes, 1'b0,
                           $sformatf("WRAP4_%s", tag)});
 
-        // Longer fixed-length bursts at narrow sizes (full width is covered
-        // by the burst-matrix and mapping tests). WRAP starts mid-burst.
+        // Longer narrow bursts; WRAP starts mid-burst
         if (size_code != FULL_SIZE) begin
             cases.push_back('{AXI4_BURST_INCR,  7, size_code, bytes, 1'b0,
                               $sformatf("INCR8_%s", tag)});
@@ -356,8 +349,7 @@ class axi4_mst_size_mapping_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Knob validation
     //-------------------------------------------------------------------------
-    // Case regions start on 0x100 boundaries and every case fits in 0x100
-    // bytes, so no burst crosses a 1 KB or 4 KB boundary.
+    // 0x100-byte case regions: no 1 KB or 4 KB crossing
     protected function void validate_knobs();
         if ((base_addr % 'h100) != 0)
             `uvm_fatal(get_type_name(), "base_addr must be a multiple of 0x100")

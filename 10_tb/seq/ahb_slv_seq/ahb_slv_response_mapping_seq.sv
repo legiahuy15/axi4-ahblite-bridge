@@ -2,11 +2,8 @@
 // File        : ahb_slv_response_mapping_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Reactive AHB-Lite slave sequence driven by a response plan.
-//               Answers every observed beat with the next planned response
-//               (OKAY or ERROR, with wait cycles) and returns address-derived
-//               read data, so the stimulus sequence knows what each beat
-//               should carry. Runs until the test kills it.
+// Description : Reactive AHB-Lite slave sequence: answers each beat from the
+//               response plan with address-derived read data.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 

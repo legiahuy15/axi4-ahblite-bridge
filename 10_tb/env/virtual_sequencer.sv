@@ -6,8 +6,7 @@
 //               Included inside the bridge package.
 //=============================================================================
 
-// The package includes this file before scoreboard.sv, so the handle below
-// needs the class name to exist first
+// Forward declaration (included before scoreboard.sv)
 typedef class scoreboard;
 
 class virtual_sequencer extends uvm_sequencer;
@@ -21,8 +20,7 @@ class virtual_sequencer extends uvm_sequencer;
     axi4_mst_sequencer axi_sqr;
     ahb_slv_sequencer  ahb_sqr;
 
-    // Null when the environment runs without a scoreboard. A sequence that
-    // declares a watchdog timeout needs it (see scoreboard::expect_timeout).
+    // Null without a scoreboard; needed to declare timeouts
     scoreboard         scb;
 
     //-------------------------------------------------------------------------

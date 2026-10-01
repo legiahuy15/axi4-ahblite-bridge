@@ -2,8 +2,7 @@
 // File        : bridge_unsupported_feature_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Coordinates unsupported-feature scenarios.
-//               Currently covers locked/exclusive requests (BRG_UNS_001).
+// Description : Coordinates the locked-request scenario (BRG_UNS_001).
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 

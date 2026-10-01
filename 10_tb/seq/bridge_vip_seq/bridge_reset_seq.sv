@@ -2,10 +2,8 @@
 // File        : bridge_reset_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Coordinates the synchronous reset timing scenario. Starts the
-//               reactive AHB slave sequence and hands the AXI stimulus the AHB
-//               interface it samples the bridge outputs on, then stops the
-//               slave sequence.
+// Description : Coordinates the synchronous reset scenario with the
+//               reactive AHB slave sequence.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 

@@ -2,34 +2,12 @@
 // File        : axi4_mst_write_starvation_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Write bursts whose data runs dry part way through.
-//               Found by the code coverage review of regression 24: no
-//               stimulus had ever dropped WVALID in the middle of a write
-//               burst, because axi4_mst_driver streamed the beats of a burst
-//               back to back and the agent had no knob for a gap. That one
-//               hole left four states of the AHB write FSM unreached,
-//               AHB_WR_WAIT, AHB_LAST_WAIT, AHB_LAST and AHB_ONEKB_LAST,
-//               which is 24 of the 26 unexecuted statements in ahb_mstr_if,
-//               and AXI_WVALID_WAIT unreached in axi_slv_if.
-//               Each state needs its own shape, so the cases are directed
-//               rather than random:
-//               - a gap in the middle of a plain INCR reaches AHB_WR_WAIT on
-//                 the AHB side and AXI_WVALID_WAIT on the AXI side
-//               - a gap before the last beat of a plain INCR is the one that
-//                 makes the bridge answer with an AHB BUSY and go to
-//                 AHB_LAST
-//               - the same gap on a FIXED burst or a WRAP2 makes it drive
-//                 IDLE instead and go to AHB_LAST_WAIT
-//               - and on a burst that has already been split at a 1 KB
-//                 boundary it carries on to AHB_ONEKB_LAST
-//               The bridge's reply is not assumed either. An observer counts
-//               the BUSY transfers and the IDLE cycles that fall inside a
-//               burst, so a run where the bridge never actually stalled
-//               fails instead of passing on the strength of the stimulus
-//               alone.
-//               The AHB slave answers from its memory model, so every burst
-//               is read back afterwards and compared beat by beat: a gap
-//               must change the timing of a write and nothing else.
+// Description : Write bursts with WVALID gaps:
+//               - mid-burst INCR gap: AHB_WR_WAIT, AXI_WVALID_WAIT
+//               - gap before the last INCR beat: BUSY, AHB_LAST
+//               - same on FIXED/WRAP2: IDLE, AHB_LAST_WAIT
+//               - after a 1 KB split: AHB_ONEKB_LAST
+//               BUSY/IDLE inside bursts must be observed; data is read back.
 //               Covers BRG_ENV_005.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -44,8 +22,7 @@ class axi4_mst_write_starvation_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Sequence knobs
     //-------------------------------------------------------------------------
-    // 4 KB aligned: the 1 KB crossing cases are placed from here and every
-    // burst has to stay inside one 4 KB page
+    // 4 KB aligned base for all cases
     bit [AXI4_ADDR_WIDTH-1:0] base_addr   = 'h8000;
     int unsigned              case_stride = 'h40;
 
@@ -82,10 +59,7 @@ class axi4_mst_write_starvation_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     protected starve_case_t case_list[$];
     protected bit           collect_ahb;
-    // A burst is open from its first beat until its last one is on the bus.
-    // Counting beats rather than waiting for the AXI response matters: every
-    // burst ends with an IDLE, and counting that one would make the
-    // idle_in_burst check below true whatever the bridge did.
+    // Open from the first to the last beat (the closing IDLE is excluded)
     protected bit           burst_active;
     protected int unsigned  beats_expected;
     protected int unsigned  beats_seen;
@@ -185,22 +159,11 @@ class axi4_mst_write_starvation_seq extends axi4_mst_base_seq;
         add_case(AXI4_BURST_FIXED, 3, 1, 4, 1'b0, 0, "FIXED4_MID_GAP4");
         add_case(AXI4_BURST_WRAP,  1, 1, 4, 1'b0, 0, "WRAP2_LAST_GAP4");
 
-        // The data runs dry on the beat that the 1 KB split is owed to.
-        // The window is exactly one beat wide: one_kb_in_progress is set by
-        // the beat sitting on the last word of the page and cleared again as
-        // soon as one_kb_splitted goes out with the re-issued NONSEQ, so the
-        // gap has to sit between those two. The burst starts one beat below
-        // the boundary for that reason.
-        // With the split beat also the last beat the bridge goes
-        // AHB_LAST_WAIT then AHB_ONEKB_LAST; with beats behind it, it waits
-        // in AHB_WR_WAIT and re-issues the NONSEQ from there.
+        // Gap on the beat after the 1 KB boundary (burst starts one beat
+        // below it)
         add_case(AXI4_BURST_INCR, 1, 1, 4, 1'b1, 0, "ONEKB_LAST_GAP4");
         add_case(AXI4_BURST_INCR, 3, 1, 4, 1'b1, 1, "ONEKB_SPLIT_GAP4");
-        // Short gaps on the same shape. With a long gap the bridge is
-        // already sitting in AHB_LAST_WAIT when the data turns up and leaves
-        // through AHB_ONEKB_LAST; a gap of one or two cycles is the chance
-        // for the data to be there in the cycle it arrives, which is the one
-        // path out of that state the long gaps never take.
+        // Short gaps: the other exit from AHB_LAST_WAIT
         add_case(AXI4_BURST_INCR, 1, 1, 1, 1'b1, 2, "ONEKB_LAST_GAP1");
         add_case(AXI4_BURST_INCR, 1, 1, 2, 1'b1, 3, "ONEKB_LAST_GAP2");
     endfunction : build_cases
@@ -208,9 +171,7 @@ class axi4_mst_write_starvation_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Observer
     //-------------------------------------------------------------------------
-    // BUSY only ever happens inside a burst, and an IDLE is only interesting
-    // between the transfers of one, so both are counted from the first
-    // NONSEQ to the beat that ends the burst.
+    // Count BUSY and IDLE inside bursts
     protected task observe_ahb();
         ahb_trans_e htrans;
 
@@ -349,9 +310,7 @@ class axi4_mst_write_starvation_seq extends axi4_mst_base_seq;
         return failed;
     endfunction : check_readback
 
-    // The stimulus asked the bridge to stall; this is where it is confirmed
-    // that it did. Without it the cases could all be running back to back
-    // and the run would still pass.
+    // The bridge must have stalled
     protected function void check_bridge_actually_stalled();
         if (cases_run != case_list.size())
             `uvm_error(get_type_name(),
@@ -371,10 +330,8 @@ class axi4_mst_write_starvation_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Addresses
     //-------------------------------------------------------------------------
-    // A crossing case starts one beat below a 1 KB boundary, so its first
-    // beat sits on the last word of the page and arms the split, and the
-    // beat the gap sits in front of is the one the split is owed to.
-    // Everything else gets its own slot well below the first boundary.
+    // Crossing cases start one beat below a 1 KB boundary; others get a slot
+    // below the first boundary
     protected function bit [AXI4_ADDR_WIDTH-1:0] case_address(
         int unsigned  index,
         starve_case_t c
@@ -384,9 +341,7 @@ class axi4_mst_write_starvation_seq extends axi4_mst_base_seq;
         if (!c.cross_1kb)
             return base_addr + (index * case_stride);
 
-        // Three 1 KB boundaries are usable inside one 4 KB page; the fourth
-        // is the page boundary itself, which a burst may not cross, so the
-        // regions roll over into the next page instead.
+        // Three usable 1 KB boundaries per 4 KB page
         boundary = base_addr + ((c.region / 3) * 4096)
                              + (((c.region % 3) + 1) * 1024);
         return boundary - BUS_BYTES;

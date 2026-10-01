@@ -2,35 +2,13 @@
 // File        : axi4_mst_timeout_boundary_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : C_DPHASE_TIMEOUT threshold boundary sequence.
-//               BRG_TMO_003 asks that an AHB completion one clock before, on
-//               and one clock after the programmed threshold is distinguished
-//               correctly. Rather than assume where that boundary sits, the
-//               sequence sweeps the AHB wait of a single transfer across a
-//               window around C_DPHASE_TIMEOUT and measures the smallest wait
-//               that the watchdog terminates. The three cases the plan names
-//               are the measured threshold and its two neighbours, which the
-//               sweep always contains.
-//               The threshold is derived from the reference design as
-//               C_DPHASE_TIMEOUT plus a small fixed offset: time_out.sv loads
-//               C_DPHASE_TIMEOUT-1 into counter_f and counts one step per
-//               HREADY-low cycle, the borrow out of the counter is registered
-//               into timeout_o, and axi_slv_if registers that again into
-//               timeout_inprogress. The offset is therefore a property of the
-//               pipeline, not of the value, so it must be the same on every
-//               build; the sequence reports it and, once EXPECT_OFFSET is
-//               given, requires it.
-//               What is checked on every run:
-//               - the response is monotonic in the wait: no transfer
-//                 completes at a wait longer than one that timed out
-//               - the window brackets the threshold, so the measurement is
-//                 not an artefact of a window that is too narrow
-//               - read and write measure the same threshold, since they share
-//                 one watchdog
-//               - the threshold scales with C_DPHASE_TIMEOUT and stays inside
-//                 the window around it
-//               - with EXPECT_OFFSET set, the threshold is exactly
-//                 C_DPHASE_TIMEOUT + EXPECT_OFFSET
+// Description : Timeout threshold sequence. Sweeps the AHB wait of a single
+//               transfer around C_DPHASE_TIMEOUT and measures the smallest
+//               wait that times out. Checks:
+//               - no completion at a wait longer than one that timed out
+//               - the threshold lies inside the sweep window
+//               - with EXPECT_OFFSET set, threshold = C_DPHASE_TIMEOUT +
+//                 EXPECT_OFFSET (per direction)
 //               Covers BRG_TMO_003.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -41,9 +19,7 @@ class axi4_mst_timeout_boundary_seq extends axi4_mst_base_seq;
 
     localparam int unsigned FULL_SIZE = $clog2(AXI4_STRB_WIDTH);
 
-    // Waits swept below and above C_DPHASE_TIMEOUT. Wide enough that the
-    // threshold cannot sit outside it on a correct design, narrow enough that
-    // the sweep stays short on the 256-cycle build.
+    // Sweep window around C_DPHASE_TIMEOUT
     localparam int unsigned WINDOW_BELOW = 3;
     localparam int unsigned WINDOW_ABOVE = 8;
 
@@ -54,17 +30,12 @@ class axi4_mst_timeout_boundary_seq extends axi4_mst_base_seq;
     int unsigned              case_stride    = 'h100;
     int unsigned              dphase_timeout = 0;
 
-    // Expected threshold per direction, as an offset from C_DPHASE_TIMEOUT.
-    // Read and write do not share the same offset: they share the counter but
-    // not the pipeline that carries the beat into it, so the boundary sits one
-    // cycle apart. Left unset the sequence measures and reports them instead
-    // of requiring a value.
+    // Expected offset from C_DPHASE_TIMEOUT per direction (unset = report)
     bit                       has_expected_offset;
     int                       expected_offset_rd;
     int                       expected_offset_wr;
 
-    // Read and write run off one counter, so their thresholds may differ by
-    // the pipeline depth between them but not by more
+    // Read/write thresholds may differ only by the pipeline depth
     localparam int unsigned MAX_DIR_SKEW = 2;
 
     //-------------------------------------------------------------------------
@@ -160,8 +131,7 @@ class axi4_mst_timeout_boundary_seq extends axi4_mst_base_seq;
     endfunction : dir_of
 
     //-------------------------------------------------------------------------
-    // Run one sweep point: a single full-width transfer whose one AHB beat is
-    // held off for 'ahb_wait' cycles. Returns whether the watchdog took it.
+    // One sweep point; returns 1 if the watchdog fired
     //-------------------------------------------------------------------------
     protected function bit beat_timed_out(axi4_transaction rsp);
         if (rsp.dir == AXI4_WRITE)
@@ -189,8 +159,7 @@ class axi4_mst_timeout_boundary_seq extends axi4_mst_base_seq;
         policy.add_beat(AHB_RESP_OKAY, ahb_wait);
 
         req = create_request(dir, addr, index);
-        // Either side of the threshold is legal here, so the scoreboard is
-        // told the request may time out rather than that it must
+        // Either result is legal: declare allow_timeout
         scb.allow_timeout(dir, req.id);
 
         send_axi_request_wait(req, rsp);
@@ -265,9 +234,7 @@ class axi4_mst_timeout_boundary_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Threshold measurement
     //-------------------------------------------------------------------------
-    // Smallest wait that timed out. Also proves the response is monotonic in
-    // the wait: a watchdog that let a longer wait through after terminating a
-    // shorter one would not have a threshold at all.
+    // Smallest wait that timed out; the result must be monotonic
     protected function int unsigned measure_threshold(axi4_dir_e dir);
         int unsigned d;
         int unsigned threshold;

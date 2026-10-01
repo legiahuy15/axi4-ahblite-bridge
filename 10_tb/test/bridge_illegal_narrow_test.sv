@@ -2,28 +2,9 @@
 // File        : bridge_illegal_narrow_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge unsupported-write test.
-//               Two things AXI4 allows that this bridge cannot honour, and
-//               that no other test showed on memory. Both are negative
-//               cases: they match the reference design and the spec review,
-//               and they are written down so they are not mistaken for
-//               coverage holes.
-//               WSTRB inside a burst is ignored. The bridge reads the
-//               strobes only when AWLEN is zero; for a burst it takes HSIZE
-//               from AWSIZE, and since AHB-Lite has no byte strobes every
-//               beat writes a whole word. The lanes the master masked off
-//               are overwritten. WSTRB of zero is the clearest case:
-//               ordinary AXI asking for nothing to be written, and the word
-//               changes anyway.
-//               An unaligned write loses its offset. The bridge aligns each
-//               beat address down to the transfer size, so the data lands in
-//               the word below the one the master addressed.
-//               Every case seeds its slot, sends the unsupported write, and
-//               reads the whole slot back at full width to compare against a
-//               model of what this bridge really does rather than of what
-//               AXI asked for. The run fails if no masked lane was ever
-//               overwritten or no offset was ever lost, so the findings
-//               cannot be reported on the strength of the stimulus alone.
+// Description : Bridge unsupported-write test (negative cases): burst WSTRB
+//               is ignored and unaligned write addresses are aligned. Memory
+//               is read back and compared with a model of the bridge.
 //               Covers BRG_SIZ_006.
 //               Included inside the bridge test package.
 //=============================================================================

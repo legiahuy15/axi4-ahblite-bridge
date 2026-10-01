@@ -2,11 +2,8 @@
 // File        : bridge_parameter_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Coordinates the configuration compliance profile. The AHB
-//               slave answers automatically from its memory model here, so no
-//               reactive slave sequence is started; the response policy is
-//               handed over only for its read-data pattern, which is the same
-//               one the slave returns for an untouched word.
+// Description : Coordinates the configuration compliance profile (AHB slave
+//               answers from its memory model).
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 

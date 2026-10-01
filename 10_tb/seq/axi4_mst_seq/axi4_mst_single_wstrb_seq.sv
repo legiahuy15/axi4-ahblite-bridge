@@ -2,26 +2,13 @@
 // File        : axi4_mst_single_wstrb_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : AXI4 single-write (AWLEN=0) WSTRB decoding sequence.
-//               For a single write the bridge derives HSIZE from WSTRB when
-//               the strobe is a legal pattern (one size-aligned run of 1, 2,
-//               4 or 8 byte lanes) and falls back to AWSIZE otherwise; HADDR
-//               is AWADDR aligned to that size (PG177 Narrow Transfers).
-//               Cases:
-//               - LEGAL: every legal narrow pattern with AWSIZE equal to the
-//                 pattern size and AWADDR on the strobed lane (narrow build),
-//                 full-width AWSIZE with a lane-0 pattern (narrow build) and
-//                 the full-width pattern (both builds).
-//               - MISDIRECTED (negative, narrow build): legal narrow pattern
-//                 above lane 0 with full-width AWSIZE at a word-aligned
-//                 AWADDR, so HADDR does not point at the strobed lanes.
-//               - FALLBACK (negative): zero and every non-legal pattern with
-//                 full-width AWSIZE, plus zero with each narrow AWSIZE on the
-//                 top lane (narrow build), so HSIZE falls back to AWSIZE.
-//               Each case writes a background word, applies the single write,
-//               then reads the whole word back and compares it with the lanes
-//               the bridge writes (HADDR/HSIZE and WDATA). Negative cases log
-//               how that differs from AXI WSTRB semantics.
+// Description : Single-write WSTRB decoding sequence. HSIZE comes from a
+//               size-aligned WSTRB run, else from AWSIZE. Cases:
+//               - LEGAL: every legal pattern
+//               - MISDIRECTED (negative): narrow pattern above lane 0 with
+//                 full-width AWSIZE
+//               - FALLBACK (negative): zero and non-legal patterns
+//               Each word is read back and compared with the lanes written.
 //               Covers BRG_SIZ_004 and BRG_SIZ_006.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -327,8 +314,7 @@ class axi4_mst_single_wstrb_seq extends axi4_mst_base_seq;
         return word;
     endfunction : merge_lanes
 
-    // Distinct per lane; the two seeds differ by 0x50 in every lane, so the
-    // background and the write data never share a byte value
+    // Distinct per lane; background and write data never share a byte
     protected function bit [AXI4_DATA_WIDTH-1:0] get_pattern(
         bit [7:0]    seed,
         int unsigned index

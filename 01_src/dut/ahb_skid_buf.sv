@@ -2,8 +2,7 @@
 // File        : ahb_skid_buf
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Registered-output skid buffer for the AXI read-data path.
-//               Absorbs downstream backpressure while preserving AXI payloads.
+// Description : Registered skid buffer on the AXI read-data channel.
 //=============================================================================
 
 `timescale 1ns/1ps

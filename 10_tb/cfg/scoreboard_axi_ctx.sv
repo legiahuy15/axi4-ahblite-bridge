@@ -2,9 +2,8 @@
 // File        : scoreboard_axi_ctx.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Per-request context for scoreboard reconstruction: the
-//               predicted AHB beats of one AXI request and the AXI
-//               completion rebuilt from the AHB beats observed for it.
+// Description : Scoreboard context of one AXI request: predicted AHB beats
+//               and the AXI completion rebuilt from observed beats.
 //               Included inside the bridge package.
 //=============================================================================
 
@@ -19,19 +18,13 @@ class scoreboard_axi_ctx;
     int unsigned     beat_index;
     bit              write_error;
 
-    // The C_DPHASE_TIMEOUT watchdog abandons a data phase that never
-    // completes: the bridge drops the rest of the burst and forces SLVERR.
-    // The predictor models the AXI-to-AHB translation, not the watchdog, so a
-    // request the test declares through scoreboard::expect_timeout keeps its
-    // predicted beats out of the end-of-test balance and has its completion
-    // dropped instead of compared.
+    // Declared timeout: unissued beats are not counted as lost and the
+    // completion is dropped instead of compared
     bit              timed_out;
     bit              response_dropped;
 
-    // Strict declarations (scoreboard::expect_timeout) must time out; a
-    // permissive one (scoreboard::allow_timeout) is used by the boundary
-    // sweep, which does not know in advance which side of the threshold a
-    // wait falls on, and is compared normally when it completes.
+    // expect_timeout: must time out; allow_timeout: may time out, compared
+    // normally if it completes
     bit              timeout_strict;
 
     //-------------------------------------------------------------------------

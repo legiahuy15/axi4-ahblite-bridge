@@ -2,11 +2,8 @@
 // File        : bridge_timeout_boundary_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Coordinates the C_DPHASE_TIMEOUT threshold boundary sweep.
-//               Starts the reactive AHB slave sequence that answers from the
-//               shared plan, hands the AXI stimulus the timeout the build was
-//               elaborated with, the scoreboard and the expected threshold
-//               offset, then stops the slave sequence.
+// Description : Coordinates the timeout threshold sweep with the reactive
+//               AHB slave sequence.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 

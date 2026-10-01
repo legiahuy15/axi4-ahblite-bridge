@@ -2,11 +2,8 @@
 // File        : bridge_random_stress_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Coordinates the constrained-random regression scenario.
-//               Starts the reactive AHB slave sequence and shares one
-//               response policy with the AXI stimulus, which is what lets
-//               the wait and error decisions be drawn on their own rather
-//               than being derived from the request they answer.
+// Description : Coordinates the constrained-random scenario with the
+//               reactive AHB slave sequence.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 

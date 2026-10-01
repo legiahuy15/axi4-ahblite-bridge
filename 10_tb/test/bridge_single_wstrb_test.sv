@@ -2,14 +2,9 @@
 // File        : bridge_single_wstrb_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge single-write (AWLEN=0) WSTRB decoding test.
-//               Exhaustively applies every WSTRB value with full-width AWSIZE
-//               and every legal narrow pattern with a matching AWSIZE, and
-//               checks the resulting HSIZE/HADDR and the written byte lanes.
-//               Legal narrow patterns run only on a DUT built with
-//               C_S_AXI_SUPPORTS_NARROW_BURST=1. Zero, sparse and misdirected
-//               strobes are unsupported (negative) cases; ENABLE_NEGATIVE=0
-//               removes them.
+// Description : Bridge single-write WSTRB decoding test: every WSTRB value,
+//               HSIZE/HADDR and written lanes. Narrow patterns need the
+//               narrow build; ENABLE_NEGATIVE=0 drops the negative cases.
 //               Covers BRG_SIZ_004 and BRG_SIZ_006.
 //               Included inside the bridge test package.
 //=============================================================================

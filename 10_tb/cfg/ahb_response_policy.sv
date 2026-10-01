@@ -2,14 +2,9 @@
 // File        : ahb_response_policy.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Response plan shared by an AXI stimulus sequence and the
-//               reactive AHB-Lite slave sequence.
-//               The stimulus sequence pushes one entry per expected AHB beat
-//               before it sends a request; the slave sequence pops one entry
-//               per observed beat. Beats beyond the plan get the defaults, so
-//               a bridge that issues more beats than predicted is still
-//               answered, and pending_beats() reports the beats the plan
-//               expected but never saw.
+// Description : Per-beat AHB response plan shared by the AXI stimulus
+//               sequence (push) and the reactive slave sequence (pop).
+//               Unplanned beats get the defaults.
 //               Included inside the bridge package.
 //=============================================================================
 

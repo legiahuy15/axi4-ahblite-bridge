@@ -2,8 +2,7 @@
 // File        : axi_ahblite_bridge
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Top-level AXI4 slave to AHB-Lite master bridge.
-//               Connects the AXI control path to the AHB-Lite master interface.
+// Description : Top level of the AXI4 slave to AHB-Lite master bridge.
 //=============================================================================
 
 `timescale 1ns/1ps
@@ -79,18 +78,7 @@ module axi_ahblite_bridge #(
     // -------------------------------------------------------------------------
     // Configuration guards
     // -------------------------------------------------------------------------
-    // PG177 supports one shape only, and nothing in the design checked it: a
-    // build with mismatched or unsupported widths, or with a timeout the
-    // watchdog cannot represent, used to elaborate and then misbehave
-    // quietly. Each guard is its own generate branch, so a legal build
-    // elaborates none of them and carries no cost.
-    //
-    // $fatal in an initial block rather than an elaboration $error, and
-    // plain comparisons rather than inside: both choices are about this file
-    // parsing everywhere it is read. An elaboration task would report a
-    // cycle earlier and inside would read better, but a parse failure in a
-    // guard would stop a legal build too, which is far worse than reporting
-    // at time zero, before anything has run.
+    // Reject parameter sets outside the PG177 profile (simulation only).
     generate
         if ((C_S_AXI_DATA_WIDTH != 32) && (C_S_AXI_DATA_WIDTH != 64))
         begin : gen_bad_axi_data_width
@@ -142,9 +130,7 @@ module axi_ahblite_bridge #(
                 C_S_AXI_ID_WIDTH));
         end
 
-        // The watchdog loads C_DPHASE_TIMEOUT-1 into a counter sized
-        // $clog2(C_DPHASE_TIMEOUT), so a value that is not one of these does
-        // not fire at the threshold the parameter names
+        // The watchdog counter only supports these values
         if ((C_DPHASE_TIMEOUT != 0)   && (C_DPHASE_TIMEOUT != 16) &&
             (C_DPHASE_TIMEOUT != 32)  && (C_DPHASE_TIMEOUT != 64) &&
             (C_DPHASE_TIMEOUT != 128) && (C_DPHASE_TIMEOUT != 256))

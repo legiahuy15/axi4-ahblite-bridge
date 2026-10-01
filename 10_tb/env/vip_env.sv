@@ -53,8 +53,7 @@ class vip_env extends uvm_env;
         vseqr     = virtual_sequencer::type_id::create("vseqr", this);
         if (cfg.has_scoreboard || cfg.has_e2e_cov) begin
             pred = predictor::type_id::create("pred", this);
-            // How the bridge aligns HADDR depends on the build, so the
-            // predictor has to know which one it is
+            // HADDR alignment depends on the narrow build
             pred.supports_narrow = cfg.supports_narrow_burst;
         end
         if (cfg.has_scoreboard)

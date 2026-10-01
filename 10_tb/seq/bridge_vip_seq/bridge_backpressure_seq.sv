@@ -2,10 +2,8 @@
 // File        : bridge_backpressure_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Coordinates the AXI response-channel backpressure scenario.
-//               Starts the reactive AHB slave sequence that answers from the
-//               shared plan, runs the AXI stimulus that owns the BREADY and
-//               RREADY windows, then stops the slave sequence.
+// Description : Coordinates the AXI B/R backpressure scenario with the
+//               reactive AHB slave sequence.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 

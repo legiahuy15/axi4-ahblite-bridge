@@ -2,14 +2,8 @@
 // File        : bridge_ordering_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Coordinates the completion ordering scenario. The AHB slave
-//               answers from its memory model, so a read returns what an
-//               earlier write left at that address and the order of the two
-//               is visible in the data; no reactive slave sequence is
-//               started. The slave configuration is handed over as well,
-//               because the stimulus moves the AHB wait states from phase to
-//               phase and the address pattern of an untouched word comes
-//               from it.
+// Description : Coordinates the completion ordering scenario (AHB slave
+//               answers from its memory model).
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 

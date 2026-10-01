@@ -23,10 +23,7 @@ class predictor extends uvm_component;
     //-------------------------------------------------------------------------
     // Build configuration
     //-------------------------------------------------------------------------
-    // C_S_AXI_SUPPORTS_NARROW_BURST of the image under test. It decides how
-    // the bridge aligns HADDR, so the predictor cannot be written without
-    // it: ahb_mstr_if has one address generator per build, and only the
-    // narrow one aligns to the transfer size.
+    // C_S_AXI_SUPPORTS_NARROW_BURST of the DUT; selects HADDR alignment
     bit supports_narrow;
 
     //-------------------------------------------------------------------------
@@ -133,12 +130,7 @@ class predictor extends uvm_component;
         beat_count     = int'(axi_tr.len) + 1;
         effective_size = get_effective_size(axi_tr);
         bytes_per_beat = 1 << int'(effective_size);
-        // HSIZE follows the transfer size on both builds, but HADDR does
-        // not. gen_32_data_width, the generator built when
-        // C_S_AXI_SUPPORTS_NARROW_BURST is 0, drives
-        // {axi_address[..:2], 2'b00} whatever the size, so a sub-word
-        // transfer at an address that is not bus aligned lands in the word
-        // below. Only gen_32_data_width_narrow aligns to the size.
+        // HADDR alignment: bus width (narrow off) or transfer size (narrow on)
         beat_addr      = align_address(axi_tr.addr,
                                        supports_narrow ? bytes_per_beat
                                                        : (AHB_DATA_WIDTH / 8));

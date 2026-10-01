@@ -2,7 +2,7 @@
 # File        : Makefile
 # Project     : AXI4 to AHB-Lite Bridge VIP
 # Author      : Huy Le
-# Description : QuestaSim build and smoke-test targets for Linux
+# Description : QuestaSim targets for the basic DUT testbenches
 #=============================================================================
 
 .DEFAULT_GOAL := run

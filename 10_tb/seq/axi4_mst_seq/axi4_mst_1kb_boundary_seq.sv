@@ -193,14 +193,12 @@ class axi4_mst_1kb_boundary_seq extends axi4_mst_base_seq;
 
         case (bclass)
             BOUNDARY_NO_CROSS: begin
-                // Start at offset 0 — well within 1 KB
+                // Start at offset 0
                 offset = 0;
             end
 
             BOUNDARY_EXACT_EDGE: begin
-                // Last byte should be at offset 0x3FF
-                // start_offset + total_bytes - 1 = 0x3FF
-                // start_offset = 0x400 - total_bytes
+                // Last byte at 0x3FF: start_offset = 0x400 - total_bytes
                 if (total_bytes > 'h400)
                     // Burst too large to fit in 1 KB; start at 0
                     offset = 0;
@@ -220,9 +218,7 @@ class axi4_mst_1kb_boundary_seq extends axi4_mst_base_seq;
             end
 
             BOUNDARY_CROSS_LATE: begin
-                // Only the last beat starts at the boundary. A burst longer
-                // than 1 KB (e.g. 256 beats on 64-bit) cannot do that; start
-                // at offset 0 instead.
+                // Only the last beat past the boundary (offset 0 if > 1 KB)
                 if (((beats - 1) * BYTES_PER_BEAT) > 'h400)
                     offset = 0;
                 else

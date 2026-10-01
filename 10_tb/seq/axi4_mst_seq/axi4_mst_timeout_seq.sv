@@ -2,27 +2,11 @@
 // File        : axi4_mst_timeout_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : C_DPHASE_TIMEOUT watchdog directed sequence.
-//               PG177: the bridge may be built with a data-phase watchdog.
-//               With C_DPHASE_TIMEOUT = 0 the watchdog is generated away and
-//               an AHB slave may hold HREADY low indefinitely; with a non-zero
-//               value the bridge abandons a data phase that does not complete
-//               within the configured number of cycles, returns AHB to IDLE
-//               and forces SLVERR on the AXI response.
-//               The same sequence runs on every build and reads the value it
-//               was built with, so one test covers the whole matrix:
-//               - C_DPHASE_TIMEOUT = 0: a wait far longer than any supported
-//                 threshold still completes with OKAY, which is what
-//                 "generated-off watchdog" means (BRG_TMO_001)
-//               - C_DPHASE_TIMEOUT = N: a wait below the threshold completes
-//                 with OKAY and a wait above it returns SLVERR, on a single
-//                 transfer and in the middle of an INCR4, read and write,
-//                 followed by ordinary traffic that must still work
-//                 (BRG_TMO_002)
-//               The AHB side of an abandoned burst is checked by
-//               bridge_timeout_recovery_test and the exact threshold by
-//               bridge_timeout_boundary_test, so this sequence checks the
-//               response, the beat count and that nothing is lost afterwards.
+// Description : Timeout sequence, for every C_DPHASE_TIMEOUT build:
+//               - 0: a very long AHB wait completes with OKAY (BRG_TMO_001)
+//               - N: a wait below N completes, above N returns SLVERR, on a
+//                 single and an INCR4, read and write (BRG_TMO_002)
+//               Checks responses, beat count and the traffic afterwards.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 
@@ -245,9 +229,7 @@ class axi4_mst_timeout_seq extends axi4_mst_base_seq;
         if (failed)
             cases_failed++;
 
-        // After a timeout the AHB slave is still counting out the wait of the
-        // beat the bridge walked away from. Let it finish before the next
-        // case, so the abandoned beat and the next request do not overlap.
+        // Let the slave finish the abandoned wait before the next case
         if (c.expect_tmo)
             wait_cycles(c.ahb_wait + 16);
     endtask : run_case
@@ -278,10 +260,8 @@ class axi4_mst_timeout_seq extends axi4_mst_base_seq;
         return 1'b0;
     endfunction : check_write
 
-    // An abandoned read still returns ARLEN+1 beats: the bridge advances the
-    // burst as if HREADY were high and drives SLVERR from the beat the
-    // watchdog hit onwards. The beats before it carry real data, so those are
-    // checked; the data of an errored beat is not defined by PG177.
+    // Abandoned read: ARLEN+1 beats, SLVERR from the timed-out beat on;
+    // data is checked only before it
     protected function bit check_read(
         tmo_case_t                c,
         bit [AXI4_ADDR_WIDTH-1:0] addr,

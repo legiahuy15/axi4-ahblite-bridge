@@ -11,9 +11,7 @@
 `uvm_analysis_imp_decl(_e2e_actual_ahb)
 `uvm_analysis_imp_decl(_e2e_axi_rsp)
 
-// Direction and address of one predicted AHB beat. Enough to recognise a beat
-// of a request the watchdog abandoned, which the AHB slave still reports after
-// the bridge has walked away from it.
+// Direction and address of one predicted AHB beat
 typedef struct {
     ahb_dir_e                write;
     bit [AHB_ADDR_WIDTH-1:0] addr;
@@ -32,8 +30,7 @@ class e2e_rsp_ctx;
     bit              saw_wait;
     // Predicted beats not yet seen on the bus, oldest first
     e2e_beat_key_t   expected_beats[$];
-    // Set once the AXI completion of an abandoned request has been paired,
-    // so a later completion of another request cannot take it a second time
+    // Set once the completion of an abandoned request is paired
     bit              completion_seen;
 
     function new(axi4_transaction tr);
@@ -61,8 +58,7 @@ class e2e_cov extends uvm_component;
     //-------------------------------------------------------------------------
     // Correlation state
     //-------------------------------------------------------------------------
-    // Predicted side: the predictor sends a request and then all of its
-    // beats in one call, so a FIFO is exact.
+    // Predicted requests, in prediction order
     protected axi4_transaction   map_axi_queue[$];
     protected int unsigned       map_beat_index;
     // Observed side: matched like the scoreboard, independent of request
@@ -74,13 +70,8 @@ class e2e_cov extends uvm_component;
     protected ahb_transfer       pending_actual_ahb_queue[$];
     protected axi4_transaction   actual_axi_queue[$];
 
-    // Requests the C_DPHASE_TIMEOUT watchdog abandoned. The bridge answers on
-    // AXI and walks away, so the rest of their AHB beats never appear and the
-    // context would otherwise sit in rsp_ctx_queue for the whole test,
-    // swallowing the beats of every request after it. The scoreboard has the
-    // same list; here it also keeps the beat the slave reports after the
-    // bridge has left, so that beat is discarded instead of being credited to
-    // the next request.
+    // Requests abandoned by the watchdog; a late beat of one is discarded,
+    // not credited to the next request
     protected e2e_rsp_ctx        abandoned_ctx_queue[$];
     protected int unsigned       abandoned_requests;
     protected int unsigned       abandoned_beats;
@@ -579,10 +570,7 @@ class e2e_cov extends uvm_component;
             ahb_transfer tr;
             int unsigned beat_count;
 
-            // The beat the bridge walked away from is reported once the slave
-            // finishes counting out its wait, which is after the AXI
-            // completion. Matched on direction and address so it can never
-            // take a beat that belongs to a live request.
+            // Late beat of an abandoned request (matched on direction/address)
             if (abandoned_ctx_queue.size() != 0) begin
                 if (take_abandoned_beat(pending_actual_ahb_queue[0])) begin
                     void'(pending_actual_ahb_queue.pop_front());
@@ -590,13 +578,7 @@ class e2e_cov extends uvm_component;
                 end
             end
 
-            // A beat that is not the one the active request is still waiting
-            // for means that request is over: the watchdog ended it and the
-            // beats it still owed will never come. Without this the dead
-            // request stays active and swallows the beats of everything
-            // behind it, which is how an AHB ERROR ends up recorded against
-            // a request that completed with OKAY. The prediction and the bus
-            // agree on every live request, so this cannot fire on one.
+            // Unexpected beat: the active request was ended by the watchdog
             if (beat_is_foreign(pending_actual_ahb_queue[0]))
                 abandon_active_ctx();
 
@@ -639,12 +621,8 @@ class e2e_cov extends uvm_component;
         end
     endfunction : drain_actual_ahb
 
-    // expected_beats is the whole predicted burst and beat_index says how far
-    // through it the request is, so the two never drift. The predictor
-    // appends the beats of a request in one go, but a write's AHB beats are
-    // reported before the request is predicted at WLAST, so the list can
-    // still be short of beat_index; there is simply nothing to judge against
-    // yet and the beat is accepted.
+    // A write beat can arrive before its prediction (made at WLAST); it is
+    // accepted
     protected function bit beat_is_foreign(ahb_transfer tr);
         if (rsp_active_ctx == null)
             return 1'b0;
@@ -660,11 +638,7 @@ class e2e_cov extends uvm_component;
         return (ctx.beat_index < ctx.expected_beats.size());
     endfunction : ctx_owes_beats
 
-    // Take the active request out of the live queue and keep what it still
-    // owed, so a beat of it that turns up later is recognised rather than
-    // credited to whoever is active then. Its AXI completion is dropped
-    // here if it has already arrived, and by sample_response_queue if it
-    // has not.
+    // Retire the active request as abandoned and drop its AXI completion
     protected function void abandon_active_ctx();
         if (rsp_active_ctx == null)
             return;
@@ -684,12 +658,7 @@ class e2e_cov extends uvm_component;
         sample_response_queue();
     endfunction : abandon_active_ctx
 
-    // A beat of a request the watchdog already took, reported after its AXI
-    // completion. Matched on direction and address against the beats that
-    // request still owed, so a beat of a live request is never taken.
-    // It happened on the bus, so it is still sampled; what changes is that
-    // its position is taken from the request it belongs to instead of being
-    // credited to the next one.
+    // Late beat of an abandoned request: sampled against that request
     protected function bit take_abandoned_beat(ahb_transfer tr);
         foreach (abandoned_ctx_queue[i]) begin
             e2e_rsp_ctx  ctx;
@@ -712,9 +681,7 @@ class e2e_cov extends uvm_component;
 
             ctx.beat_index++;
             abandoned_beats++;
-            // Kept until its completion has been paired as well, or that
-            // completion would find nothing to pair with and sit in
-            // actual_axi_queue to the end of the test
+            // Kept until its completion is paired
             if (!ctx_owes_beats(ctx) && ctx.completion_seen)
                 abandoned_ctx_queue.delete(i);
             return 1'b1;
@@ -722,9 +689,7 @@ class e2e_cov extends uvm_component;
         return 1'b0;
     endfunction : take_abandoned_beat
 
-    // Same selection rule as the scoreboard: oldest unstarted request whose
-    // first predicted beat has the same direction and address, otherwise the
-    // oldest unstarted request of the same direction.
+    // Same selection rule as the scoreboard
     protected function e2e_rsp_ctx find_rsp_ctx(ahb_transfer tr);
         foreach (rsp_ctx_queue[i]) begin
             if (!rsp_ctx_queue[i].started && rsp_ctx_queue[i].has_first_beat &&
@@ -755,8 +720,8 @@ class e2e_cov extends uvm_component;
     //-------------------------------------------------------------------------
     // Response correlation
     //-------------------------------------------------------------------------
-    // Each AXI completion is paired with the oldest AHB-complete request of
-    // the same direction and ID.
+    // Pair each AXI completion with the oldest AHB-complete request of the
+    // same direction and ID
     protected function void sample_response_queue();
         int unsigned actual_index;
 
@@ -776,9 +741,7 @@ class e2e_cov extends uvm_component;
                 end
             end
             if (done_index < 0) begin
-                // No AHB-complete request owns this completion. Either its
-                // beats have not all arrived yet, or the watchdog ended it
-                // early and the rest never will.
+                // Beats still pending, or request ended by the watchdog
                 if (take_abandoned_request(axi_tr)) begin
                     actual_axi_queue.delete(actual_index);
                     continue;
@@ -799,22 +762,10 @@ class e2e_cov extends uvm_component;
         end
     endfunction : sample_response_queue
 
-    // A completion whose request still owes AHB beats. Without the watchdog
-    // that cannot happen: the last beat of a request is reported on the cycle
-    // its data phase ends and the completion follows at least one cycle
-    // later, so every request reaches rsp_done_queue before its completion
-    // arrives. With C_DPHASE_TIMEOUT the bridge answers on AXI and abandons
-    // the transfer, and the context has to be taken out of the live queue
-    // here or it keeps consuming the beats of the requests behind it.
-    // The response pair is still sampled: cx_wait_status already reasons
-    // about a timeout as one of the two sources of SLVERR, and before this
-    // no timeout ever reached cg_response_map.
+    // Completion before all AHB beats (watchdog timeout): retire the request
+    // and still sample the response pair
     protected function bit take_abandoned_request(axi4_transaction axi_tr);
-        // A request the active beat stream has already shown to be dead, or
-        // one whose completion turned up first. Only a started request is
-        // judged here: an unstarted one is simply behind, its beats are
-        // waiting for the prediction that will let them drain, and
-        // beat_is_foreign will retire it later if the watchdog did take it.
+        // Only a started request is retired here
         foreach (abandoned_ctx_queue[i]) begin
             e2e_rsp_ctx ctx;
 
@@ -852,9 +803,7 @@ class e2e_cov extends uvm_component;
         return 1'b0;
     endfunction : take_abandoned_request
 
-    // Only the beats the request really got are behind saw_error and
-    // saw_wait, which is what makes the pair meaningful for a request the
-    // watchdog cut short.
+    // saw_error/saw_wait cover only the beats actually issued
     protected function void sample_abandoned_response(
         e2e_rsp_ctx      ctx,
         axi4_transaction axi_tr
@@ -993,10 +942,7 @@ class e2e_cov extends uvm_component;
     //-------------------------------------------------------------------------
     function void check_phase(uvm_phase phase);
         super.check_phase(phase);
-        // Beats a request the watchdog abandoned still owed are expected to
-        // be missing, so abandoned_ctx_queue is deliberately not counted.
-        // The others name themselves: a residue check that does not say what
-        // is left over cannot be acted on.
+        // abandoned_ctx_queue is not counted (missing beats are expected)
         if ((map_axi_queue.size() != 0) || (rsp_ctx_queue.size() != 0) ||
             (pending_actual_ahb_queue.size() != 0) ||
             (rsp_done_queue.size() != 0) || (actual_axi_queue.size() != 0))

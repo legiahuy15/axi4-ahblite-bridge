@@ -33,11 +33,8 @@ class axi4_mst_agent_cfg extends uvm_object;
     int unsigned max_outstanding   = 0;
     int unsigned w_before_aw_delay = 1;
 
-    // Write-data starvation: cycles WVALID is held low between the beats of
-    // a burst, drawn per gap. 0/0 sends the beats back to back, which is
-    // what every test did before this knob existed. A transaction can ask
-    // for one gap at a chosen beat instead, which is what the directed
-    // starvation test uses; that takes precedence over this range.
+    // WVALID gap between burst beats (0/0 = back to back); a per-transaction
+    // gap takes precedence
     int unsigned wvalid_gap_min = 0;
     int unsigned wvalid_gap_max = 0;
 

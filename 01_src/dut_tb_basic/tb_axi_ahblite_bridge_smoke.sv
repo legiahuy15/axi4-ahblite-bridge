@@ -2,8 +2,8 @@
 // File        : tb_axi_ahblite_bridge_smoke
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Self-checking non-UVM smoke testbench for the AXI4-to-AHB-Lite
-//               bridge using a pipelined AHB-Lite memory slave model.
+// Description : Self-checking non-UVM smoke test of the bridge with an
+//               AHB-Lite memory slave model.
 //=============================================================================
 
 `timescale 1ns/1ps
@@ -685,8 +685,7 @@ module tb_axi_ahblite_bridge_smoke;
         end
     endtask
 
-    // AHB-Lite slave response generation. Wait and ERROR behavior is latched
-    // only after an address phase has been accepted.
+    // AHB-Lite slave response: wait states and two-cycle ERROR
     always_comb begin
         m_ahb_hready = 1'b1;
         m_ahb_hresp  = 1'b0;
@@ -705,8 +704,7 @@ module tb_axi_ahblite_bridge_smoke;
         end
     end
 
-    // One registered AHB data-phase slot. The current HWDATA is committed for
-    // the previous address/control phase when HREADY completes that transfer.
+    // AHB data-phase slot: memory write on completion, read data on accept
     always @(posedge s_axi_aclk) begin
         if (!s_axi_aresetn) begin
             dp_valid                  <= 1'b0;
@@ -778,8 +776,7 @@ module tb_axi_ahblite_bridge_smoke;
         end
     end
 
-    // Procedural protocol stability checks avoid requiring an SVA-capable
-    // simulator for this first smoke test.
+    // Protocol stability checks (no SVA required)
     always @(posedge s_axi_aclk) begin
         if (!s_axi_aresetn) begin
             previous_ahb_stall <= 1'b0;

@@ -2,18 +2,10 @@
 // File        : axi4_mst_unaligned_read_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : AXI4 unaligned read directed sequence.
-//               PG177: the bridge aligns the address on AHB-Lite for an
-//               unaligned AXI read. For each case the sequence writes a known
-//               background with an aligned full-width INCR16, then reads with
-//               an ARADDR that is not aligned to ARSIZE and checks the byte
-//               lanes AXI defines as valid:
-//               - first beat (and every FIXED beat): from the ARADDR byte to
-//                 the end of its ARSIZE container;
-//               - later INCR beats: the whole aligned container.
-//               The scoreboard checks the aligned HADDR and HSIZE per beat.
-//               Full-width cases run on every build; narrow ARSIZE cases run
-//               only when narrow support is enabled.
+// Description : Unaligned read sequence. Writes a background, then reads at
+//               an unaligned ARADDR and checks the AXI-valid lanes (first and
+//               FIXED beats from ARADDR, later beats the whole container).
+//               Narrow ARSIZE needs the narrow build.
 //               Covers BRG_SIZ_005.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -89,8 +81,7 @@ class axi4_mst_unaligned_read_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Case list
     //-------------------------------------------------------------------------
-    // Every byte offset in the first bus word. Offsets that are multiples of
-    // the transfer size are aligned reference cases.
+    // Every byte offset in the first bus word
     protected function void build_cases(ref unaligned_case_t cases[$]);
         add_size_cases(cases, FULL_SIZE);
         if (!enable_narrow)
@@ -285,8 +276,7 @@ class axi4_mst_unaligned_read_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Knob validation
     //-------------------------------------------------------------------------
-    // Case regions start on 0x100 boundaries and the background covers every
-    // byte a case reads, so no access crosses a 1 KB or 4 KB boundary.
+    // 0x100-byte case regions: no 1 KB or 4 KB crossing
     protected function void validate_knobs();
         if ((base_addr % 'h100) != 0)
             `uvm_fatal(get_type_name(), "base_addr must be a multiple of 0x100")

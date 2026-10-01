@@ -2,36 +2,9 @@
 // File        : bridge_mutation_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge fault-injection test.
-//               Every other test in this regression asks whether the bridge
-//               is right. This one asks whether the answer would have been
-//               different had it been wrong, which is the question the rest
-//               of the regression rests on and the only one none of them
-//               ask.
-//               The target is the two hand-written comparisons at the heart
-//               of the scoreboard, ahb_request_matches and
-//               axi_transaction_matches. Both are lists of fields, and a
-//               field left out of one of them would make the whole
-//               regression blind to that field while still reporting a
-//               pass. The suite corrupts one named field at a time in the
-//               stream the scoreboard observes and requires a mismatch to
-//               come back; a case where nothing is reported is the bug it
-//               exists to find.
-//               It runs inside the regression rather than beside it. While
-//               the suite is active the scoreboard reports a failed
-//               comparison as a caught fault instead of an error, so the
-//               run stays green, and the verdict is in the counts: a fault
-//               that went in without being caught fails the test, and so
-//               does one that never reached a comparison at all.
-//               Two gaps, each for a reason. A wrong ID cannot be injected
-//               this way, because the scoreboard pairs a completion with its
-//               request by ID, so a corrupted one produces an unmatched
-//               completion rather than a mismatch; ID sensitivity rests on
-//               the driver and monitor ID checks and on B_WITH_REQUEST and
-//               R_WITH_REQUEST. The assertions are not covered either: they
-//               report with $error, which does not pass through the UVM
-//               report server and so cannot be demoted, and proving their
-//               sensitivity needs a run whose pass criterion is inverted.
+// Description : Scoreboard fault-injection test. Corrupts one compared field
+//               at a time and requires every fault to be caught. ID and
+//               assertions are not covered.
 //               Covers BRG_ENV_006.
 //               Included inside the bridge test package.
 //=============================================================================

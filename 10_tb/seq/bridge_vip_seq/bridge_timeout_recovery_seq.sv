@@ -2,11 +2,8 @@
 // File        : bridge_timeout_recovery_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Coordinates the C_DPHASE_TIMEOUT termination and recovery
-//               scenario. Starts the reactive AHB slave sequence, hands the
-//               AXI stimulus the timeout the build was elaborated with, the
-//               scoreboard and the AHB interface it observes HTRANS on, then
-//               stops the slave sequence.
+// Description : Coordinates the timeout termination and recovery scenario
+//               with the reactive AHB slave sequence.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 

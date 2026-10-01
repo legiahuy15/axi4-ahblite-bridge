@@ -2,9 +2,7 @@
 // File        : bridge_mutation_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Coordinates the fault-injection suite. It needs the
-//               scoreboard itself, because the scoreboard is what is being
-//               tested here rather than the bridge.
+// Description : Coordinates the scoreboard fault-injection suite.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
 

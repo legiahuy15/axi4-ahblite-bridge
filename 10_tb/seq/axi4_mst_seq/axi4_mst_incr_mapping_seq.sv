@@ -67,9 +67,7 @@ class axi4_mst_incr_mapping_seq extends axi4_mst_base_seq;
 
         foreach (entries[e]) begin
             if (entries[e].len == 0) begin
-                // Single-beat INCR: sweep every AxSIZE. Narrow sizes are
-                // outside the supported profile unless the DUT is built
-                // with narrow support.
+                // Single-beat INCR at every AxSIZE (narrow needs the build)
                 for (int unsigned sz = (enable_narrow ? 0 : FULL_SIZE);
                      sz < NUM_SIZES; sz++) begin
                     run_incr_case(AXI4_WRITE, entries[e], sz);
@@ -172,7 +170,7 @@ class axi4_mst_incr_mapping_seq extends axi4_mst_base_seq;
     endtask : run_incr_case
 
     //-------------------------------------------------------------------------
-    // Address computation — align and avoid 1 KB crossing
+    // Address computation (aligned, no 1 KB crossing)
     //-------------------------------------------------------------------------
     protected function bit [AXI4_ADDR_WIDTH-1:0] compute_safe_address(
         int unsigned index,

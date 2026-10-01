@@ -2,16 +2,9 @@
 // File        : bridge_axi_backpressure_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge AXI response-channel backpressure test.
-//               The master delays BREADY and RREADY by a known number of
-//               cycles on every response, so a stalled B or R response has to
-//               be held by the bridge. B_STABLE and R_STABLE check the held
-//               payload, C_B_STALL and C_R_STALL cover the stall, and the
-//               sequence checks the stall cycle by cycle and measures it, so a
-//               window that never took effect fails the case.
-//               The B and R windows are set independently and swept over 1, 2,
-//               3, 8 and 16 cycles on every burst shape, with AHB wait states,
-//               with SLVERR and across a 1 KB split.
+// Description : Bridge AXI B/R backpressure test. BREADY/RREADY delays of
+//               1, 2, 3, 8 and 16 cycles on every burst shape, with AHB wait
+//               states, SLVERR and a 1 KB split; checks the held payload.
 //               Covers BRG_WAI_002 and BRG_WAI_003.
 //               Included inside the bridge test package.
 //=============================================================================
@@ -41,9 +34,7 @@ class bridge_axi_backpressure_test extends bridge_base_test;
 
         env_cfg.axi_cfg.return_responses = 1'b1;
         env_cfg.axi_cfg.max_outstanding  = 1;
-        // The driver chooses the delayed-ready path once, when it starts
-        // waiting for a response, so both windows must already be non-zero
-        // here. The sequence then sets the window of every case.
+        // Non-zero from the start; the sequence sets the window per case
         env_cfg.axi_cfg.bready_delay_min = 1;
         env_cfg.axi_cfg.bready_delay_max = 1;
         env_cfg.axi_cfg.rready_delay_min = 1;

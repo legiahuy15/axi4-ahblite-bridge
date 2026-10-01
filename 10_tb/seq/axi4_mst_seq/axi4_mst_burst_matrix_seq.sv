@@ -76,10 +76,7 @@ class axi4_mst_burst_matrix_seq extends axi4_mst_base_seq;
     // Build the sweep matrix
     //-------------------------------------------------------------------------
     protected function void build_matrix(ref burst_entry_t matrix[$]);
-        // INCR lengths: 1,2,3,4,5,8,10,16,17,32,128,256
-        //   len = beats-1 => 0,1,2,3,4,7,9,15,16,31,127,255
-        // 10, 32 and 128 are non-fixed-length AHB INCR bursts between the
-        // AHB INCR4/8/16 lengths; 128 also covers AxLEN 64..254
+        // INCR lengths: 1,2,3,4,5,8,10,16,17,32,128,256 beats
         int unsigned incr_lens[] = '{0, 1, 2, 3, 4, 7, 9, 15, 16, 31, 127, 255};
         foreach (incr_lens[i])
             matrix.push_back('{AXI4_BURST_INCR, incr_lens[i],
@@ -183,15 +180,8 @@ class axi4_mst_burst_matrix_seq extends axi4_mst_base_seq;
         addr = base_addr + (index * case_stride);
         addr = (addr / byte_per_beat) * byte_per_beat;
 
-        // For WRAP, alignment must be on size boundary (already done above).
-        // For INCR the rule to respect here is the AXI one: a burst must not
-        // cross a 4 KB boundary. Aligning the start down to a power of two at
-        // least as large as the burst guarantees that for any bus width.
-        // The 1 KB boundary is an AHB concern and bridge_1kb_boundary_test
-        // covers it deliberately, so nothing is done about it here: the old
-        // nudge to the next 1 KB boundary assumed a burst fits in 1 KB, which
-        // stops being true at 8 bytes a beat, and it pushed a 256-beat 64-bit
-        // burst across a 4 KB boundary instead of away from one.
+        // INCR: align the start to a power of two >= burst size so it never
+        // crosses 4 KB (1 KB crossings are allowed here)
         if (burst == AXI4_BURST_INCR) begin
             int unsigned span;
 

@@ -2,34 +2,11 @@
 // File        : axi4_mst_illegal_narrow_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Write requests the bridge cannot honour, shown on memory.
-//               Two things AXI4 allows and this bridge does not, both left
-//               open by BRG_SIZ_006 after bridge_single_wstrb_test closed
-//               the single-write strobe cases and bridge_unaligned_read_test
-//               closed the unaligned reads:
-//               - WSTRB inside a burst. For AWLEN of zero the bridge reads
-//                 the strobes and derives HSIZE from them, but for a burst
-//                 axi_slv_if takes HSIZE from AWSIZE and never looks at
-//                 WSTRB again. AHB-Lite has no byte strobes, so every beat
-//                 writes a whole AWSIZE-wide word and the lanes the master
-//                 masked off are overwritten with it. WSTRB of zero is the
-//                 plainest case: ordinary AXI asking for nothing to be
-//                 written, and the whole word changes anyway.
-//               - an unaligned write. The bridge aligns the beat address
-//                 down to the transfer size, so the byte offset the master
-//                 asked for is lost and the data lands in the word below.
-//               Neither is a bug to be fixed here; both match the reference
-//               design and the spec review. They are recorded as negative
-//               cases so they are not mistaken for coverage holes, and so
-//               the damage is written down: which lanes change, and where
-//               the data actually lands.
-//               Every case is run against memory rather than argued about.
-//               The slot is seeded with a known pattern, the illegal write
-//               is sent, and the whole slot is read back at full width and
-//               compared against a model of what the bridge really does,
-//               not of what AXI asked for. A case that left the untouched
-//               words alone and still corrupted the masked lanes is what
-//               passing looks like.
+// Description : Unsupported writes, checked on memory (negative cases):
+//               - burst WSTRB is ignored; every beat writes a whole word
+//               - an unaligned write address is aligned down
+//               Each slot is seeded, written and read back at full width,
+//               then compared with a model of the bridge.
 //               Covers BRG_SIZ_006.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -41,12 +18,10 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
     localparam int unsigned FULL_SIZE = $clog2(AXI4_STRB_WIDTH);
     localparam int unsigned BUS_BYTES = AXI4_STRB_WIDTH;
 
-    // Words of the slot seeded and read back around each case, so a write
-    // that spilled outside the beats it claimed is visible too
+    // Slot words seeded and read back around each case
     localparam int unsigned WINDOW_WORDS = 8;
 
-    // Strobe patterns, all built from the bus width so they mean the same
-    // thing on a 32 and a 64 bit bus
+    // Strobe patterns built from the bus width
     localparam int unsigned STRB_NONE      = 0;
     localparam int unsigned STRB_ALTERNATE = 1;
     localparam int unsigned STRB_ONE_LANE  = 2;
@@ -63,8 +38,7 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Shared handles
     //-------------------------------------------------------------------------
-    // Only read_data is used: the canonical address pattern the slave
-    // returns for a word nothing has written
+    // Only read_data is used (pattern of an unwritten word)
     ahb_response_policy pattern;
 
     //-------------------------------------------------------------------------
@@ -175,10 +149,7 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
         add_case(AXI4_BURST_FIXED, 3, FULL_SIZE, 0, STRB_ALTERNATE,
                  "FIXED4_WSTRB_ALTERNATE");
 
-        // An unaligned write, at every byte offset the bus word has. A
-        // burst is used as well as a single, because a single write is the
-        // one case where the bridge does read WSTRB and would decide the
-        // size from it instead of from AWSIZE.
+        // Unaligned write at every byte offset, single and burst
         for (int unsigned off = 1; off < BUS_BYTES; off++) begin
             add_case(AXI4_BURST_INCR, 0, FULL_SIZE, off, STRB_FULL,
                      $sformatf("SINGLE_UNALIGNED_OFF%0d", off));
@@ -186,10 +157,7 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
                      $sformatf("INCR2_UNALIGNED_OFF%0d", off));
         end
 
-        // Narrow bursts at an offset that does not suit their size. Only on
-        // a build that supports them, and only as bursts: for a single
-        // write the bridge would take the size from WSTRB rather than from
-        // AWSIZE, which is bridge_single_wstrb_test's ground.
+        // Misaligned narrow bursts (narrow build only)
         if (supports_narrow) begin
             for (int unsigned sz = 1; sz < FULL_SIZE; sz++)
                 add_case(AXI4_BURST_INCR, 1, sz, (1 << sz) / 2, STRB_FULL,
@@ -210,8 +178,7 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
 
         slot = base_addr + (index * case_stride);
 
-        // A known starting point, so anything the illegal write changes is
-        // visible against it
+        // Seed the slot
         seed_slot(index, slot);
 
         req = create_illegal_write(index, c, slot);
@@ -231,9 +198,7 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
             cases_failed++;
     endtask : run_case
 
-    // Full-strobe, full-width, aligned: the one shape the bridge honours
-    // exactly, so the slot starts in a state the model and the device agree
-    // on.
+    // Seed with full-width, full-strobe, aligned writes
     protected task seed_slot(
         int unsigned              index,
         bit [AXI4_ADDR_WIDTH-1:0] slot
@@ -277,8 +242,7 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Checks
     //-------------------------------------------------------------------------
-    // An unsupported request is still answered normally: PG177 has no way to
-    // report it, which is exactly why it has to be written down here.
+    // An unsupported request is still answered with OKAY
     protected function bit check_response(
         illegal_case_t   c,
         axi4_transaction rsp
@@ -293,11 +257,7 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
         return 1'b0;
     endfunction : check_response
 
-    // Read the whole window back at full width and compare it with the
-    // model. This is where the finding is made: the model says the masked
-    // lanes changed and the offset was dropped, and memory has to agree.
-    // A task rather than a function, because it has to drive the bus, so
-    // the verdict comes back through an output instead of a return value.
+    // Read the window back at full width and compare with the model
     protected task read_back_slot(
         input  int unsigned              index,
         input  illegal_case_t            c,
@@ -369,11 +329,7 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
 
         bytes = effective_bytes(req);
 
-        // Masked lanes the bridge wrote anyway. Only the lanes the transfer
-        // really reaches count: a write the strobes narrowed down to two
-        // bytes leaves the other two alone, and calling those overwritten
-        // would overstate the finding. Counted only once the read-back has
-        // agreed with the model, so it is an observation, not an intention.
+        // Masked lanes within the transfer that were written anyway
         foreach (req.strb[beat]) begin
             bit [AXI4_ADDR_WIDTH-1:0] addr;
             int unsigned              lane_offset;
@@ -385,12 +341,7 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
                     lanes_overwritten++;
         end
 
-        // Where the first beat actually landed. The size has to come from
-        // effective_bytes rather than from AWSIZE: on a single write the
-        // bridge derives it from WSTRB, so an offset of 2 with a full-width
-        // AWSIZE becomes a 2-byte transfer that keeps its offset, while an
-        // offset of 1 falls back to AWSIZE and loses it. Counting from the
-        // request alone would get those two the wrong way round.
+        // Where the first beat landed (size from effective_bytes)
         landed = bridge_beat_address(req, 0, bytes);
         if (landed != req.addr)
             offsets_lost++;
@@ -417,9 +368,8 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Model of what the bridge really does
     //-------------------------------------------------------------------------
-    // Not a model of AXI. WSTRB is ignored unless the request is a single
-    // write, every beat writes a whole size-wide word, and the address is
-    // aligned down to the size first.
+    // WSTRB used only for single writes; whole size-wide words; aligned
+    // address
     protected function void apply_bridge_write(axi4_transaction req);
         int unsigned bytes;
 
@@ -436,15 +386,8 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
         end
     endfunction : apply_bridge_write
 
-    // Where a beat really goes. The start is aligned once, by the rule this
-    // build uses: ahb_mstr_if has one address generator per build and only
-    // the narrow one aligns to the transfer size, the other drives
-    // {addr[..:2], 2'b00} whatever the size. After that each beat is the
-    // effective size further on, which is also what the hardware does,
-    // because a burst can only be narrower than the bus on a narrow build.
-    // Note the lane the data is taken from moves with the aligned address,
-    // so an offset that is dropped does not just misplace the bytes, it
-    // picks different ones out of WDATA.
+    // Beat address: start aligned to the bus (narrow off) or the size
+    // (narrow on), then incremented by the effective size
     protected function bit [AXI4_ADDR_WIDTH-1:0] bridge_beat_address(
         axi4_transaction req,
         int unsigned     beat,
@@ -473,9 +416,7 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
         endcase
     endfunction : bridge_beat_address
 
-    // A single write is the one place the bridge reads WSTRB: one
-    // size-aligned run of lanes sets HSIZE, anything else falls back to
-    // AWSIZE. For a burst AWSIZE is used and the strobes are ignored.
+    // Single write: size from a size-aligned WSTRB run, else AWSIZE
     protected function int unsigned effective_bytes(axi4_transaction req);
         int unsigned run_bytes;
 
@@ -610,13 +551,7 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
         return strb;
     endfunction : strobe_for
 
-    // The strobes a well-behaved master would drive for this beat: the
-    // lanes the transfer really covers, which for an unaligned first beat
-    // stops at the next size boundary and never reaches past the bus word.
-    // It is not all ones. A narrow write that strobed every lane would be
-    // illegal AXI in its own right, and cg_write_strobe says so with an
-    // illegal bin, so the alignment cases have to be malformed in one way
-    // only: their address.
+    // Legal strobes for this beat (only the address is malformed)
     protected function bit [AXI4_STRB_WIDTH-1:0] lawful_strobe(
         axi4_transaction req,
         int unsigned     beat
@@ -628,8 +563,7 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
         int unsigned              run;
 
         bytes = 1 << int'(req.size);
-        // Only the first beat starts where the master asked; the rest sit on
-        // size boundaries
+        // Only the first beat may be unaligned
         addr  = (beat == 0) ? req.addr : beat_address(req, beat);
 
         lane_offset = addr % BUS_BYTES;

@@ -2,30 +2,9 @@
 // File        : bridge_ordering_test.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : Bridge completion ordering test.
-//               Every other test sends one request and waits for it. This
-//               one hands the driver a whole list at once and lets the queue
-//               back up behind the bridge, which is the only way the bridge
-//               gets the chance to reorder anything: eight reads on one ID,
-//               eight reads on rotating IDs with falling burst lengths, a
-//               write and read stream over the same addresses, four phases
-//               that put every access of the phase on a single address, and
-//               a randomized mixed phase with AHB wait states and AXI
-//               response backpressure.
-//               The reference order is the order the bridge accepted the
-//               requests on AW and AR, not the order they were issued in,
-//               because a read arriving with a write wins arbitration and
-//               the write then takes the next turn. That acceptance order is
-//               replayed through a reference copy of the slave memory, so
-//               every read is compared against what an in-order bridge would
-//               owe it at that point.
-//               max_outstanding is 0 so the driver never throttles the
-//               queue, and the AHB slave answers from its memory model so a
-//               read that overtook a write returns the wrong word. The
-//               scoreboard matches AHB beats to requests by first-beat
-//               direction and address and AXI completions by direction and
-//               ID, both of which stay usable here because the requests that
-//               share an address carry different data.
+// Description : Bridge in-order completion test. Many requests outstanding
+//               (same and rotating IDs, same-address read/write, random mix);
+//               read data is checked against the AW/AR acceptance order.
 //               Covers BRG_UNS_002.
 //               Included inside the bridge test package.
 //=============================================================================

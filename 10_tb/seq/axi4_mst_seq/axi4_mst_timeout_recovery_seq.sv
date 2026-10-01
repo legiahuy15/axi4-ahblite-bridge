@@ -2,30 +2,13 @@
 // File        : axi4_mst_timeout_recovery_seq.sv
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : C_DPHASE_TIMEOUT termination and recovery sequence.
-//               BRG_TMO_004 asks for three things: the watchdog returns the
-//               AHB bus to IDLE, the AXI side gets SLVERR, and the bridge
-//               recovers cleanly after a reset.
-//               Termination is checked on the AHB interface itself rather
-//               than from the response. An observer counts the address phases
-//               the bridge actually issues and watches HTRANS once the
-//               watchdog has fired, so a burst that kept running or restarted
-//               after being abandoned is caught even though its AXI response
-//               would look the same.
-//               Cases:
-//               - single write and single read abandoned: exactly one address
-//                 phase, HTRANS IDLE from then until the slave releases the
-//                 bus, SLVERR on the AXI side
-//               - INCR4 write and read abandoned on their second beat: the
-//                 two remaining beats are never issued
-//               - a write-path and a read-path timeout, each followed by a
-//                 reset and by ordinary traffic that must complete with OKAY
-//               - a reset asserted while the slave is still holding HREADY
-//                 low after an abandoned beat, which is the case a stuck
-//                 slave produces, again followed by ordinary traffic
-//               The traffic after each reset is compared by the scoreboard as
-//               usual, so recovery means the whole path works again, not just
-//               that a response came back.
+// Description : Timeout termination and recovery sequence. An AHB observer
+//               counts issued address phases and checks HTRANS stays IDLE
+//               after the watchdog fires. Cases:
+//               - single read/write timeout: one address phase, SLVERR
+//               - INCR4 timeout on beat 2: remaining beats never issued
+//               - timeout, reset, then OKAY traffic (also with reset while
+//                 the slave still holds HREADY low)
 //               Covers BRG_TMO_004.
 //               Included inside bridge_seq_pkg.sv.
 //=============================================================================
@@ -40,9 +23,7 @@ class axi4_mst_timeout_recovery_seq extends axi4_mst_base_seq;
     // pins at C_DPHASE_TIMEOUT+2 at the latest
     localparam int unsigned OVER_MARGIN = 32;
 
-    // The bridge drives IDLE from the cycle the watchdog fires; the response
-    // reaches the sequence around the same time, so the check starts a couple
-    // of cycles later to stay clear of that skew
+    // Delay before the IDLE check starts
     localparam int unsigned IDLE_GRACE = 2;
 
     //-------------------------------------------------------------------------
@@ -143,8 +124,7 @@ class axi4_mst_timeout_recovery_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // AHB observer
     //-------------------------------------------------------------------------
-    // Counts every address phase the bridge gets accepted, and reports any
-    // address or data phase driven while the bus is supposed to be idle.
+    // Counts accepted address phases; flags activity while idle expected
     protected task observe_ahb();
         ahb_trans_e htrans;
 
@@ -219,9 +199,7 @@ class axi4_mst_timeout_recovery_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Recovery
     //-------------------------------------------------------------------------
-    // reset_during_stall asserts reset while the slave is still counting out
-    // the wait of the beat the bridge abandoned, which is what a stuck slave
-    // looks like; otherwise the bus is left to settle first.
+    // reset_during_stall: reset while the slave still holds HREADY low
     protected task check_reset_recovery(
         axi4_dir_e dir,
         bit        reset_during_stall,
@@ -276,8 +254,8 @@ class axi4_mst_timeout_recovery_seq extends axi4_mst_base_seq;
     //-------------------------------------------------------------------------
     // Building blocks
     //-------------------------------------------------------------------------
-    // One request whose beat 'stall_beat' is held off past the threshold.
-    // Returns 1 when the response was not the expected SLVERR.
+    // Request with beat 'stall_beat' held past the threshold; returns 1 if
+    // the response is not SLVERR
     protected task do_timeout(
         input  axi4_dir_e                dir,
         input  int unsigned              len,

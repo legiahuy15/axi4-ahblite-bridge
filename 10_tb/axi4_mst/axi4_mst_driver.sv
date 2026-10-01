@@ -182,9 +182,7 @@ class axi4_mst_driver extends uvm_driver #(axi4_transaction);
     protected task drive_w(axi4_transaction tr);
         @(vif.master_cb);
         foreach (tr.data[i]) begin
-            // Let the write data run dry before this beat, if asked. Never
-            // before the first beat: a burst that has not started yet is a
-            // late request, not a starved one.
+            // Optional WVALID gap, never before the first beat
             if (i != 0)
                 insert_w_gap(tr, i);
 
@@ -208,12 +206,8 @@ class axi4_mst_driver extends uvm_driver #(axi4_transaction);
         vif.master_cb.WLAST  <= 1'b0;
     endtask : drive_w
 
-    // WVALID low for a while between two beats of a burst. A transaction may
-    // name one beat and a length, which is how the directed starvation test
-    // puts the gap exactly where a particular bridge state needs it;
-    // otherwise the agent's range applies to every beat. With neither set
-    // this returns before touching the bus, so a burst goes out back to back
-    // exactly as it did before the knob existed.
+    // WVALID gap between burst beats: per-transaction gap if set, otherwise
+    // the agent range; none by default
     protected task insert_w_gap(axi4_transaction tr, int unsigned beat);
         int unsigned gap;
 

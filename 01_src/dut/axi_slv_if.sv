@@ -2,8 +2,8 @@
 // File        : axi_slv_if
 // Project     : AXI4 to AHB-Lite Bridge VIP
 // Author      : Huy Le
-// Description : AXI4 slave-side control for the AXI4-to-AHB-Lite bridge.
-//               Accepts AXI requests and returns read and write responses.
+// Description : AXI4 slave: request capture, read/write arbitration and
+//               B/R response generation.
 //=============================================================================
 
 `timescale 1ns/1ps
@@ -420,7 +420,7 @@ module axi_slv_if #(
         end
     endgenerate
 
-    // Write channel FSM. Read requests have priority when both directions arrive together.
+    // Write channel FSM (a simultaneous read has priority)
     always_comb begin
         axi_write_ns     = axi_write_cs;
         write_ready_sm   = 1'b0;
