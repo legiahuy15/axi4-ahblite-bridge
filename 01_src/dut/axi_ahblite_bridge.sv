@@ -76,6 +76,95 @@ module axi_ahblite_bridge #(
     input  logic                              m_ahb_hresp
 );
 
+    // -------------------------------------------------------------------------
+    // Configuration guards
+    // -------------------------------------------------------------------------
+    // PG177 supports one shape only, and nothing in the design checked it: a
+    // build with mismatched or unsupported widths, or with a timeout the
+    // watchdog cannot represent, used to elaborate and then misbehave
+    // quietly. Each guard is its own generate branch, so a legal build
+    // elaborates none of them and carries no cost.
+    //
+    // $fatal in an initial block rather than an elaboration $error, and
+    // plain comparisons rather than inside: both choices are about this file
+    // parsing everywhere it is read. An elaboration task would report a
+    // cycle earlier and inside would read better, but a parse failure in a
+    // guard would stop a legal build too, which is far worse than reporting
+    // at time zero, before anything has run.
+    generate
+        if ((C_S_AXI_DATA_WIDTH != 32) && (C_S_AXI_DATA_WIDTH != 64))
+        begin : gen_bad_axi_data_width
+            initial $fatal(1, $sformatf(
+                {"axi_ahblite_bridge: C_S_AXI_DATA_WIDTH=%0d is not ",
+                 "supported; PG177 allows 32 or 64"},
+                C_S_AXI_DATA_WIDTH));
+        end
+
+        if ((C_M_AHB_DATA_WIDTH != 32) && (C_M_AHB_DATA_WIDTH != 64))
+        begin : gen_bad_ahb_data_width
+            initial $fatal(1, $sformatf(
+                {"axi_ahblite_bridge: C_M_AHB_DATA_WIDTH=%0d is not ",
+                 "supported; PG177 allows 32 or 64"},
+                C_M_AHB_DATA_WIDTH));
+        end
+
+        if (C_S_AXI_DATA_WIDTH != C_M_AHB_DATA_WIDTH)
+        begin : gen_data_width_mismatch
+            initial $fatal(1, $sformatf(
+                {"axi_ahblite_bridge: C_S_AXI_DATA_WIDTH=%0d and ",
+                 "C_M_AHB_DATA_WIDTH=%0d differ; the bridge does not ",
+                 "convert data width"},
+                C_S_AXI_DATA_WIDTH, C_M_AHB_DATA_WIDTH));
+        end
+
+        if (C_S_AXI_ADDR_WIDTH != C_M_AHB_ADDR_WIDTH)
+        begin : gen_addr_width_mismatch
+            initial $fatal(1, $sformatf(
+                {"axi_ahblite_bridge: C_S_AXI_ADDR_WIDTH=%0d and ",
+                 "C_M_AHB_ADDR_WIDTH=%0d differ; the bridge passes ",
+                 "addresses straight through"},
+                C_S_AXI_ADDR_WIDTH, C_M_AHB_ADDR_WIDTH));
+        end
+
+        if ((C_S_AXI_ADDR_WIDTH < 32) || (C_S_AXI_ADDR_WIDTH > 64))
+        begin : gen_bad_addr_width
+            initial $fatal(1, $sformatf(
+                {"axi_ahblite_bridge: C_S_AXI_ADDR_WIDTH=%0d is out of ",
+                 "range; PG177 allows 32 to 64"},
+                C_S_AXI_ADDR_WIDTH));
+        end
+
+        if ((C_S_AXI_ID_WIDTH < 1) || (C_S_AXI_ID_WIDTH > 32))
+        begin : gen_bad_id_width
+            initial $fatal(1, $sformatf(
+                {"axi_ahblite_bridge: C_S_AXI_ID_WIDTH=%0d is out of range; ",
+                 "1 to 32 is supported"},
+                C_S_AXI_ID_WIDTH));
+        end
+
+        // The watchdog loads C_DPHASE_TIMEOUT-1 into a counter sized
+        // $clog2(C_DPHASE_TIMEOUT), so a value that is not one of these does
+        // not fire at the threshold the parameter names
+        if ((C_DPHASE_TIMEOUT != 0)   && (C_DPHASE_TIMEOUT != 16) &&
+            (C_DPHASE_TIMEOUT != 32)  && (C_DPHASE_TIMEOUT != 64) &&
+            (C_DPHASE_TIMEOUT != 128) && (C_DPHASE_TIMEOUT != 256))
+        begin : gen_bad_dphase_timeout
+            initial $fatal(1, $sformatf(
+                {"axi_ahblite_bridge: C_DPHASE_TIMEOUT=%0d is not ",
+                 "supported; PG177 allows 0, 16, 32, 64, 128 or 256"},
+                C_DPHASE_TIMEOUT));
+        end
+
+        if ((C_S_AXI_SUPPORTS_NARROW_BURST != 0) &&
+            (C_S_AXI_SUPPORTS_NARROW_BURST != 1))
+        begin : gen_bad_narrow_burst
+            initial $fatal(1, $sformatf(
+                {"axi_ahblite_bridge: C_S_AXI_SUPPORTS_NARROW_BURST=%0d is ",
+                 "not a boolean"},
+                C_S_AXI_SUPPORTS_NARROW_BURST));
+        end
+    endgenerate
+
     logic [C_S_AXI_ADDR_WIDTH-1:0] axi_address;
     logic ahb_rd_request, ahb_wr_request;
     logic [C_M_AHB_DATA_WIDTH-1:0] rd_data;

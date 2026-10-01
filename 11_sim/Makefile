@@ -45,6 +45,24 @@ COV_SUMMARY_AWK = cov_summary.awk
 REF_VHDL   ?= ../00_doc/axi_ahblite_bridge_v3_0_vh_rfs.vhd
 REF_LIB    ?= refwork
 
+# Negative parameter cases (BRG_CFG_003). Each one is its own compilation of
+# the bridge on its own, with the parameter under test set from a define and
+# every other one legal, and each has to fail. The case list is
+# "name:defines", with the defines separated by commas.
+GUARD_LIB  ?= guardwork
+GUARD_TOP  ?= bridge_illegal_param_top
+GUARD_SRC  ?= ../10_tb/bridge_illegal_param_top.sv
+GUARD_CASES ?= \
+    axi_data_width_8:GUARD_AXI_DATA_WIDTH=8,GUARD_AHB_DATA_WIDTH=8 \
+    ahb_data_width_16:GUARD_AXI_DATA_WIDTH=16,GUARD_AHB_DATA_WIDTH=16 \
+    data_width_mismatch:GUARD_AXI_DATA_WIDTH=64,GUARD_AHB_DATA_WIDTH=32 \
+    addr_width_mismatch:GUARD_AHB_ADDR_WIDTH=40 \
+    addr_width_too_small:GUARD_AXI_ADDR_WIDTH=16,GUARD_AHB_ADDR_WIDTH=16 \
+    id_width_too_large:GUARD_AXI_ID_WIDTH=33 \
+    dphase_timeout_7:GUARD_DPHASE_TIMEOUT=7 \
+    dphase_timeout_1000:GUARD_DPHASE_TIMEOUT=1000 \
+    narrow_burst_2:GUARD_NARROW_BURST=2
+
 QUESTA_BIN ?=
 VLIB        ?= $(QUESTA_BIN)vlib
 VMAP        ?= $(QUESTA_BIN)vmap
@@ -187,7 +205,7 @@ REGRESS_TARGETS = $(foreach test,$(TEST_LIST),\
 #-----------------------------------------------------------------------------
 .PHONY: help check-tools compile optimize optimize_timeout compile_wide \
         optimize_wide run gui regress merge_cov cov_report assert_report \
-        code_report compile_ref clean
+        code_report compile_ref illegal_param_check clean
 
 help:
 	@echo "AXI4 to AHB-Lite Bridge VIP"
@@ -199,6 +217,7 @@ help:
 	@echo "  make assert_report   Assertion and cover-directive text reports"
 	@echo "  make code_report     DUT code coverage, uncovered lines in detail"
 	@echo "  make compile_ref     Compile the reference VHDL (BRG_ENV_007 check)"
+	@echo "  make illegal_param_check  Every illegal parameter set must be rejected"
 	@echo "  make clean           Remove generated simulation outputs"
 	@echo ""
 	@echo "  TESTNAME=<name>      Default: $(TESTNAME)"
@@ -509,11 +528,63 @@ code_report: $(if $(filter 1,$(SKIP_MERGE)),,merge_cov)
 			| head -20 || true
 
 #-----------------------------------------------------------------------------
+# Negative parameter check
+#-----------------------------------------------------------------------------
+# Every case here has to fail, which is why this is its own target and not
+# part of regress: a run that is supposed to end in a fatal cannot share a
+# pass criterion with one that is supposed to end clean. A case counts as
+# rejected whichever stage catches it, because some illegal widths are
+# caught by the tool before the guards in the design get a chance.
+illegal_param_check: check-tools
+	@cd "$(MAKEFILE_DIR)" && mkdir -p "$(LOG_DIR)"
+	@cd "$(MAKEFILE_DIR)" && \
+		rejected=0; accepted=0; missing=""; \
+		for entry in $(GUARD_CASES); do \
+			name="$${entry%%:*}"; defs="$${entry#*:}"; \
+			log="$(LOG_DIR)/guard_$$name.log"; \
+			define_args=""; \
+			for d in $$(echo "$$defs" | tr ',' ' '); do \
+				define_args="$$define_args +define+$$d"; \
+			done; \
+			rm -rf -- "$(GUARD_LIB)"; \
+			"$(VLIB)" "$(GUARD_LIB)" >/dev/null 2>&1; \
+			"$(VMAP)" "$(GUARD_LIB)" "$(GUARD_LIB)" >/dev/null 2>&1; \
+			{ "$(VLOG)" -sv -mfcu -timescale 1ns/1ps -work "$(GUARD_LIB)" \
+				$$define_args ../01_src/dut/*.sv "$(GUARD_SRC)" && \
+			  "$(VOPT)" +acc -work "$(GUARD_LIB)" \
+				"$(GUARD_LIB).$(GUARD_TOP)" -o "$(GUARD_TOP)_opt" && \
+			  "$(VSIM)" -c -work "$(GUARD_LIB)" \
+				"$(GUARD_LIB).$(GUARD_TOP)_opt" -do "run -all; quit -f"; \
+			} > "$$log" 2>&1; \
+			if grep -qE '\*\* (Error|Fatal)' "$$log"; then \
+				rejected=$$((rejected + 1)); \
+				echo "[REJECTED] $$name"; \
+			else \
+				accepted=$$((accepted + 1)); \
+				missing="$$missing $$name"; \
+				echo "[ACCEPTED] $$name | log=$$log"; \
+			fi; \
+		done; \
+		rm -rf -- "$(GUARD_LIB)"; \
+		echo ""; \
+		echo "[GUARD] rejected=$$rejected accepted=$$accepted"; \
+		if [ "$$accepted" -ne 0 ]; then \
+			echo "  The bridge accepted a configuration PG177 does not"; \
+			echo "  support, so it would elaborate and then misbehave"; \
+			echo "  quietly:$$missing"; \
+			exit 1; \
+		fi; \
+		if [ "$$rejected" -eq 0 ]; then \
+			echo "  No case ran at all; the check proved nothing."; \
+			exit 1; \
+		fi
+
+#-----------------------------------------------------------------------------
 # Cleanup
 #-----------------------------------------------------------------------------
 # modelsim.ini is part of the source tree (library mappings); keep it
 clean:
 	@echo "[CLEAN] Removing generated files under $(MAKEFILE_DIR)"
-	@cd "$(MAKEFILE_DIR)" && rm -rf -- work "$(WORK64)" "$(REF_LIB)" report
+	@cd "$(MAKEFILE_DIR)" && rm -rf -- work "$(WORK64)" "$(REF_LIB)" "$(GUARD_LIB)" report
 	@cd "$(MAKEFILE_DIR)" && rm -f -- \
 		transcript vsim.wlf vsim_stacktrace.vstf *.vcd *.ucdb
