@@ -262,6 +262,10 @@ class scoreboard extends uvm_scoreboard;
         axi4_dir_e              dir,
         bit [AXI4_ID_WIDTH-1:0] id
     );
+        // A declaration that will not come true is itself a fault the suite
+        // arms, so it is counted like the field mutations
+        if (mutation_mode)
+            mutations_armed++;
         timeout_keys.push_back('{dir, id, 1'b1});
     endfunction : expect_timeout
 
@@ -403,7 +407,8 @@ class scoreboard extends uvm_scoreboard;
             // A declared request that completed instead. Permissive on a
             // threshold sweep, a fault when the test said it must time out.
             if (timed_out_ctx.timeout_strict) begin
-                missed_timeouts++;
+                if (!mutation_mode)
+                    missed_timeouts++;
                 report_mismatch($sformatf({"Declared timeout on %s id=0x%0h ",
                                            "completed without SLVERR"},
                                           tr.dir.name(), tr.id));
@@ -513,7 +518,8 @@ class scoreboard extends uvm_scoreboard;
                                     matched_ahb),
                           UVM_HIGH)
             end else begin
-                mismatched_ahb++;
+                if (!mutation_mode)
+                    mismatched_ahb++;
                 report_mismatch($sformatf({"AHB request mismatch\n",
                                            "  expected: %s\n",
                                            "  actual  : %s"},
@@ -659,7 +665,8 @@ class scoreboard extends uvm_scoreboard;
                                         actual_tr.data.size(), matched_axi),
                               UVM_HIGH)
             end else begin
-                mismatched_axi++;
+                if (!mutation_mode)
+                    mismatched_axi++;
                 report_mismatch($sformatf({"AXI completion mismatch
 ",
                                            "  expected: %s
