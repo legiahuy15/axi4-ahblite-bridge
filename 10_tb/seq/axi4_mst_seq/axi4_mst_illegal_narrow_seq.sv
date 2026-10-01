@@ -364,22 +364,36 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
         illegal_case_t            c,
         axi4_transaction          req
     );
-        int unsigned bytes;
+        int unsigned              bytes;
+        bit [AXI4_ADDR_WIDTH-1:0] landed;
 
-        bytes = 1 << c.size;
+        bytes = effective_bytes(req);
 
-        // Masked lanes the bridge wrote anyway. Counted from the strobes the
-        // request carried, but only after the read-back agreed that the
-        // whole word changed, so it is an observation and not an intention.
-        if (c.len != 0) begin
-            foreach (req.strb[beat]) begin
-                for (int unsigned lane = 0; lane < BUS_BYTES; lane++)
-                    if (!req.strb[beat][lane])
-                        lanes_overwritten++;
-            end
+        // Masked lanes the bridge wrote anyway. Only the lanes the transfer
+        // really reaches count: a write the strobes narrowed down to two
+        // bytes leaves the other two alone, and calling those overwritten
+        // would overstate the finding. Counted only once the read-back has
+        // agreed with the model, so it is an observation, not an intention.
+        foreach (req.strb[beat]) begin
+            bit [AXI4_ADDR_WIDTH-1:0] addr;
+            int unsigned              lane_offset;
+
+            addr        = beat_address(req, beat);
+            addr        = addr - (addr % bytes);
+            lane_offset = addr % BUS_BYTES;
+            for (int unsigned i = 0; i < bytes; i++)
+                if (!req.strb[beat][lane_offset + i])
+                    lanes_overwritten++;
         end
 
-        if ((c.offset % bytes) != 0)
+        // Where the first beat actually landed. The size has to come from
+        // effective_bytes rather than from AWSIZE: on a single write the
+        // bridge derives it from WSTRB, so an offset of 2 with a full-width
+        // AWSIZE becomes a 2-byte transfer that keeps its offset, while an
+        // offset of 1 falls back to AWSIZE and loses it. Counting from the
+        // request alone would get those two the wrong way round.
+        landed = req.addr - (req.addr % bytes);
+        if (landed != req.addr)
             offsets_lost++;
     endfunction : record_findings
 
@@ -532,14 +546,15 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
             for (int unsigned lane = 0; lane < BUS_BYTES; lane++)
                 req.data[beat][8 * lane +: 8] =
                     8'(8'hC0 + (index * 5) + (beat * 3) + lane);
-            req.strb[beat] = strobe_for(c, beat);
+            req.strb[beat] = strobe_for(c, req, beat);
         end
         return req;
     endfunction : create_illegal_write
 
     protected function bit [AXI4_STRB_WIDTH-1:0] strobe_for(
-        illegal_case_t c,
-        int unsigned   beat
+        illegal_case_t   c,
+        axi4_transaction req,
+        int unsigned     beat
     );
         bit [AXI4_STRB_WIDTH-1:0] strb;
 
@@ -555,10 +570,43 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
             STRB_ROTATE:
                 strb[beat % BUS_BYTES] = 1'b1;
             default:
-                strb = '1;
+                strb = lawful_strobe(req, beat);
         endcase
         return strb;
     endfunction : strobe_for
+
+    // The strobes a well-behaved master would drive for this beat: the
+    // lanes the transfer really covers, which for an unaligned first beat
+    // stops at the next size boundary and never reaches past the bus word.
+    // It is not all ones. A narrow write that strobed every lane would be
+    // illegal AXI in its own right, and cg_write_strobe says so with an
+    // illegal bin, so the alignment cases have to be malformed in one way
+    // only: their address.
+    protected function bit [AXI4_STRB_WIDTH-1:0] lawful_strobe(
+        axi4_transaction req,
+        int unsigned     beat
+    );
+        bit [AXI4_STRB_WIDTH-1:0] strb;
+        bit [AXI4_ADDR_WIDTH-1:0] addr;
+        int unsigned              bytes;
+        int unsigned              lane_offset;
+        int unsigned              run;
+
+        bytes = 1 << int'(req.size);
+        // Only the first beat starts where the master asked; the rest sit on
+        // size boundaries
+        addr  = (beat == 0) ? req.addr : beat_address(req, beat);
+
+        lane_offset = addr % BUS_BYTES;
+        run         = bytes - (addr % bytes);
+        if (run > (BUS_BYTES - lane_offset))
+            run = BUS_BYTES - lane_offset;
+
+        strb = '0;
+        for (int unsigned i = 0; i < run; i++)
+            strb[lane_offset + i] = 1'b1;
+        return strb;
+    endfunction : lawful_strobe
 
     //-------------------------------------------------------------------------
     // Bookkeeping
