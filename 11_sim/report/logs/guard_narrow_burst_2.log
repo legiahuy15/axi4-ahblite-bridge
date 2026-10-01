@@ -1,0 +1,139 @@
+QuestaSim-64 vlog 10.6b Compiler 2017.05 May 25 2017
+Start time: 12:27:42 on Oct 01,2026
+vlog -sv -mfcu -timescale 1ns/1ps -work guardwork "+define+GUARD_NARROW_BURST=2" ../01_src/dut/ahb_mstr_if.sv ../01_src/dut/ahb_skid_buf.sv ../01_src/dut/axi_ahblite_bridge.sv ../01_src/dut/axi_slv_if.sv ../01_src/dut/counter_f.sv ../01_src/dut/time_out.sv ../10_tb/bridge_illegal_param_top.sv 
+-- Compiling module ahb_mstr_if
+-- Compiling module ahb_skid_buf
+-- Compiling module axi_ahblite_bridge
+-- Compiling module axi_slv_if
+** Warning: ../01_src/dut/axi_slv_if.sv(145): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(149): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(151): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(152): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(156): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(164): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(168): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(170): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(174): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(175): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(176): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(177): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+** Warning: ../01_src/dut/axi_slv_if.sv(419): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+-- Compiling module counter_f
+-- Compiling module time_out
+** Warning: ../01_src/dut/time_out.sv(54): (vlog-2583) [SVCHK] - Some checking for conflicts with always_comb and always_latch variables not yet supported. Run vopt to provide additional design-level checks.
+-- Compiling module bridge_illegal_param_top
+
+Top level modules:
+	bridge_illegal_param_top
+End time: 12:27:42 on Oct 01,2026, Elapsed time: 0:00:00
+Errors: 0, Warnings: 14
+QuestaSim-64 vopt 10.6b Compiler 2017.05 May 25 2017
+Start time: 12:27:42 on Oct 01,2026
+vopt "+acc" -work guardwork guardwork.bridge_illegal_param_top -o bridge_illegal_param_top_opt 
+
+Top level modules:
+	bridge_illegal_param_top
+
+Analyzing design...
+-- Loading module bridge_illegal_param_top
+-- Loading module axi_ahblite_bridge
+-- Loading module ahb_skid_buf
+-- Loading module axi_slv_if
+-- Loading module ahb_mstr_if
+-- Loading module time_out
+Optimizing 6 design-units (inlining 0/6 module instances):
+-- Optimizing module ahb_mstr_if(fast)
+** Note: (vopt-143) Recognized 1 FSM in module "ahb_mstr_if(fast)".
+-- Optimizing module axi_slv_if(fast)
+** Note: (vopt-143) Recognized 2 FSMs in module "axi_slv_if(fast)".
+-- Optimizing module axi_ahblite_bridge(fast)
+-- Optimizing module ahb_skid_buf(fast)
+-- Optimizing module time_out(fast)
+-- Optimizing module bridge_illegal_param_top(fast)
+Optimized design name is bridge_illegal_param_top_opt
+End time: 12:27:42 on Oct 01,2026, Elapsed time: 0:00:00
+Errors: 0, Warnings: 0
+Reading pref.tcl
+
+# 10.6b
+
+# vsim -c guardwork.bridge_illegal_param_top_opt -do "run -all; quit -f" 
+# Start time: 12:27:43 on Oct 01,2026
+# //  Questa Sim-64
+# //  Version 10.6b linux_x86_64 May 25 2017
+# //
+# //  Copyright 1991-2017 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.bridge_illegal_param_top(fast)
+# Loading work.axi_ahblite_bridge(fast)
+# Loading work.ahb_skid_buf(fast)
+# Loading work.axi_slv_if(fast)
+# Loading work.ahb_mstr_if(fast)
+# Loading work.time_out(fast)
+# ** Warning: (vsim-3017) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Too few port connections. Expected 48, found 0.
+#    Time: 0 ps  Iteration: 0  Instance: /bridge_illegal_param_top/dut File: ../01_src/dut/axi_ahblite_bridge.sv
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_aclk'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_aresetn'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_awid'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_awlen'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_awsize'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_awburst'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_awcache'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_awaddr'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_awprot'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_awvalid'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_awready'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_awlock'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_wdata'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_wstrb'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_wlast'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_wvalid'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_wready'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_bid'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_bresp'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_bvalid'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_bready'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_arid'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_araddr'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_arprot'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_arcache'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_arvalid'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_arlen'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_arsize'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_arburst'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_arlock'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_arready'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_rid'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_rdata'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_rresp'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_rvalid'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_rlast'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 's_axi_rready'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 'm_ahb_haddr'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 'm_ahb_hwrite'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 'm_ahb_hsize'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 'm_ahb_hburst'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 'm_ahb_hprot'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 'm_ahb_htrans'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 'm_ahb_hmastlock'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 'm_ahb_hwdata'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 'm_ahb_hready'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 'm_ahb_hrdata'.
+# ** Warning: (vsim-3722) ../10_tb/bridge_illegal_param_top.sv(56): [TFMPC] - Missing connection for port 'm_ahb_hresp'.
+# run -all
+# ** Fatal: axi_ahblite_bridge: C_S_AXI_SUPPORTS_NARROW_BURST=2 is not a boolean
+#    Time: 0 ps  Scope: bridge_illegal_param_top.dut.gen_bad_narrow_burst File: ../01_src/dut/axi_ahblite_bridge.sv Line: 161
+# ** Note: $finish    : ../01_src/dut/axi_ahblite_bridge.sv(161)
+#    Time: 0 ps  Iteration: 0  Region: /bridge_illegal_param_top/dut/gen_bad_narrow_burst
+# End time: 12:27:43 on Oct 01,2026, Elapsed time: 0:00:00
+# Errors: 1, Warnings: 49
