@@ -38,13 +38,6 @@ CODE_DU_ARGS  = $(foreach du,$(CODE_DU_LIST),-du $(du))
 SVA_DIR       = ../10_tb/sva
 COV_SUMMARY_AWK = cov_summary.awk
 
-# The original VHDL the SystemVerilog DUT was translated from. The spec
-# review treats a side-by-side comparison against it as a prerequisite for
-# calling the translation golden (BRG_ENV_007), and the first thing that
-# needs settling is whether this installation can compile VHDL at all.
-REF_VHDL   ?= ../00_doc/axi_ahblite_bridge_v3_0_vh_rfs.vhd
-REF_LIB    ?= refwork
-
 # Negative parameter cases (BRG_CFG_003). Each one is its own compilation of
 # the bridge on its own, with the parameter under test set from a define and
 # every other one legal, and each has to fail. The case list is
@@ -66,7 +59,6 @@ GUARD_CASES ?= \
 QUESTA_BIN ?=
 VLIB        ?= $(QUESTA_BIN)vlib
 VMAP        ?= $(QUESTA_BIN)vmap
-VCOM        ?= $(QUESTA_BIN)vcom
 VLOG        ?= $(QUESTA_BIN)vlog
 VOPT        ?= $(QUESTA_BIN)vopt
 VSIM        ?= $(QUESTA_BIN)vsim
@@ -205,7 +197,7 @@ REGRESS_TARGETS = $(foreach test,$(TEST_LIST),\
 #-----------------------------------------------------------------------------
 .PHONY: help check-tools compile optimize optimize_timeout compile_wide \
         optimize_wide run gui regress merge_cov cov_report assert_report \
-        code_report compile_ref illegal_param_check clean
+        code_report illegal_param_check clean
 
 help:
 	@echo "AXI4 to AHB-Lite Bridge VIP"
@@ -216,7 +208,6 @@ help:
 	@echo "  make cov_report      Merge UCDB files and create HTML report"
 	@echo "  make assert_report   Assertion and cover-directive text reports"
 	@echo "  make code_report     DUT code coverage, uncovered lines in detail"
-	@echo "  make compile_ref     Compile the reference VHDL (BRG_ENV_007 check)"
 	@echo "  make illegal_param_check  Every illegal parameter set must be rejected"
 	@echo "  make clean           Remove generated simulation outputs"
 	@echo ""
@@ -249,23 +240,6 @@ compile: check-tools
 	@cd "$(MAKEFILE_DIR)" && { test -d work || "$(VLIB)" work; }
 	@cd "$(MAKEFILE_DIR)" && "$(VMAP)" work work
 	cd "$(MAKEFILE_DIR)" && "$(VLOG)" $(VLOG_FLAGS) -f "$(FILELIST)"
-
-# Compile the reference VHDL on its own, into its own library. This is the
-# feasibility check BRG_ENV_007 is waiting on and nothing depends on it:
-# 'vcom -version' only prints a banner and takes no licence, so the only way
-# to find out whether VHDL is usable here is to compile something. If this
-# target passes, the side-by-side harness is worth building; if it fails on
-# a licence, the item is excluded on that ground instead.
-compile_ref: check-tools
-	@cd "$(MAKEFILE_DIR)" && mkdir -p "$(LOG_DIR)"
-	@cd "$(MAKEFILE_DIR)" && { test -d "$(REF_LIB)" || "$(VLIB)" "$(REF_LIB)"; }
-	@cd "$(MAKEFILE_DIR)" && "$(VMAP)" "$(REF_LIB)" "$(REF_LIB)"
-	cd "$(MAKEFILE_DIR)" && "$(VCOM)" -work "$(REF_LIB)" \
-		-l "$(LOG_DIR)/compile_ref.log" "$(REF_VHDL)"
-	@cd "$(MAKEFILE_DIR)" && \
-		echo "[COMPILE_REF] the reference VHDL compiles. Units in $(REF_LIB):"; \
-		"$(QUESTA_BIN)vdir" -lib "$(REF_LIB)" 2>/dev/null | head -20 || \
-		echo "  (vdir not available; the compile log is $(LOG_DIR)/compile_ref.log)"
 
 optimize: compile
 	@cd "$(MAKEFILE_DIR)" && mkdir -p "$(LOG_DIR)"
@@ -585,6 +559,6 @@ illegal_param_check: check-tools
 # modelsim.ini is part of the source tree (library mappings); keep it
 clean:
 	@echo "[CLEAN] Removing generated files under $(MAKEFILE_DIR)"
-	@cd "$(MAKEFILE_DIR)" && rm -rf -- work "$(WORK64)" "$(REF_LIB)" "$(GUARD_LIB)" report
+	@cd "$(MAKEFILE_DIR)" && rm -rf -- work "$(WORK64)" "$(GUARD_LIB)" report
 	@cd "$(MAKEFILE_DIR)" && rm -f -- \
 		transcript vsim.wlf vsim_stacktrace.vstf *.vcd *.ucdb

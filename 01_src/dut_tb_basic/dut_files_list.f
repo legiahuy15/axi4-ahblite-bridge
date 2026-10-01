@@ -1,7 +1,7 @@
-+incdir+..
-../counter_f.sv
-../time_out.sv
-../ahb_skid_buf.sv
-../axi_slv_if.sv
-../ahb_mstr_if.sv
-../axi_ahblite_bridge.sv
++incdir+../dut
+../dut/counter_f.sv
+../dut/time_out.sv
+../dut/ahb_skid_buf.sv
+../dut/axi_slv_if.sv
+../dut/ahb_mstr_if.sv
+../dut/axi_ahblite_bridge.sv
