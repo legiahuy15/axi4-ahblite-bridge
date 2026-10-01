@@ -378,8 +378,7 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
             bit [AXI4_ADDR_WIDTH-1:0] addr;
             int unsigned              lane_offset;
 
-            addr        = beat_address(req, beat);
-            addr        = addr - (addr % bytes);
+            addr        = bridge_beat_address(req, beat, bytes);
             lane_offset = addr % BUS_BYTES;
             for (int unsigned i = 0; i < bytes; i++)
                 if (!req.strb[beat][lane_offset + i])
@@ -392,7 +391,7 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
         // AWSIZE becomes a 2-byte transfer that keeps its offset, while an
         // offset of 1 falls back to AWSIZE and loses it. Counting from the
         // request alone would get those two the wrong way round.
-        landed = req.addr - (req.addr % bytes);
+        landed = bridge_beat_address(req, 0, bytes);
         if (landed != req.addr)
             offsets_lost++;
     endfunction : record_findings
@@ -429,14 +428,50 @@ class axi4_mst_illegal_narrow_seq extends axi4_mst_base_seq;
             bit [AXI4_ADDR_WIDTH-1:0] addr;
             int unsigned              lane_offset;
 
-            addr        = beat_address(req, beat);
-            addr        = addr - (addr % bytes);
+            addr        = bridge_beat_address(req, beat, bytes);
             lane_offset = addr % BUS_BYTES;
             for (int unsigned i = 0; i < bytes; i++)
                 shadow[addr + i] =
                     req.data[beat][8 * (lane_offset + i) +: 8];
         end
     endfunction : apply_bridge_write
+
+    // Where a beat really goes. The start is aligned once, by the rule this
+    // build uses: ahb_mstr_if has one address generator per build and only
+    // the narrow one aligns to the transfer size, the other drives
+    // {addr[..:2], 2'b00} whatever the size. After that each beat is the
+    // effective size further on, which is also what the hardware does,
+    // because a burst can only be narrower than the bus on a narrow build.
+    // Note the lane the data is taken from moves with the aligned address,
+    // so an offset that is dropped does not just misplace the bytes, it
+    // picks different ones out of WDATA.
+    protected function bit [AXI4_ADDR_WIDTH-1:0] bridge_beat_address(
+        axi4_transaction req,
+        int unsigned     beat,
+        int unsigned     bytes
+    );
+        bit [AXI4_ADDR_WIDTH-1:0] start;
+        int unsigned              align_bytes;
+
+        align_bytes = supports_narrow ? bytes : BUS_BYTES;
+        start       = req.addr - (req.addr % align_bytes);
+
+        case (req.burst)
+            AXI4_BURST_FIXED:
+                return start;
+            AXI4_BURST_WRAP: begin
+                int unsigned              span;
+                bit [AXI4_ADDR_WIDTH-1:0] wrap_base;
+
+                span      = (int'(req.len) + 1) * bytes;
+                wrap_base = start - (start % span);
+                return wrap_base +
+                       ((start - wrap_base + (beat * bytes)) % span);
+            end
+            default:
+                return start + (beat * bytes);
+        endcase
+    endfunction : bridge_beat_address
 
     // A single write is the one place the bridge reads WSTRB: one
     // size-aligned run of lanes sets HSIZE, anything else falls back to

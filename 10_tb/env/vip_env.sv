@@ -51,8 +51,12 @@ class vip_env extends uvm_env;
         axi_agent = axi4_mst_agent::type_id::create("axi_agent", this);
         ahb_agent = ahb_slv_agent::type_id::create("ahb_agent", this);
         vseqr     = virtual_sequencer::type_id::create("vseqr", this);
-        if (cfg.has_scoreboard || cfg.has_e2e_cov)
+        if (cfg.has_scoreboard || cfg.has_e2e_cov) begin
             pred = predictor::type_id::create("pred", this);
+            // How the bridge aligns HADDR depends on the build, so the
+            // predictor has to know which one it is
+            pred.supports_narrow = cfg.supports_narrow_burst;
+        end
         if (cfg.has_scoreboard)
             scb = scoreboard::type_id::create("scb", this);
         if (cfg.has_e2e_cov)
