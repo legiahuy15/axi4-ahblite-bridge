@@ -1,9 +1,6 @@
 QuestaSim-64 vopt 10.6b Compiler 2017.05 May 25 2017
-Start time: 09:40:31 on Oct 01,2026
+Start time: 09:53:43 on Oct 01,2026
 vopt "+acc" -work work -cover sbcet -l report/logs/optimize.log work.bridge_tb_top -o opt_bridge_tb_top 
-** Warning: (vopt-6) -- Waiting for lock by "hle@VFSRV03, pid = 2580682". Lockfile is "/home/hle/Desktop/bridge_axi4_ahblite_vip/11_sim/work/_lock".
-** Warning: (vopt-6) -- Waiting for lock by "hle@VFSRV03, pid = 2580788". Lockfile is "/home/hle/Desktop/bridge_axi4_ahblite_vip/11_sim/work/_lock".
-** Warning: (vopt-6) -- Waiting for lock by "hle@VFSRV03, pid = 2580876". Lockfile is "/home/hle/Desktop/bridge_axi4_ahblite_vip/11_sim/work/_lock".
 
 Top level modules:
 	bridge_tb_top
@@ -45,5 +42,5 @@ Optimizing 17 design-units (inlining 0/10 module instances):
 -- Optimizing interface axi4_if(fast)
 -- Optimizing interface ahb_if(fast)
 Optimized design name is opt_bridge_tb_top
-End time: 09:40:47 on Oct 01,2026, Elapsed time: 0:00:16
-Errors: 0, Warnings: 3
+End time: 09:53:46 on Oct 01,2026, Elapsed time: 0:00:03
+Errors: 0, Warnings: 0
